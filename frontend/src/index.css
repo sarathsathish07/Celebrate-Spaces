@@ -1,0 +1,306 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.hero-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100vh;
+}
+
+.hero-card {
+  background-color: rgba(0, 0, 0, 0.5); /* Dark background with transparency */
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+.custom-navbar {
+  background-color: #172432 !important;
+}
+.custom-navbarUser{
+  background-color:#082b43
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link,
+.custom-navbar .nav-dropdown {
+  color: #fff; /* Ensures text is readable */
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .nav-dropdown:hover {
+  color: #ddd !important; /* Slightly lighter color on hover for better UX */
+}
+.custom-button {
+  background-color: #FF7757;
+  border-color: #FF7757;
+  color: white;
+}
+
+.custom-button:hover {
+  background-color: #e66d50;
+  border-color: #e66d50;
+}
+.custom-navbar-homepage .titleHome {
+  color: #000000 !important;
+  font-family: 'Lobster'; 
+  font-size: 1.4rem;
+
+}
+.custom-navbarUser .titleHome {
+  font-family: 'Lobster'; 
+  font-size: 1.4rem;
+  
+}
+.nav-link-title {
+  color: #000000 !important;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1B2431;
+}
+.login-containerH {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #082b43;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  
+}
+.login-formH {
+  width: 100%;
+  max-width: 400px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.login-form h1,.login-formH h1 {
+  color: #ffffff;
+  text-align: center; 
+}
+
+.login-form .form-control {
+  background-color: #2C3E50;
+  color: #ffffff;
+  border: none;
+}
+
+.login-form .form-control:focus {
+  background-color: #34495E;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
+}
+
+.login-form .form-label {
+  color: #ffffff;
+}
+
+.login-form .btn-primary:hover {
+  background-color: #e66d50;
+  border-color: #e66d50;
+}
+.login-form .register-link {
+  color: #FF7757;
+  text-align: center; 
+}
+
+
+.hotel-header {
+  background-color: #082b43; 
+}
+.hotel-header .nav-link{
+  color: white;
+}
+
+.hotelier-sidebar {
+  background-color: #9caeb8; 
+  padding: 20px;
+  height: 100vh;
+}
+.admin-sidebar {
+  background-color: rgb(33, 37, 41); 
+  padding: 20px;
+  height: 100vh;
+}
+
+.hotelier-sidebar .nav-link {
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.admin-sidebar .nav-link {
+  color: #ffffff;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.hotelier-sidebar .nav-link:hover {
+  background-color: #e2e6ea; 
+  border-radius: 5px;
+}
+.admin-sidebar .nav-link:hover {
+  background-color: #e2e6ea; 
+  border-radius: 5px;
+}
+
+.sidebar-welcome {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.custom-navbarUser .nav-link {
+  color: #fff !important;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.custom-navbarUser .title{
+  color: white !important;;
+}
+
+/* .custom-navbarUser .navbar-nav.ms-auto.me-auto {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+} */
+/* 
+.custom-navbarUser .navbar-brand.title {
+  position: relative;
+  left: 0;
+} */
+
+/* .custom-navbarUser .navbar-nav.ms-auto {
+  position: relative;
+  right: 0;
+} */
+
+.custom-navbarUser .nav-item {
+  display: flex;
+  align-items: center;
+}
+.sidebar {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  height: 100vh;
+  border-radius: 30px;
+  margin-top: 50px;
+}
+
+.sidebar h4 {
+  margin-bottom: 20px;
+}
+
+.sidebar hr {
+  margin: 10px 0;
+}
+.custom-navbar-homepage {
+  background-color: transparent !important;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+.custom-navbarUser {
+  /* position: absolute; */
+  width: 100%;
+  /* z-index: 10; */
+}
+.custom-navbar-homepage  .nav-link{
+  color: #000;
+}
+.hotelierbody{
+  background-color: #ffffff;
+  padding-left: 0;
+}
+.adminsidecol{
+  padding-left: 0;
+}
+.hotelsidecol{
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.hotelierbody .card {
+  background-color: #9caeb8; 
+  padding: 20px;
+  border-radius: 10px;
+  color: rgb(0, 0, 0);
+}
+.hotelierbody .hotelscard{
+  background-color: white;
+  color: black;
+}
+.addhotelbutton{
+  background-color: #082b43 ;
+  
+}
+.overlay-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+}
+
+.hotel-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.hotel-image {
+  height: 300px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.hotel-card-body {
+  width: 100%;
+  padding: 10px;
+}
+
+.hotel-card-button {
+  background-color: #082b43;
+  border: none;
+}
+.hotelierbody .hotelscard{
+  height: 50px;
+}
+
+
+
+
+
+
