@@ -8,10 +8,10 @@
 }
 
 .dark-button {
-  background-color: #20a12d; /* Dark background color */
-  color: #fafafa; /* White text color for contrast */
-  border: none; /* Remove border if not needed */
+  background-color: #20a12d; 
+  color: #fafafa; 
+  border: none; 
   cursor: pointer; 
-  overflow-x: hidden;/* Add a pointer cursor for interaction */
-  /* Add any other styles you want */
+  overflow-x: hidden;
+  
 }

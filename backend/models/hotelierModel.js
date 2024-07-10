@@ -32,7 +32,7 @@ const hotelierSchema = mongoose.Schema({
   verificationStatus: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending'
+    default: null
   },
   certificates: {
     type: String,

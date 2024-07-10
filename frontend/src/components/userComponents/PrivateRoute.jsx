@@ -1,11 +1,24 @@
-import { Navigate,Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
-
-import React from 'react'
+import React, { useEffect } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { useGetUserProfileQuery } from '../../slices/usersApiSlice.js';
+import { logout } from '../../slices/authSlice';
 
 const PrivateRoute = () => {
-  const {userInfo} =useSelector((state)=>state.auth)
-  return userInfo ? <Outlet/> : <Navigate to='/login' replace/>
-}
+  const { userInfo } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-export default PrivateRoute
+  const { data, error } = useGetUserProfileQuery(null, {
+    skip: !userInfo, 
+  });
+
+  useEffect(() => {
+    if (error && error.status === 401) {
+      dispatch(logout());
+    }
+  }, [error, dispatch]);
+
+  return userInfo ? <Outlet /> : <Navigate to='/login' replace />;
+};
+
+export default PrivateRoute;

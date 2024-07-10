@@ -1,64 +1,65 @@
-import { Navbar, Nav, Container,NavDropdown,Badge } from 'react-bootstrap';
-import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
-import {useSelector,useDispatch} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
-import {LinkContainer} from 'react-router-bootstrap'
-import { logout } from '../../slices/adminAuthSlice.js';
-import { useAdminLogoutMutation } from '../../slices/adminApiSlice.js';
+import { Navbar, Nav, Container, NavDropdown, Badge } from "react-bootstrap";
+import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { LinkContainer } from "react-router-bootstrap";
+import { logout } from "../../slices/adminAuthSlice.js";
+import { useAdminLogoutMutation } from "../../slices/adminApiSlice.js";
 
 const AdminHeader = () => {
-  const isLoginPage = location.pathname === '/admin/login';
+  const isLoginPage = location.pathname === "/admin/login";
 
   if (isLoginPage) {
     return null;
   }
-  const {adminInfo} = useSelector((state)=>state.adminAuth)
+  const { adminInfo } = useSelector((state) => state.adminAuth);
 
-  const [logoutApiCall] = useAdminLogoutMutation()
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const logoutHandler = async() =>{
+  const [logoutApiCall] = useAdminLogoutMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-      navigate('/admin/login')
+      navigate("/admin/login");
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
   return (
     <header>
-      <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
+      <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
         <Container>
-        <LinkContainer to='/admin'>
-          <Navbar.Brand>Admin</Navbar.Brand>
-        </LinkContainer>
-          <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
-            <Nav className='ms-auto'>
-            {adminInfo ? (<>
-              <NavDropdown title={adminInfo.email} id='username'>
-                <LinkContainer to='/admin/get-user'>
-                <NavDropdown.Item>
-                Users List
-                </NavDropdown.Item>
-                </LinkContainer>
-                <NavDropdown.Item onClick={logoutHandler}>
-                Logout
-                </NavDropdown.Item>
-          
-              </NavDropdown>
-
-            </>) :
-            
-             (<>
-              <LinkContainer to='admin/login'> 
-              <Nav.Link>
-                <FaSignInAlt /> Sign In
-              </Nav.Link>
-            </LinkContainer>
-            </>) }
+          <LinkContainer to="/admin">
+            <Navbar.Brand>Admin</Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              {adminInfo ? (
+                <>
+                  <NavDropdown
+                    title={adminInfo.email}
+                    id="username"
+                    style={{ color: "white" }}
+                  >
+                    <LinkContainer to="/admin/get-user">
+                      <NavDropdown.Item>Users List</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Item onClick={logoutHandler}>
+                      Logout
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                </>
+              ) : (
+                <>
+                  <LinkContainer to="admin/login">
+                    <Nav.Link>
+                      <FaSignInAlt /> Sign In
+                    </Nav.Link>
+                  </LinkContainer>
+                </>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

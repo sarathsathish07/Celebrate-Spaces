@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { UsersTable } from '../../components/adminComponents/UserTable'
-import { useGetUserDataMutation } from '../../slices/adminApiSlice'
+import React, { useEffect, useState } from "react";
+import { UsersTable } from "../../components/adminComponents/UserTable";
+import { useGetUserDataMutation } from "../../slices/adminApiSlice";
 import AdminLayout from "../../components/adminComponents/AdminLayout";
-import { Container } from 'react-bootstrap'
-import { toast } from 'react-toastify';
+import { Container } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 export const UserManagementScreen = () => {
   const [usersData, setUsersData] = useState([]);
@@ -12,7 +12,7 @@ export const UserManagementScreen = () => {
   const [userDataFromApi] = useGetUserDataMutation();
 
   const refetchData = () => {
-    setRefetch(prev => !prev);
+    setRefetch((prev) => !prev);
   };
 
   useEffect(() => {
@@ -21,7 +21,9 @@ export const UserManagementScreen = () => {
         const responseFromApiCall = await userDataFromApi().unwrap();
         setUsersData(responseFromApiCall);
       } catch (error) {
-        toast.error(error?.data?.message || error?.error || "Error fetching users");
+        toast.error(
+          error?.data?.message || error?.error || "Error fetching users"
+        );
         console.error("Error fetching users:", error);
       }
     };
@@ -32,11 +34,8 @@ export const UserManagementScreen = () => {
   return (
     <AdminLayout>
       <Container>
-        <UsersTable 
-          users={usersData} 
-          refetchData={refetchData} 
-        />
+        <UsersTable users={usersData} refetchData={refetchData} />
       </Container>
     </AdminLayout>
   );
-}
+};

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import { useGetAllHotelsDataMutation } from '../../slices/adminApiSlice';
-import AdminLayout from '../../components/adminComponents/AdminLayout';
-import { HotelsTable } from '../../components/adminComponents/HotelsTable';
+import React, { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { useGetAllHotelsDataMutation } from "../../slices/adminApiSlice";
+import AdminLayout from "../../components/adminComponents/AdminLayout";
+import { HotelsTable } from "../../components/adminComponents/HotelsTable";
 
 const HotelsManagementScreen = () => {
   const [hotelsData, setHotelsData] = useState([]);
@@ -21,8 +21,10 @@ const HotelsManagementScreen = () => {
         const responseFromApiCall = await getHotelsData().unwrap();
         setHotelsData(responseFromApiCall);
       } catch (error) {
-        toast.error(error?.data?.message || error?.error || 'Error fetching hotels');
-        console.error('Error fetching hotels:', error);
+        toast.error(
+          error?.data?.message || error?.error || "Error fetching hotels"
+        );
+        console.error("Error fetching hotels:", error);
       }
     };
 

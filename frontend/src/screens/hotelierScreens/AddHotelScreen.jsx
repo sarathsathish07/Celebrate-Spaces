@@ -1,28 +1,70 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import { useAddHotelMutation } from '../../slices/hotelierApiSlice';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import HotelierLayout from '../../components/hotelierComponents/HotelierLayout';
-import FormContainer from '../../components/userComponents/FormContainer';
+import React, { useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import { useAddHotelMutation } from "../../slices/hotelierApiSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
+import FormContainer from "../../components/userComponents/FormContainer";
 
 const AddHotelScreen = () => {
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
-  const [description, setDescription] = useState('');
-  const [amenities, setAmenities] = useState('');
+  const [description, setDescription] = useState("");
+  const [amenities, setAmenities] = useState("");
   const [addHotel] = useAddHotelMutation();
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setSelectedImages(files);
+    const validImageTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+    ];
+    const validImages = files.filter((file) =>
+      validImageTypes.includes(file.type)
+    );
+
+    if (validImages.length !== files.length) {
+      toast.error("Only image files are allowed (jpeg, png, gif)");
+    } else {
+      setSelectedImages(validImages);
+    }
+  };
+
+  const validateNameAndCity = (value) => {
+    const regex = /^[A-Za-z\s'-]+$/;
+    return regex.test(value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      !name ||
+      !city ||
+      !address ||
+      !selectedImages.length ||
+      !description ||
+      !amenities
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    if (!validateNameAndCity(name)) {
+      toast.error("Name cannot contain numbers or special characters");
+      return;
+    }
+
+    if (!validateNameAndCity(city)) {
+      toast.error("City cannot contain numbers or special characters");
+      return;
+    }
+
     try {
       const images = await Promise.all(
         selectedImages.map(async (image) => {
@@ -37,11 +79,11 @@ const AddHotelScreen = () => {
         address,
         images,
         description,
-        amenities: amenities.split(',').map((amenity) => amenity.trim()),
+        amenities: amenities.split(",").map((amenity) => amenity.trim()),
         isListed: true,
       }).unwrap();
-      toast.success('Hotel added successfully');
-      navigate('/hotelier/registered-hotels');
+      toast.success("Hotel added successfully");
+      navigate("/hotelier/registered-hotels");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -58,7 +100,13 @@ const AddHotelScreen = () => {
 
   return (
     <HotelierLayout>
-      <FormContainer style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', padding: '20px', borderRadius: '10px' }}>
+      <FormContainer
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          padding: "20px",
+          borderRadius: "10px",
+        }}
+      >
         <h1 className="my-3">Add Hotel</h1>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="name">
@@ -98,7 +146,7 @@ const AddHotelScreen = () => {
                   src={URL.createObjectURL(image)}
                   alt="preview"
                   className="img-thumbnail"
-                  style={{ width: '150px', marginRight: '10px' }}
+                  style={{ width: "150px", marginRight: "10px" }}
                 />
               ))}
             </div>
@@ -121,7 +169,12 @@ const AddHotelScreen = () => {
               onChange={(e) => setAmenities(e.target.value)}
             />
           </Form.Group>
-          <Button variant="primary" type="submit" className="my-3" style={{ backgroundColor: '#082b43' }}>
+          <Button
+            variant="primary"
+            type="submit"
+            className="my-3"
+            style={{ backgroundColor: "#082b43" }}
+          >
             Add Hotel
           </Button>
         </Form>

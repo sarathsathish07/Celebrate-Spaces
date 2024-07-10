@@ -25,10 +25,23 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    resendHotelierOtp: builder.mutation({
+      query: (data) => ({
+        url: `${HOTELS_URL}/resend-otp`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
     hotelierLogout: builder.mutation({
       query: () => ({
         url: `${HOTELS_URL}/logout`,
         method: 'POST',
+      }),
+    }),
+    getHotelierProfile: builder.query({
+      query: () => ({
+        url: `${HOTELS_URL}/profile`, 
+        method: 'GET',
       }),
     }),
     hotelierUpdateUser: builder.mutation({
@@ -39,12 +52,13 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     uploadVerificationDetails: builder.mutation({
-      query: (data) => ({
+      query: (formData) => ({
         url: `${HOTELS_URL}/verification`,
         method: 'POST',
-        body: data,
+        body: formData,
       }),
     }),
+    
     addHotel: builder.mutation({
       query: (data) => ({
         url: `${HOTELS_URL}/add-hotel`,
@@ -84,5 +98,7 @@ export const {
   useAddHotelMutation,
   useGetHotelsQuery,
   useGetHotelByIdQuery,
-  useUpdateHotelMutation
+  useUpdateHotelMutation,
+  useGetHotelierProfileQuery,
+  useResendHotelierOtpMutation
 } = hotelierApiSlice;

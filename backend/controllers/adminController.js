@@ -1,253 +1,103 @@
-import asyncHandler from "express-async-handler";
-import generateAdminToken from "../utils/generateAdminToken.js";
-import User from "../models/userModel.js";
-import Hotelier from "../models/hotelierModel.js";
-import Hotel from "../models/hotelModel.js";
-import nodemailer from 'nodemailer';
+import expressAsyncHandler from 'express-async-handler';
+import * as adminService from '../services/adminService.js';
+import { generateAdminToken } from '../services/adminService.js';
 
-const credentials = {
-  email: "admin@gmail.com",
-  password: "12345",
-  _id: "61024896"
-};
-
-const authAdmin = asyncHandler(async (req, res) => {
-  
-  if ( req.body.email == credentials.email &&
-    req.body.password == credentials.password) {
-      console.log("token creation");
-      const adminToken=generateAdminToken(res, credentials._id);
-      res.status(201).json({
-        _id: credentials._id,
-        email: credentials.email,
-      });
-    }
-   else {
-    
-    res.status(401);
-    throw new Error("Invalid Credentials");
-  }
-});
-
-
-const logoutAdmin = asyncHandler(async (req, res) => {
-  console.log("444");
-  res.cookie("jwtAdmin", "", {
-    httpOnly: true,
-    expires: new Date(),
-  });
-  res.status(200).json({ message: "Admin logged out" });
-});
-
-
-const getAllUser = asyncHandler(async (req, res) => {
-  const userData = await User.find({}, { name: 1, email: 1 ,profileImageName:1,isBlocked:1});
-  if (userData) {
-    res.status(200).json(userData);
-  } else {
-    res.status(400);
-    throw new Error("Error in fetching data");
-  }
-});
-
-
-const updateUserData = asyncHandler(async (req, res) => {
-  const userId = req.body.userId;
-  const user = await User.findById(userId);
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    const updateUser = await user.save();
-
-    res.status(200).json({
-      _id: updateUser._id,
-      name: updateUser.name,
-      email: updateUser.email,
-    });
-  } else {
-    res.status(400);
-    throw new Error("user not found");
-  }
-});
-
-
-const deleteUser = asyncHandler(async (req, res) => {
-  const userId = req.body.userId;
-  const deleted = await User.findByIdAndDelete(userId);
-
-  if (deleted) {
-    res
-      .status(200)
-      .json({ success: true, message: "User Deleted Succesfully" });
-  } else {
-    res.status(404).json({ success: false, message: "USER delete Failed" });
-  }
-});
-
-
-const addNewUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-  const userExist = await User.findOne({ email });
-  if (userExist) {
-    res.status(400);
-
-    throw new Error("User alredy exists");
-  } else {
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
-    if (user) {
-      res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
-  }
-});
-const getVerificationDetails = async (req, res) => {
+const authAdmin = expressAsyncHandler(async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const hoteliers = await Hotelier.find({ verificationStatus: 'pending' }).select('-password');
-    res.json(hoteliers);
+    const admin = await adminService.authenticateAdmin(email, password);
+    generateAdminToken(res, admin._id);
+    res.status(201).json({
+      _id: admin._id,
+      email: admin.email,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(401);
+    throw new Error(error.message);
   }
-};
-
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', 
-  auth: {
-    user: 'sarathsathish77@gmail.com',
-    pass: 'pehs ltsj iktw pqtp',
-  },
 });
 
 
-const acceptVerification = async (req, res) => {
-  try {
-    const hotelier = await Hotelier.findById(req.params.hotelierId);
-    if (!hotelier) {
-      return res.status(404).json({ message: 'Hotelier not found' });
-    }
-    
-    hotelier.verificationStatus = 'accepted';
-    await hotelier.save();
-    
-    await sendVerificationEmail(hotelier.email, 'Verification Accepted', 'Your verification request has been accepted.');
+const logoutAdmin = expressAsyncHandler(async (req, res) => {
+  const message =  adminService.logoutAdmin(res);
+  res.status(200).json(message);
+});
 
+const getAllUsers = expressAsyncHandler(async (req, res) => {
+  const users = await adminService.getAllUsers();
+  res.status(200).json(users);
+});
+
+const updateUser = expressAsyncHandler(async (req, res) => {
+  const { userId, name, email } = req.body;
+  const updatedUser = await adminService.updateUser(userId, { name, email });
+  res.status(200).json(updatedUser);
+});
+
+
+const getVerificationDetails = expressAsyncHandler(async (req, res) => {
+  const hoteliers = await adminService.getVerificationDetails();
+  res.status(200).json(hoteliers);
+});
+
+const acceptVerification = expressAsyncHandler(async (req, res) => {
+  try {
+    await adminService.acceptVerification(req.params.hotelierId);
     res.json({ message: 'Verification accepted' });
   } catch (error) {
     console.error('Error accepting verification:', error);
     res.status(500).json({ message: 'Server Error' });
   }
-};
+});
 
-const rejectVerification = async (req, res) => {
+const rejectVerification = expressAsyncHandler(async (req, res) => {
   try {
-    const hotelier = await Hotelier.findById(req.params.hotelierId);
-    if (!hotelier) {
-      return res.status(404).json({ message: 'Hotelier not found' });
-    }
-    
-    hotelier.verificationStatus = 'rejected';
-    await hotelier.save();
-    
-    await sendVerificationEmail(hotelier.email, 'Verification Rejected', 'Your verification request has been rejected.');
-
+    await adminService.rejectVerification(req.params.hotelierId);
     res.json({ message: 'Verification rejected' });
   } catch (error) {
     console.error('Error rejecting verification:', error);
     res.status(500).json({ message: 'Server Error' });
   }
-};
+});
 
-const sendVerificationEmail = async (recipient, subject, message) => {
-  try {
-    await transporter.sendMail({
-      from: 'sarathsathish77@gmail.com',
-      to: recipient,
-      subject: subject,
-      text: message,
-    });
-    console.log('Email sent successfully');
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error; 
-  }
-};
-
-const blockUser = asyncHandler(async (req, res) => {
+const blockUser = expressAsyncHandler(async (req, res) => {
   const { userId } = req.body;
-  console.log(userId);
-  const user = await User.findById(userId);
-  console.log(user);
-
-  if (user) {
-    user.isBlocked = true;
-    await user.save();
-    res.status(200).json({ message: 'User blocked successfully' });
-  } else {
-    res.status(404).json({ message: 'User not found' });
-  }
+  const message = await adminService.blockUser(userId);
+  res.status(200).json(message);
 });
 
-const unblockUser = asyncHandler(async (req, res) => {
+const unblockUser = expressAsyncHandler(async (req, res) => {
   const { userId } = req.body;
-  const user = await User.findById(userId);
-
-  if (user) {
-    user.isBlocked = false;
-    await user.save();
-    res.status(200).json({ message: 'User unblocked successfully' });
-  } else {
-    res.status(404).json({ message: 'User not found' });
-  }
+  const message = await adminService.unblockUser(userId);
+  res.status(200).json(message);
 });
-const getAllHotels = asyncHandler(async (req, res) => {
-  const hotels = await Hotel.find({});
-  res.json(hotels);
+const getAllHotels = expressAsyncHandler(async (req, res) => {
+  const hotels = await adminService.getAllHotels();
+  res.status(200).json(hotels);
 });
-const listHotel = asyncHandler(async (req, res) => {
-  const hotel = await Hotel.findById(req.params.hotelId);
-
-  if (hotel) {
-    hotel.isListed = true;
-    await hotel.save();
-    res.json({ message: 'Hotel listed successfully' });
-  } else {
-    res.status(404).json({ message: 'Hotel not found' });
-  }
-});
-const unlistHotel = asyncHandler(async (req, res) => {
-  const hotel = await Hotel.findById(req.params.hotelId);
-
-  if (hotel) {
-    hotel.isListed = false;
-    await hotel.save();
-    res.json({ message: 'Hotel unlisted successfully' });
-  } else {
-    res.status(404).json({ message: 'Hotel not found' });
-  }
+const listHotel = expressAsyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+  const result = await adminService.listHotel(hotelId);
+  res.status(200).json(result);
 });
 
+const unlistHotel = expressAsyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+  const result = await adminService.unlistHotel(hotelId);
+  res.status(200).json(result);
+});
 
-export { authAdmin,
-   logoutAdmin,
-    addNewUser,
-    deleteUser,
-    updateUserData,
-    getAllUser,
-    getVerificationDetails,
-    acceptVerification,
-    rejectVerification,
-    blockUser,
-    unblockUser,
-    getAllHotels,
-    listHotel,
-    unlistHotel
-   };
+export {
+  authAdmin,
+  logoutAdmin,
+  getAllUsers,
+  updateUser,
+  getVerificationDetails,
+  acceptVerification,
+  rejectVerification,
+  blockUser,
+  unblockUser,
+  getAllHotels,
+  listHotel,
+  unlistHotel
+};

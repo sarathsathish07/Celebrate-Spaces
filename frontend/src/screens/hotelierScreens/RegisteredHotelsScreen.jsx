@@ -1,30 +1,49 @@
-import React, { useEffect } from 'react';
-import { Button, Container, Card, Row, Col } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { useGetHotelsQuery } from '../../slices/hotelierApiSlice.js';
-import HotelierLayout from '../../components/hotelierComponents/HotelierLayout';
-import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Button, Container, Card, Row, Col } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
+import { useGetHotelsQuery } from "../../slices/hotelierApiSlice.js";
+import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RegisteredHotelsScreen = () => {
-  const { data: hotels, isLoading, isError } = useGetHotelsQuery();
+  const { data: hotels, isLoading, isError, refetch } = useGetHotelsQuery();
+  const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
+  const [refetchToggle, setRefetchToggle] = useState(false);
+
+  useEffect(() => {
+    if (hotelierInfo) {
+      refetch();
+    }
+  }, [hotelierInfo, refetchToggle, refetch]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetchToggle, refetch]);
 
   const renderHotels = () => {
-    return hotels.map((hotel) => (
+    return hotels?.map((hotel) => (
       <Col key={hotel._id} md={4} className="mb-4">
         <Card className="h-100 shadow hotelscard">
-          <Card.Img 
-            variant="top" 
-            src={hotel.images[0]} 
-            alt={hotel.name} 
-            style={{ height: '200px', objectFit: 'cover' }} 
+          <Card.Img
+            variant="top"
+            src={hotel.images[0]}
+            alt={hotel.name}
+            style={{ height: "200px", objectFit: "cover" }}
           />
           <Card.Body>
             <Card.Title>{hotel.name}</Card.Title>
-            <Card.Text><strong>City:</strong> {hotel.city}</Card.Text>
-            <Card.Text><strong>Address:</strong> {hotel.address}</Card.Text>
+            <Card.Text>
+              <strong>City:</strong> {hotel.city}
+            </Card.Text>
+            <Card.Text>
+              <strong>Address:</strong> {hotel.address}
+            </Card.Text>
             <Link to={`/hotelier/edit-hotel/${hotel._id}`}>
-              <Button className="mt-2" variant="primary">Edit Hotel</Button>
+              <Button className="mt-2" variant="primary">
+                Edit Hotel
+              </Button>
             </Link>
           </Card.Body>
         </Card>
@@ -34,13 +53,13 @@ const RegisteredHotelsScreen = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
-    toast.error('Error fetching hotels');
+    toast.error("Error fetching hotels");
     return <div>Error</div>;
   }
 
   return (
     <HotelierLayout>
-      <Container className='px-4 w-75'>
+      <Container className="px-4 w-75">
         <Row>
           <Col md={10}>
             <h1 className="my-3">Registered Hotels</h1>
@@ -50,11 +69,8 @@ const RegisteredHotelsScreen = () => {
               <Button className="addhotelbutton my-4">Add Hotel</Button>
             </LinkContainer>
           </Col>
-        
         </Row>
-        <Row>
-          {renderHotels()}
-        </Row>
+        <Row>{renderHotels()}</Row>
       </Container>
     </HotelierLayout>
   );

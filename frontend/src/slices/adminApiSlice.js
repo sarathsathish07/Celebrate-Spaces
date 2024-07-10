@@ -31,7 +31,7 @@ export const admiApiSlice=apiSlice.injectEndpoints({
                method:'POST',
             })
         }),
-        getVerificationData: builder.query({
+         getVerificationData: builder.query({
             query: () => `${ADMIN_URL}/verification`,
           }),
           adminAcceptVerification: builder.mutation({

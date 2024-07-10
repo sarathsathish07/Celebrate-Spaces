@@ -1,46 +1,60 @@
-import React, { useState } from 'react';
-import { Button, Card, Modal } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Button, Card, Modal } from "react-bootstrap";
 import {
   useGetVerificationDataQuery,
   useAdminAcceptVerificationMutation,
   useAdminRejectVerificationMutation,
-} from '../../slices/adminApiSlice';
-import AdminLayout from '../../components/adminComponents/AdminLayout';
+} from "../../slices/adminApiSlice";
+import AdminLayout from "../../components/adminComponents/AdminLayout";
 import { toast } from "react-toastify";
 
 const AdminVerificationScreen = () => {
-  const { data: verifications, error, isLoading } = useGetVerificationDataQuery();
+  const {
+    data: verifications,
+    error,
+    isLoading,
+    refetch,
+  } = useGetVerificationDataQuery();
   const [acceptVerification] = useAdminAcceptVerificationMutation();
   const [rejectVerification] = useAdminRejectVerificationMutation();
   const [showModal, setShowModal] = useState(false);
-  const [selectedCertificate, setSelectedCertificate] = useState('');
+  const [selectedCertificate, setSelectedCertificate] = useState("");
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleAccept = async (adminId) => {
     try {
       await acceptVerification(adminId);
-      toast.success('Verification request accepted successfully');
-      refetch(); 
+      refetch();
+      toast.success("Verification request accepted successfully");
     } catch (error) {
-      console.error('Error accepting verification:', error);
+      console.error("Error accepting verification:", error);
     }
   };
 
   const handleReject = async (adminId) => {
     try {
       await rejectVerification(adminId);
-      toast.success('Verification request rejected');
-      refetch(); 
+      refetch();
+      toast.success("Verification request rejected");
     } catch (error) {
-      console.error('Error rejecting verification:', error);
+      console.error("Error rejecting verification:", error);
     }
   };
 
-  const openModal = (certificatePath) => {
-    setSelectedCertificate(certificatePath);
+  const openModal = (certificate) => {
+    const adjustedCertificatePath = certificate.replace(
+      "backend\\public\\",
+      ""
+    );
+    setSelectedCertificate(adjustedCertificatePath);
     setShowModal(true);
   };
 
   const closeModal = () => {
+    setSelectedCertificate("");
     setShowModal(false);
   };
 
@@ -50,18 +64,21 @@ const AdminVerificationScreen = () => {
   return (
     <AdminLayout>
       <div>
-        <h2 className='my-3'>Verification Requests</h2>
+        <h2 className="my-3">Verification Requests</h2>
         {verifications.map((admin) => (
           <Card key={admin._id} className="my-3 p-3 rounded">
             <Card.Body>
               <h3>{admin.name}</h3>
               <p>Status: {admin.verificationStatus}</p>
-              <Button variant="primary" onClick={() => openModal(admin.certificates)}>
+              <Button
+                variant="primary"
+                onClick={() => openModal(admin.certificates)}
+              >
                 View Certificate
-              </Button>{' '}
+              </Button>{" "}
               <Button variant="success" onClick={() => handleAccept(admin._id)}>
                 Accept
-              </Button>{' '}
+              </Button>{" "}
               <Button variant="danger" onClick={() => handleReject(admin._id)}>
                 Reject
               </Button>
@@ -69,17 +86,22 @@ const AdminVerificationScreen = () => {
           </Card>
         ))}
 
-        {/* Modal to display certificate */}
         <Modal show={showModal} onHide={closeModal} size="xl">
           <Modal.Header closeButton>
             <Modal.Title>View Certificate</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <iframe
-              title="Certificate Preview"
-              src={`http://localhost:5000/CertificateUploads/${selectedCertificate}`}
-              style={{ width: '100%', height: '80vh', border: 'none' }}
-            ></iframe>
+            {selectedCertificate && (
+              <img
+                src={`http://localhost:5000/${selectedCertificate}`}
+                alt="Certificate Preview"
+                style={{
+                  width: "100%",
+                  maxHeight: "80vh",
+                  objectFit: "contain",
+                }}
+              />
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={closeModal}>

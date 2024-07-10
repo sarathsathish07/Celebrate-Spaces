@@ -5,7 +5,8 @@ import { FaTachometerAlt, FaUser, FaHotel, FaCheckCircle, FaCalendarCheck, FaEnv
 
 const HotelierSidebar = ({ hotelierName }) => {
   return (
-    <Nav className="flex-column hotelier-sidebar">
+    <div className='hotelier-sidebar'>
+<Nav className="flex-column ">
       <LinkContainer to="/hotelier/">
         <Nav.Link className='mt-5'>
           <FaTachometerAlt /> Dashboard
@@ -37,6 +38,8 @@ const HotelierSidebar = ({ hotelierName }) => {
         </Nav.Link>
       </LinkContainer>
     </Nav>
+    </div>
+    
   );
 };
 

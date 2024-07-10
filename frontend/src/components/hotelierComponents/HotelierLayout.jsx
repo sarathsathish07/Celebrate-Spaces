@@ -4,12 +4,12 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 const HotelierLayout = ({ children, hotelierName }) => {
   return (
-    <Container fluid>
+    <Container fluid >
       <Row>
-        <Col md={2} className='hotelsidecol'>
+        <Col md={3} className='hotelsidecol'>
           <HotelierSidebar hotelierName={hotelierName} />
         </Col>
-        <Col md={10} className='hotelierbody'>
+        <Col md={9} className='hotelierbody'>
           {children}
         </Col>
       </Row>

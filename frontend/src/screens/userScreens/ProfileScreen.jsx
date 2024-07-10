@@ -1,140 +1,254 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Form, Button } from "react-bootstrap";
-import FormContainer from "../../components/userComponents/FormContainer";
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Button,
+  Card,
+  Container,
+  Row,
+  Col,
+  Image,
+  Nav,
+} from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
 import { setCredentials } from "../../slices/authSlice";
-import { useNavigate } from "react-router-dom";
-import { useUpdateUserMutation } from "../../slices/usersApiSlice";
-const PROFILE_IMAGE_DIR_PATH = 'http://localhost:5000/UserProfileImages/'
-
+import {
+  useGetUserProfileQuery,
+  useUpdateUserMutation,
+} from "../../slices/usersApiSlice";
+import bgImage from "../../assets/images/bgimage.jpg";
+import defaultProfileImage from "../../assets/images/5856.jpg";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [profileImageName, setProfileImageName] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
-  const [updateProfile, { isLoading }] = useUpdateUserMutation()
-  useEffect(() => {
-    setName(userInfo.name);
-    setEmail(userInfo.email);
-    setProfileImageName(userInfo.profileImageName);
-  }, [userInfo.setName, userInfo.setEmail,userInfo.profileImageName]);
+  const {
+    data: userProfile,
+    isLoading: profileLoading,
+    refetch,
+  } = useGetUserProfileQuery();
+  const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const nameRegex = /^[A-Za-z\s'-]+$/
-    if(!nameRegex.test(name)){
-      toast.error('Name is not valid')
-      return
+  useEffect(() => {
+    if (userProfile) {
+      setName(userProfile.name);
+      setEmail(userProfile.email);
+      setProfileImage(userProfile.profileImageName);
     }
-    if(!emailRegex.test(email)){
-      toast.error("Email Not Valid")
-      return
+  }, [userProfile]);
+
+  useEffect(() => {
+    if (userInfo) {
+      refetch();
     }
-    if (password !== confirmPassword) {
-      toast.error("Passwords donot match");
-    } else {
-     try {
-      const formData = new FormData();
-    
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('profileImageName', profileImageName);
-  const responseFromApiCall = await updateProfile(formData).unwrap();
-  dispatch(setCredentials({...responseFromApiCall}))
-  toast.success('Profile Updated Succesfully')
-     } catch (error) {
-        console.log(error.data.message);
-        toast.error("An error occured")
-     }
+  }, [userInfo, refetch]);
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setProfileImage(file);
     }
   };
 
+  const validateName = (name) => {
+    if (name.trim() === "") {
+      toast.error("Name is required");
+      return false;
+    }
+    return true;
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (email.trim() === "") {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      toast.error("Email is not valid");
+      return false;
+    }
+    return true;
+  };
+
+  const validatePassword = (password) => {
+    if (
+      password.length < 8 ||
+      !/[a-zA-Z]/.test(password) ||
+      !/\d/.test(password) ||
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ) {
+      toast.error(
+        "Password must be at least 8 characters long and contain at least one letter, one number, and one special character."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    if (!validateName(name) || !validateEmail(email)) {
+      return;
+    }
+
+    if (
+      password &&
+      (password !== confirmPassword || !validatePassword(password))
+    ) {
+      toast.error(
+        "Passwords do not match or do not meet the required criteria"
+      );
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      if (password) formData.append("password", password);
+      if (profileImage) formData.append("profileImage", profileImage);
+
+      const responseFromApiCall = await updateProfile(formData).unwrap();
+      await refetch();
+      dispatch(setCredentials(responseFromApiCall));
+      toast.success("Profile Updated Successfully");
+    } catch (error) {
+      toast.error(
+        error?.data?.message || error?.message || "An error occurred"
+      );
+    }
+  };
+
+  const getImageUrl = (imageName) => {
+    if (!imageName) return defaultProfileImage;
+    return `http://localhost:5000/UserProfileImages/${imageName.replace(
+      "backend\\public\\",
+      ""
+    )}`;
+  };
+
+  if (profileLoading) return <Loader />;
+
   return (
-    <FormContainer>
-       {userInfo.profileImageName && (
-        <img
-          src={PROFILE_IMAGE_DIR_PATH + userInfo.profileImageName}
-          alt={userInfo.name}
-          style={{
-            width: "150px",
-            justifyContent:"center",
-            height: "150px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            display: "block",
-            marginTop: "5px",
-            marginLeft: "115px",
-            marginBottom: "10px",
-          }}
-        />
-      )}
-      <h1>Update Profile</h1>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="name"
-            placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="profileImage">
-              <Form.Label>Profile Picture</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={(e) => setProfileImageName(e.target.files[0])}
-              ></Form.Control>
-            </Form.Group>
-
-        {isLoading && <Loader/>}
-
-        <Button type="submit" variant="primary" className="mt-3">
-          Update
-        </Button>
-      </Form>
-    </FormContainer>
+    <div>
+      <div className="position-relative">
+        <img src={bgImage} alt="background" className="background-image" />
+        <div className="overlay-text">
+          <h1>My Profile</h1>
+        </div>
+      </div>
+      <Container className="profile-container">
+        <Row>
+          <Col md={3} className="sidebar-container">
+            <div className="sidebarprofile">
+              <Image
+                src={
+                  profileImage
+                    ? typeof profileImage === "string"
+                      ? getImageUrl(profileImage)
+                      : URL.createObjectURL(profileImage)
+                    : defaultProfileImage
+                }
+                className="sidebar-image"
+                alt={name}
+              />
+              <Nav className="flex-column">
+                <LinkContainer to="/profile">
+                  <Nav.Link>My Profile</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/bookings">
+                  <Nav.Link>Bookings</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/wallet">
+                  <Nav.Link>Wallet</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/messages">
+                  <Nav.Link>Messages</Nav.Link>
+                </LinkContainer>
+              </Nav>
+            </div>
+          </Col>
+          <Col md={8}>
+            <Card className="profile-card">
+              <Card.Header className="profile-card-header">
+                My Account
+              </Card.Header>
+              <Card.Body>
+                <Form onSubmit={submitHandler}>
+                  <Form.Group className="my-3" controlId="name">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="profile-input"
+                    />
+                  </Form.Group>
+                  <Form.Group className="my-3" controlId="email">
+                    <Form.Label>Email Address</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="profile-input"
+                    />
+                  </Form.Group>
+                  <Form.Group className="my-3" controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Enter password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="profile-input"
+                    />
+                  </Form.Group>
+                  <Form.Group className="my-3" controlId="confirmPassword">
+                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Confirm password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="profile-input"
+                    />
+                  </Form.Group>
+                  <Form.Group className="my-3" controlId="profileImage">
+                    <Form.Label>Profile Picture</Form.Label>
+                    <Form.Control
+                      type="file"
+                      onChange={handleImageChange}
+                      className="profile-input"
+                    />
+                    {isLoading && <Loader />}
+                  </Form.Group>
+                  <Button
+                    type="submit"
+                    className="profile-button"
+                    style={{ backgroundColor: "#082b43" }}
+                  >
+                    Update
+                  </Button>
+                  {isLoading && <Loader />}
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 
