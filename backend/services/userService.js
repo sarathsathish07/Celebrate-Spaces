@@ -134,6 +134,14 @@ const updateUserProfile = async (userId, updateData,profileImage) => {
 
   return await userRepository.saveUser(user);
 };
+const getSingleHotelById = async (id) => {
+  const hotel = await userRepository.findHotelById(id);
+  if (hotel) {
+    const rooms = await userRepository.findRoomsByHotelId(id);
+    return { ...hotel._doc, rooms };
+  }
+  return null;
+};
 
 export {
   authenticateUser,
@@ -143,5 +151,6 @@ export {
   getUserProfile,
   updateUserProfile,
   generateToken,
-  resendOtp
+  resendOtp,
+  getSingleHotelById
 };

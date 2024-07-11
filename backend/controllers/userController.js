@@ -101,6 +101,15 @@ const getHotels = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const getHotelById = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const hotel = await userService.getSingleHotelById(id);
+  if (hotel) {
+    res.status(200).json(hotel);
+  } else {
+    res.status(404).json({ message: 'Hotel not found' });
+  }
+});
 
 export {
   authUser,
@@ -110,5 +119,6 @@ export {
   updateUserProfile,
   verifyOtp,
   getHotels,
-  resendOtp
+  resendOtp,
+  getHotelById
 };

@@ -17,22 +17,7 @@ const AddHotelScreen = () => {
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const validImageTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-    ];
-    const validImages = files.filter((file) =>
-      validImageTypes.includes(file.type)
-    );
-
-    if (validImages.length !== files.length) {
-      toast.error("Only image files are allowed (jpeg, png, gif)");
-    } else {
-      setSelectedImages(validImages);
-    }
+    setSelectedImages(e.target.files);
   };
 
   const validateNameAndCity = (value) => {
@@ -66,36 +51,22 @@ const AddHotelScreen = () => {
     }
 
     try {
-      const images = await Promise.all(
-        selectedImages.map(async (image) => {
-          const base64 = await convertToBase64(image);
-          return base64;
-        })
-      );
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("city", city);
+      formData.append("address", address);
+      formData.append("description", description);
+      formData.append("amenities", amenities);
+      for (let i = 0; i < selectedImages.length; i++) {
+        formData.append("images", selectedImages[i]);
+      }
 
-      await addHotel({
-        name,
-        city,
-        address,
-        images,
-        description,
-        amenities: amenities.split(",").map((amenity) => amenity.trim()),
-        isListed: true,
-      }).unwrap();
+      await addHotel(formData);
       toast.success("Hotel added successfully");
       navigate("/hotelier/registered-hotels");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
-  };
-
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
   };
 
   return (
@@ -138,17 +109,22 @@ const AddHotelScreen = () => {
           </Form.Group>
           <Form.Group controlId="images">
             <Form.Label>Images</Form.Label>
-            <Form.Control type="file" multiple onChange={handleImageChange} />
+            <Form.Control
+              type="file"
+              multiple
+              onChange={handleImageChange}
+            />
             <div className="mt-3">
-              {selectedImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={URL.createObjectURL(image)}
-                  alt="preview"
-                  className="img-thumbnail"
-                  style={{ width: "150px", marginRight: "10px" }}
-                />
-              ))}
+              {selectedImages &&
+                Array.from(selectedImages).map((image, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(image)}
+                    alt="preview"
+                    className="img-thumbnail"
+                    style={{ width: "150px", marginRight: "10px" }}
+                  />
+                ))}
             </div>
           </Form.Group>
           <Form.Group controlId="description">

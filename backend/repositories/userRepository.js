@@ -1,4 +1,6 @@
 import User from '../models/userModel.js';
+import Hotel from '../models/hotelModel.js';
+import Room from '../models/roomModel.js';
 
 const findUserByEmail = async (email) => {
   return await User.findOne({ email });
@@ -15,10 +17,19 @@ const findUserById = async (id) => {
 const saveUser = async (user) => {
   return await user.save();
 };
+const findHotelById = async (id) => {
+  return await Hotel.findById(id).exec();
+};
+
+const findRoomsByHotelId = async (hotelId) => {
+  return await Room.find({ hotelId }).exec();
+};
 
 export {
   findUserByEmail,
   createUser,
   findUserById,
   saveUser,
+  findHotelById,
+  findRoomsByHotelId
 };

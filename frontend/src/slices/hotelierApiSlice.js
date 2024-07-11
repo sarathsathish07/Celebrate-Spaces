@@ -79,11 +79,21 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     updateHotel: builder.mutation({
-      query: ({ id, ...hotel }) => ({
+      query: ({ id, formData }) => ({
         url: `${HOTELS_URL}/${id}`,
         method: 'PUT',
-        body: hotel,
+        body: formData,
       }),
+    }),
+    addRoom: builder.mutation({
+      query: ({ hotelId, formData }) => ({
+        url: `${HOTELS_URL}/add-room/${hotelId}`,
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+    getRoomById: builder.query({
+      query: (roomId) => `${HOTELS_URL}/rooms/${roomId}`,
     }),
   }),
 });
@@ -100,5 +110,7 @@ export const {
   useGetHotelByIdQuery,
   useUpdateHotelMutation,
   useGetHotelierProfileQuery,
-  useResendHotelierOtpMutation
+  useResendHotelierOtpMutation,
+  useAddRoomMutation,
+  useGetRoomByIdQuery
 } = hotelierApiSlice;

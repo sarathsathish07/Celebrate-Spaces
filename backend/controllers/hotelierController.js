@@ -119,8 +119,18 @@ const uploadVerificationDetailsHandler = expressAsyncHandler(async (req, res) =>
 });
 
 const addHotelHandler = expressAsyncHandler(async (req, res) => {
-  const { name, city, address, images, description, amenities } = req.body;
-  const response = await addHotel(req.hotelier._id, { name, city, address, images, description, amenities });
+  const { name, city, address, description, amenities } = req.body;
+  const images = req.files.map((file) => file.path);
+
+  const response = await addHotel(req.hotelier._id, {
+    name,
+    city,
+    address,
+    images,
+    description,
+    amenities: amenities.split(",").map((amenity) => amenity.trim()),
+    isListed: true,
+  });
   res.status(response.status).json(response.data);
 });
 
@@ -134,10 +144,18 @@ const getHotelByIdHandler = expressAsyncHandler(async (req, res) => {
   res.status(response.status).json(response.data);
 });
 
-const updateHotelHandler = expressAsyncHandler(async (req, res) => {
-  const response = await updateHotelData(req.params.id, req.body);
-  res.status(response.status).json(response.data);
-});
+const updateHotelHandler = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+  console.log(req.files);
+
+  try {
+    const updatedHotel = await updateHotelData(id, updateData,req.files);
+    res.status(200).json(updatedHotel);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating hotel', error: error.message });
+  }
+};
 
 export {
   authHotelierHandler,

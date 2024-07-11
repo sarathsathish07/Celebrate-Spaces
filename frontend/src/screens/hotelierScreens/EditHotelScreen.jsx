@@ -19,7 +19,7 @@ const EditHotelScreen = () => {
     amenities: "",
     images: [],
   });
-
+  const [selectedImages, setSelectedImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
 
   useEffect(() => {
@@ -43,40 +43,8 @@ const EditHotelScreen = () => {
     }));
   };
 
-  const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files);
-    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
-    const validImages = files.filter((file) => validImageTypes.includes(file.type));
-
-    if (validImages.length !== files.length) {
-      toast.error("Only image files are allowed (jpeg, png, gif)");
-    } else {
-      const imagesArray = await Promise.all(
-        validImages.map(async (file) => {
-          const base64 = await convertToBase64(file);
-          return base64;
-        })
-      );
-
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...imagesArray],
-      }));
-    }
-  };
-
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  const validateNameAndCity = (value) => {
-    const regex = /^[A-Za-z\s'-]+$/;
-    return regex.test(value);
+  const handleImageChange = (e) => {
+    setSelectedImages(e.target.files);
   };
 
   const handleRemoveImage = (index) => {
@@ -89,24 +57,29 @@ const EditHotelScreen = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formData.name || !formData.city || !formData.address || !formData.description || !formData.amenities) {
       toast.error("All fields are required");
       return;
     }
-
-    if (!validateNameAndCity(formData.name)) {
-      toast.error("Name cannot contain numbers or special characters");
-      return;
-    }
-
-    if (!validateNameAndCity(formData.city)) {
-      toast.error("City cannot contain numbers or special characters");
-      return;
-    }
-
+  
     try {
-      await updateHotel({ id, ...formData, removeImages: imagesToDelete }).unwrap();
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("city", formData.city);
+      formDataToSend.append("address", formData.address);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("amenities", formData.amenities);
+  
+      imagesToDelete.forEach((image) => {
+        formDataToSend.append("removeImages", image);
+      });
+  
+      for (let i = 0; i < selectedImages.length; i++) {
+        formDataToSend.append("images", selectedImages[i]);
+      }
+  
+      await updateHotel({ id, formData: formDataToSend }).unwrap();
       refetch();
       toast.success("Hotel updated successfully");
       navigate("/hotelier/registered-hotels");
@@ -114,6 +87,7 @@ const EditHotelScreen = () => {
       toast.error(error?.data?.message || error?.error || "Error updating hotel");
     }
   };
+  
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
@@ -152,7 +126,14 @@ const EditHotelScreen = () => {
               {formData.images.map((image, index) => (
                 <Col key={index} md={3} className="mb-3 position-relative">
                   <Card style={{ width: "100%", height: "100%" }}>
-                    <Card.Img variant="top" src={image} alt={`Hotel Image ${index}`} style={{ height: "150px", objectFit: "cover" }} />
+                    {typeof image === 'string' && (
+                      <Card.Img
+                        variant="top"
+                        src={`http://localhost:5000/${image.replace("backend\\public\\", "")}`}
+                        alt={`Hotel Image ${index}`}
+                        style={{ height: "150px", objectFit: "cover" }}
+                      />
+                    )}
                     <Button
                       variant="danger"
                       size="sm"

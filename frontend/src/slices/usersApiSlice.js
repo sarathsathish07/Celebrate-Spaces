@@ -57,6 +57,26 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getHotelById: builder.query({
+      query: (id) => ({
+        url: `${USERS_URL}/hotels/${id}`,
+        method: 'GET',
+      }),
+    }),
+    saveBooking: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/booking`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    updateBookingStatus: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/booking/update-status`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
   })
 })
 
@@ -70,4 +90,7 @@ export const {
   useUpdateUserMutation,
   useGetHotelsDataMutation,
   useGetUserProfileQuery,
+  useGetHotelByIdQuery,
+  useSaveBookingMutation,
+  useUpdateBookingStatusMutation
 } = usersApiSlice

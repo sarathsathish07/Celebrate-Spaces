@@ -7,10 +7,11 @@ import {
   createHotel,
   findHotelsByHotelierId,
   findHotelById,
+  findRoomById
 } from '../repositories/hotelRepository.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-
+import path from 'path';
 const fetchAcceptedHotels = async () => {
   return await getAcceptedHotels();
 };
@@ -155,40 +156,52 @@ const getHotels = async (hotelierId) => {
 };
 
 const getHotelById = async (hotelId) => {
-  const hotel = await findHotelById(hotelId);
-  if (hotel) {
-    return { status: 200, data: hotel };
-  } else {
-    return { status: 404, data: { message: 'Hotel not found' } };
+  try {
+    // Find the hotel by hotelId
+    const hotel = await findHotelById(hotelId);
+    if (!hotel) {
+      return { status: 404, data: { message: 'Hotel not found' } };
+    }
+
+    const rooms = await findRoomById({ hotelId });
+
+    return { status: 200, data: { ...hotel._doc, rooms } };
+  } catch (error) {
+    console.error('Error fetching hotel details:', error);
+    return { status: 500, data: { message: 'Server error' } };
   }
 };
 
-const updateHotelData = async (hotelId, updateData) => {
-  const hotel = await findHotelById(hotelId);
-  if (hotel) {
+const updateHotelData = async (hotelId, updateData, files) => {
+  try {
+    const hotel = await findHotelById(hotelId);
+
+    if (!hotel) {
+      throw new Error("Hotel not found");
+    }
+
     hotel.name = updateData.name || hotel.name;
     hotel.city = updateData.city || hotel.city;
     hotel.address = updateData.address || hotel.address;
     hotel.description = updateData.description || hotel.description;
-    hotel.amenities = updateData.amenities ? updateData.amenities.split(',').map(item => item.trim()) : hotel.amenities;
+    hotel.amenities = updateData.amenities ? updateData.amenities.split(",").map(item => item.trim()) : hotel.amenities;
 
-    // Handle image addition
-    if (updateData.images && updateData.images.length > 0) {
-      const uniqueImages = updateData.images.filter(newImage => !hotel.images.includes(newImage));
-      hotel.images.push(...uniqueImages);
+    if (files && files.length > 0) {
+      const newImages = files.map(file => path.relative("backend/public", file.path).replace(/\\/g, "/"));
+      hotel.images.push(...newImages);
     }
 
-    // Handle image removal
     if (updateData.removeImages && updateData.removeImages.length > 0) {
       hotel.images = hotel.images.filter(image => !updateData.removeImages.includes(image));
     }
 
     const updatedHotel = await hotel.save();
-    return { status: 200, data: updatedHotel };
-  } else {
-    return { status: 404, data: { message: 'Hotel not found' } };
+    return updatedHotel;
+  } catch (error) {
+    throw error;
   }
 };
+
 
 
 export {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Container, Card, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useGetHotelsQuery } from "../../slices/hotelierApiSlice.js";
@@ -10,28 +10,28 @@ import { useSelector } from "react-redux";
 const RegisteredHotelsScreen = () => {
   const { data: hotels, isLoading, isError, refetch } = useGetHotelsQuery();
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
-  const [refetchToggle, setRefetchToggle] = useState(false);
 
   useEffect(() => {
     if (hotelierInfo) {
       refetch();
     }
-  }, [hotelierInfo, refetchToggle, refetch]);
-
-  useEffect(() => {
-    refetch();
-  }, [refetchToggle, refetch]);
+  }, [hotelierInfo, refetch]);
 
   const renderHotels = () => {
     return hotels?.map((hotel) => (
       <Col key={hotel._id} md={4} className="mb-4">
         <Card className="h-100 shadow hotelscard">
-          <Card.Img
-            variant="top"
-            src={hotel.images[0]}
-            alt={hotel.name}
-            style={{ height: "200px", objectFit: "cover" }}
-          />
+          {hotel.images.length > 0 && (
+            <Card.Img
+              variant="top"
+              src={`http://localhost:5000/${hotel.images[0].replace(
+                "backend\\public\\",
+                ""
+              )}`} 
+              alt={hotel.name}
+              style={{ height: "200px", objectFit: "cover" }}
+            />
+          )}
           <Card.Body>
             <Card.Title>{hotel.name}</Card.Title>
             <Card.Text>
@@ -43,6 +43,11 @@ const RegisteredHotelsScreen = () => {
             <Link to={`/hotelier/edit-hotel/${hotel._id}`}>
               <Button className="mt-2" variant="primary">
                 Edit Hotel
+              </Button>
+            </Link>
+            <Link to={`/hotelier/add-room/${hotel._id}`}>
+              <Button className="mt-2" variant="success">
+                Add Room
               </Button>
             </Link>
           </Card.Body>

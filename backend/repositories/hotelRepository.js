@@ -43,32 +43,6 @@ const createHotelier = async (hotelierData) => {
   return await Hotelier.create(hotelierData);
 };
 
-// const updateHotelier = async (hotelierId, updateData, file) => {
-//   const hotelier = await Hotelier.findById(hotelierId);
-//   if (hotelier) {
-//     hotelier.name = updateData.name || hotelier.name;
-//     hotelier.email = updateData.email || hotelier.email;
-//     if (updateData.password) {
-//       hotelier.password = updateData.password;
-//     }
-//     if (file) {
-//       hotelier.profileImageName = file.filename || hotelier.profileImageName;
-//     }
-//     return await hotelier.save();
-//   }
-//   return null;
-// };
-
-// const uploadVerificationDetails = async (hotelierId, certificatePath) => {
-//   const hotelier = await Hotelier.findById(hotelierId);
-//   if (hotelier) {
-//     hotelier.certificates = certificatePath;
-//     hotelier.verificationStatus = 'pending';
-//     return await hotelier.save();
-//   }
-//   return null;
-// };
-
 const createHotel = async (hotelierId, hotelData) => {
   const hotel = new Hotel({ ...hotelData, hotelierId });
   return await hotel.save();
@@ -81,14 +55,18 @@ const findHotelsByHotelierId = async (hotelierId) => {
 const findHotelById = async (hotelId) => {
   return await Hotel.findById(hotelId);
 };
+const findRoomById = async (hotelId) => {
+  return await Room.find({ hotelId });
+};
 
 const findHotelierById = async (id) => {
   return await Hotelier.findById(id);
-};  
+};
 
 const saveHotelier = async (user) => {
   return await user.save();
 };
+
 export {
   getAcceptedHotels,
   findHotelierByEmail,
@@ -97,5 +75,6 @@ export {
   findHotelsByHotelierId,
   findHotelById,
   findHotelierById,
-  saveHotelier
+  saveHotelier,
+  findRoomById
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, Row, Col, Button } from "react-bootstrap";
+import { Container, Card, Row, Col } from "react-bootstrap";
 import { useGetHotelsDataMutation } from "../../slices/usersApiSlice";
+import { useNavigate } from "react-router-dom";
 import HotelsSidebar from "../../components/userComponents/HotelsSidebar";
 import bgImage from "../../assets/images/bg-1.png";
 import Loader from "../../components/userComponents/Loader";
@@ -9,6 +10,7 @@ import { toast } from "react-toastify";
 const HotelsScreen = () => {
   const [hotels, setHotels] = useState([]);
   const [getHotels, { isLoading, isError }] = useGetHotelsDataMutation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -24,7 +26,11 @@ const HotelsScreen = () => {
     fetchHotels();
   }, [getHotels]);
 
-  if (isLoading) return <div><Loader/></div>;
+  const handleHotelClick = (id) => {
+    navigate(`/hotels/${id}`);
+  };
+
+  if (isLoading) return <div><Loader /></div>;
   if (isError) return <div>Error fetching hotels</div>;
 
   return (
@@ -44,10 +50,13 @@ const HotelsScreen = () => {
             <Row>
               {hotels.map((hotel) => (
                 <Col key={hotel._id} md={4} className="mb-4">
-                  <Card className="hotel-card">
+                  <Card className="hotel-card" onClick={() => handleHotelClick(hotel._id)}>
                     <Card.Img
                       variant="top"
-                      src={hotel.images[0]}
+                      src={`http://localhost:5000/${hotel.images[0].replace(
+                        "backend\\public\\",
+                        ""
+                      )}`} 
                       alt={hotel.name}
                       className="hotel-image"
                     />

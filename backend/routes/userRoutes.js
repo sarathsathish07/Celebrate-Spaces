@@ -6,8 +6,10 @@ import { authUser,
   updateUserProfile,
   verifyOtp ,
   resendOtp,
-  getHotels
+  getHotels,
+  getHotelById,
 } from '../controllers/userController.js';
+import { saveBooking,updateBookingStatus } from '../controllers/bookingController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { multerUploadUserProfile } from "../config/multerConfig.js";
 
@@ -21,5 +23,8 @@ router.post('/resend-otp', resendOtp);
 router.post('/logout',logoutUser)
 router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfile.single('profileImage'),protect,updateUserProfile);
 router.get('/hotels',getHotels )
+router.get('/hotels/:id', getHotelById);
+router.post('/booking',protect, saveBooking);
+router.put('/booking/update-status',protect, updateBookingStatus);
 
 export default router
