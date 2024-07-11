@@ -9,7 +9,7 @@ import { authUser,
   getHotels,
   getHotelById,
 } from '../controllers/userController.js';
-import { saveBooking,updateBookingStatus } from '../controllers/bookingController.js';
+import { saveBooking,updateBookingStatus,getBookingsByUserId } from '../controllers/bookingController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { multerUploadUserProfile } from "../config/multerConfig.js";
 
@@ -26,5 +26,6 @@ router.get('/hotels',getHotels )
 router.get('/hotels/:id', getHotelById);
 router.post('/booking',protect, saveBooking);
 router.put('/booking/update-status',protect, updateBookingStatus);
+router.get('/bookings/:userId', protect, getBookingsByUserId);
 
 export default router

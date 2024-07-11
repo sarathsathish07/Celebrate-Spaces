@@ -52,7 +52,20 @@ const updateBookingStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getBookingsByUserId = asyncHandler(async (req, res) => {
+  const bookings = await Booking.find({ userId: req.params.userId })
+    .populate('hotelId', 'name') 
+    .populate('roomId', 'type'); 
+
+  if (bookings) {
+    res.json(bookings);
+  } else {
+    res.status(404);
+    throw new Error('Bookings not found');
+  }
+});
 
 export { saveBooking ,
-  updateBookingStatus
+  updateBookingStatus,
+  getBookingsByUserId
 };

@@ -77,6 +77,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getBookings: builder.query({
+      query: (userId) => ({
+        url: `${USERS_URL}/bookings/${userId}`,
+        method: 'GET',
+      }),
+    }),
   })
 })
 
@@ -92,5 +98,6 @@ export const {
   useGetUserProfileQuery,
   useGetHotelByIdQuery,
   useSaveBookingMutation,
-  useUpdateBookingStatusMutation
+  useUpdateBookingStatusMutation,
+  useGetBookingsQuery
 } = usersApiSlice

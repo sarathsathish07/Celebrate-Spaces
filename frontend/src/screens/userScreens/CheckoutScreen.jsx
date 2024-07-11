@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useGetRoomByIdQuery } from '../../slices/hotelierApiSlice';
+import { useGetRoomByIdQuery } from '../../slices/hotelierApiSlice.js';
 import { useSaveBookingMutation, useUpdateBookingStatusMutation } from '../../slices/usersApiSlice.js';
-import Loader from '../../components/userComponents/Loader';
+import Loader from '../../components/userComponents/Loader.jsx';
 import { toast } from 'react-toastify';
 import { Container, Row, Col, Card, ListGroup, Button, Form } from 'react-bootstrap';
 
-const BookingScreen = () => {
+const CheckoutScreen = () => {
   const [paymentMethod, setPaymentMethod] = useState('wallet');
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -157,4 +157,4 @@ const BookingScreen = () => {
   );
 };
 
-export default BookingScreen;
+export default CheckoutScreen;
