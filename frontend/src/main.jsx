@@ -36,6 +36,8 @@ import AddRoomScreen from "./screens/hotelierScreens/AddRoomScreen.jsx";
 import HotelDetailsScreen from "./screens/userScreens/HotelDetailsScreen.jsx";
 import CheckoutScreen from "./screens/userScreens/CheckoutScreen.jsx";
 import BookingsScreen from "./screens/userScreens/BookingsScreen.jsx";
+import ResetPasswordScreen from "./screens/userScreens/ResetPasswordScreen.jsx";
+import ForgotPasswordScreen from "./screens/userScreens/ForgotPasswordScreen.jsx";
 import store from "./store.js";
 import { Provider } from "react-redux";
 
@@ -47,6 +49,8 @@ const router = createBrowserRouter(
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/verify-otp" element={<OtpVerificationScreen />} />
+      <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
+      <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
       <Route path="/hotels" element={<HotelsScreen />} />
 
       <Route path="" element={<PrivateRoute />}>

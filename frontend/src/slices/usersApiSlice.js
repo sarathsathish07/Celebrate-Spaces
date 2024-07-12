@@ -83,6 +83,21 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    sendPasswordResetEmail: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/forgot-password`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/reset-password/${data.token}`,
+        method: 'PUT',
+        body: { password: data.password },
+      }),
+    }),
   })
 })
 
@@ -99,5 +114,7 @@ export const {
   useGetHotelByIdQuery,
   useSaveBookingMutation,
   useUpdateBookingStatusMutation,
-  useGetBookingsQuery
+  useGetBookingsQuery,
+  useSendPasswordResetEmailMutation,
+  useResetPasswordMutation
 } = usersApiSlice

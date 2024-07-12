@@ -24,6 +24,12 @@ const findHotelById = async (id) => {
 const findRoomsByHotelId = async (hotelId) => {
   return await Room.find({ hotelId }).exec();
 };
+const findUserByResetToken = async (resetToken) => {
+  return await User.findOne({
+    resetPasswordToken: resetToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+};
 
 export {
   findUserByEmail,
@@ -31,5 +37,6 @@ export {
   findUserById,
   saveUser,
   findHotelById,
-  findRoomsByHotelId
+  findRoomsByHotelId,
+  findUserByResetToken
 };

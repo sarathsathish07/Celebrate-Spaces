@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useGetHotelByIdQuery } from '../../slices/usersApiSlice';
 import Loader from '../../components/userComponents/Loader';
+import Footer from '../../components/userComponents/Footer';
 import { toast } from 'react-toastify';
 
 const HotelDetailsScreen = () => {
@@ -54,7 +55,8 @@ const HotelDetailsScreen = () => {
   }
 
   return (
-    <Container className="hotel-details-content">
+    <div>
+<Container className="hotel-details-content">
       <Row className="mb-3">
         <Col md={8}>
           <Image
@@ -120,7 +122,7 @@ const HotelDetailsScreen = () => {
                         <Card.Body className="room-card-body">
                           <Card.Title>{room.type}</Card.Title>
                           <Card.Text>
-                            <strong>Price:</strong> ${room.price}<br />
+                            <strong>Price:</strong> Rs {room.price}<br />
                             <strong>Area:</strong> {room.area} sq.ft<br />
                             <strong>Occupancy:</strong> {room.occupancy}<br />
                             <strong>Amenities:</strong> {room.amenities.join(', ')}
@@ -180,6 +182,9 @@ const HotelDetailsScreen = () => {
         </Modal.Footer>
       </Modal>
     </Container>
+    <Footer/>
+    </div>
+    
   );
 };
 

@@ -99,6 +99,12 @@ const LoginScreen = () => {
 
                 <Row>
                   <Col className="text-center">
+                    <Link to="/forgot-password">Forgot Password?</Link>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col className="text-center">
                     Are you a hotelier?{" "}
                     <Link to="/hotelier/login">Login here</Link>
                   </Col>

@@ -75,22 +75,28 @@ const getUserProfile = expressAsyncHandler(async (req, res) => {
 
 const updateUserProfile = expressAsyncHandler(async (req, res) => {
   try {
-    const updatedHotelier = await userService.updateUserProfile(
+    const updateData = { ...req.body };
+    if (req.file) {
+      updateData.profileImage = req.file;
+    }
+
+    const updatedUser = await userService.updateUserProfileService(
       req.user._id,
-      req.body,
+      updateData,
       req.file
     );
+
     res.status(200).json({
-      _id: updatedHotelier._id,
-      name: updatedHotelier.name,
-      email: updatedHotelier.email,
-      profileImageName: updatedHotelier.profileImageName
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      profileImageName: updatedUser.profileImageName,
     });
   } catch (error) {
-    res.status(404);
-    throw new Error(error.message);
+    res.status(400).json({ message: error.message });
   }
 });
+
 
 const getHotels = async (req, res) => {
   try {
@@ -111,6 +117,30 @@ const getHotelById = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const sendPasswordResetEmail = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const response = await userService.sendPasswordResetEmailService(email, req);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+const resetPassword = expressAsyncHandler(async (req, res) => {
+  const resetToken = req.params.token;
+  const { password } = req.body;
+
+  try {
+    const response = await userService.resetPasswordService(resetToken, password);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -120,5 +150,7 @@ export {
   verifyOtp,
   getHotels,
   resendOtp,
-  getHotelById
+  getHotelById,
+  sendPasswordResetEmail,
+  resetPassword
 };

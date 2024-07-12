@@ -8,6 +8,8 @@ import { authUser,
   resendOtp,
   getHotels,
   getHotelById,
+  sendPasswordResetEmail,
+  resetPassword
 } from '../controllers/userController.js';
 import { saveBooking,updateBookingStatus,getBookingsByUserId } from '../controllers/bookingController.js';
 import { protect } from '../middleware/authMiddleware.js';
@@ -20,6 +22,8 @@ router.post('/',registerUser)
 router.post('/auth',authUser)
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
+router.post('/forgot-password', sendPasswordResetEmail);
+router.put('/reset-password/:token', resetPassword);
 router.post('/logout',logoutUser)
 router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfile.single('profileImage'),protect,updateUserProfile);
 router.get('/hotels',getHotels )

@@ -26,6 +26,7 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState(""); // New state for current password
   const [profileImage, setProfileImage] = useState(null);
 
   const dispatch = useDispatch();
@@ -116,6 +117,7 @@ const ProfileScreen = () => {
       formData.append("name", name);
       formData.append("email", email);
       if (password) formData.append("password", password);
+      formData.append("currentPassword", currentPassword); 
       if (profileImage) formData.append("profileImage", profileImage);
 
       const responseFromApiCall = await updateProfile(formData).unwrap();
@@ -205,11 +207,21 @@ const ProfileScreen = () => {
                       className="profile-input"
                     />
                   </Form.Group>
-                  <Form.Group className="my-3" controlId="password">
-                    <Form.Label>Password</Form.Label>
+                  <Form.Group className="my-3" controlId="currentPassword">
+                    <Form.Label>Current Password</Form.Label>
                     <Form.Control
                       type="password"
-                      placeholder="Enter password"
+                      placeholder="Enter current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="profile-input"
+                    />
+                  </Form.Group>
+                  <Form.Group className="my-3" controlId="password">
+                    <Form.Label>New Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Enter new password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="profile-input"

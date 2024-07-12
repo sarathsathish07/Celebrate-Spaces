@@ -117,10 +117,17 @@ const getUserProfile = async (userId) => {
 
 
 
-const updateUserProfile = async (userId, updateData,profileImage) => {
+const updateUserProfileService = async (userId, updateData, profileImage) => {
   const user = await userRepository.findUserById(userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
+  }
+
+  if (updateData.currentPassword) {
+    const isMatch = await user.matchPassword(updateData.currentPassword);
+    if (!isMatch) {
+      throw new Error("Current password is incorrect");
+    }
   }
 
   user.name = updateData.name || user.name;
@@ -134,6 +141,9 @@ const updateUserProfile = async (userId, updateData,profileImage) => {
 
   return await userRepository.saveUser(user);
 };
+
+
+
 const getSingleHotelById = async (id) => {
   const hotel = await userRepository.findHotelById(id);
   if (hotel) {
@@ -143,14 +153,86 @@ const getSingleHotelById = async (id) => {
   return null;
 };
 
+const sendEmail = async ({ to, subject, text }) => {
+  let transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: 'sarathsathish77@gmail.com', 
+      pass: 'pehs ltsj iktw pqtp', 
+    },
+  });
+
+  let mailOptions = {
+    from: 'sarathsathish77@gmail.com', 
+    to: to, 
+    subject: subject, 
+    text: text,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const sendPasswordResetEmailService = async (email, req) => {
+  const user = await userRepository.findUserByEmail(email);
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetTokenExpire = Date.now() + 30 * 60 * 1000; 
+
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpire = resetTokenExpire;
+  await userRepository.saveUser(user);
+
+  const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+
+  const message = `
+    You requested a password reset. Please make a PUT request to:
+    ${resetUrl}
+  `;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Password Reset Request',
+      text: message,
+    });
+
+    return { message: 'Email sent' };
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await userRepository.saveUser(user);
+    throw new Error('Email could not be sent');
+  }
+};
+const resetPasswordService = async (resetToken, password) => {
+  const user = await userRepository.findUserByResetToken(resetToken);
+
+  if (!user) {
+    throw new Error('Invalid or expired token');
+  }
+
+  user.password = password; 
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await userRepository.saveUser(user);
+
+  return { message: 'Password reset successfully' };
+};
+
 export {
   authenticateUser,
   registerNewUser,
   verifyUserOtp,
   logoutUser,
   getUserProfile,
-  updateUserProfile,
+  updateUserProfileService,
   generateToken,
   resendOtp,
-  getSingleHotelById
+  getSingleHotelById,
+  sendPasswordResetEmailService,
+  resetPasswordService
 };
