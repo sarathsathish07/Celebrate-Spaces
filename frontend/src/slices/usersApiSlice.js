@@ -98,6 +98,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: { password: data.password },
       }),
     }),
+    getRoomsData: builder.mutation({
+      query: (hotelIds) => ({
+        url: `${USERS_URL}/rooms`,
+        method: 'POST',
+        body: { hotelIds },
+      }),
+    }),
   })
 })
 
@@ -116,5 +123,6 @@ export const {
   useUpdateBookingStatusMutation,
   useGetBookingsQuery,
   useSendPasswordResetEmailMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  useGetRoomsDataMutation 
 } = usersApiSlice

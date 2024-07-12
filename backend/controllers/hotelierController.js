@@ -157,6 +157,7 @@ const updateHotelHandler = async (req, res) => {
   }
 };
 
+
 export {
   authHotelierHandler,
   registerHotelierHandler,

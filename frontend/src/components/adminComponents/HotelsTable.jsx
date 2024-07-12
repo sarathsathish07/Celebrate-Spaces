@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
-import { Button, Form as BootstrapForm } from 'react-bootstrap';
+import { Table, Container, Row, Col, Card, Button, Form as BootstrapForm } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { AiFillCheckCircle, AiFillCloseCircle } from 'react-icons/ai';
 import { useAdminListHotelMutation, useAdminUnlistHotelMutation } from '../../slices/adminApiSlice';
@@ -43,67 +42,61 @@ export const HotelsTable = ({ hotels, refetchData }) => {
   };
 
   return (
-    <>
-      <div className="containerS">
-        <div>
-          <BootstrapForm>
-            <BootstrapForm.Group className="mt-3" controlId="exampleForm.ControlInput1">
-              <BootstrapForm.Label>Search hotels:</BootstrapForm.Label>
-              <BootstrapForm.Control
-                style={{ width: '500px' }}
-                value={searchQuery}
-                type="text"
-                placeholder="Enter Name or City..."
-                onChange={handleSearch}
-              />
-            </BootstrapForm.Group>
-          </BootstrapForm>
-        </div>
-      </div>
-      <br />
-
-      <MDBTable align="middle">
-        <MDBTableHead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">City</th>
-            <th scope="col">Address</th>
-            <th scope="col">Status</th>
-            <th scope="col">Action</th>
-          </tr>
-        </MDBTableHead>
-        <MDBTableBody>
-          {filteredHotels.map((hotel) => (
-            <tr key={hotel._id}>
-              <td>
-                <div className="d-flex align-items-center">
-                  <div className="ms-3">
-                    <p className="fw-bold mb-1">{hotel.name}</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <p className="fw-normal mb-1">{hotel.city}</p>
-              </td>
-              <td>
-                <p className="fw-normal mb-1">{hotel.address}</p>
-              </td>
-              <td>
-                <p className="fw-normal mb-1">{hotel.isListed ? 'Listed' : 'Unlisted'}</p>
-              </td>
-              <td>
-                <Button
-                  variant="transparent"
-                  size="sm"
-                  onClick={() => (hotel.isListed ? handleUnlist(hotel) : handleList(hotel))}
-                >
-                  {hotel.isListed ? <AiFillCloseCircle /> : <AiFillCheckCircle />}
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </MDBTableBody>
-      </MDBTable>
-    </>
+    <Container fluid>
+      <Row>
+        <Col>
+          <Card className="mt-3">
+            <Card.Header>Hotels</Card.Header>
+            <Card.Body>
+              <div className="containerS">
+                <BootstrapForm>
+                  <BootstrapForm.Group className="mt-3" controlId="exampleForm.ControlInput1">
+                    <BootstrapForm.Label>Search hotels:</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      style={{ width: '500px' }}
+                      value={searchQuery}
+                      type="text"
+                      placeholder="Enter Name or City..."
+                      onChange={handleSearch}
+                    />
+                  </BootstrapForm.Group>
+                </BootstrapForm>
+              </div>
+              <br />
+              <Table responsive>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredHotels.map((hotel) => (
+                    <tr key={hotel._id}>
+                      <td>{hotel.name}</td>
+                      <td>{hotel.city}</td>
+                      <td>{hotel.address}</td>
+                      <td>{hotel.isListed ? 'Listed' : 'Unlisted'}</td>
+                      <td>
+                        <Button
+                          variant="transparent"
+                          size="sm"
+                          onClick={() => (hotel.isListed ? handleUnlist(hotel) : handleList(hotel))}
+                        >
+                          {hotel.isListed ? <AiFillCloseCircle /> : <AiFillCheckCircle />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };

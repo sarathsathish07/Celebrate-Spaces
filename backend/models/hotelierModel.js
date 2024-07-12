@@ -29,6 +29,9 @@ const hotelierSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  otpExpiry: {
+    type: Date,
+  },
   verificationStatus: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],

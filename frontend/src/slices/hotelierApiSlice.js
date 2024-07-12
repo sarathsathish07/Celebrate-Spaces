@@ -95,7 +95,11 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
     getRoomById: builder.query({
       query: (roomId) => `${HOTELS_URL}/rooms/${roomId}`,
     }),
+    getHotelierBookings: builder.query({
+      query: (id) => `${HOTELS_URL}/bookings/${id}`,
+    }),
   }),
+  
 });
 
 export const {
@@ -112,5 +116,6 @@ export const {
   useGetHotelierProfileQuery,
   useResendHotelierOtpMutation,
   useAddRoomMutation,
-  useGetRoomByIdQuery
+  useGetRoomByIdQuery,
+  useGetHotelierBookingsQuery
 } = hotelierApiSlice;

@@ -41,6 +41,9 @@ const authHotelier = async (email, password, res) => {
 
   if (hotelier && (await hotelier.matchPassword(password))) {
     if (!hotelier.otpVerified) {
+      if (new Date() > hotelier.otpExpiry) {
+        throw new Error('OTP has expired. Please request a new OTP.');
+      }
       throw new Error('Please verify your OTP before logging in');
     }
     return hotelier
@@ -59,12 +62,15 @@ const registerHotelier = async (name, email, password) => {
     throw new Error('User already exists and is verified.');
   } else {
     const otp = crypto.randomInt(100000, 999999);
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+
     const user = await createHotelier({
       name,
       email,
       password,
       otp,
       otpVerified: false,
+      otpExpiry,
     });
 
     await sendHotelierOtpEmail(user.email, otp);
@@ -75,14 +81,23 @@ const registerHotelier = async (name, email, password) => {
 const verifyHotelierOtp = async (email, otp) => {
   const hotelier = await findHotelierByEmail(email);
 
-  if (hotelier && hotelier.otp.toString() === otp.trim()) {
-    hotelier.otpVerified = true;
-    await saveHotelier(hotelier);
-    return { message: 'OTP verified successfully' };
+  if (hotelier) {
+    if (new Date() > hotelier.otpExpiry) {
+      throw new Error('OTP has expired');
+    }
+
+    if (hotelier.otp.toString() === otp.trim()) {
+      hotelier.otpVerified = true;
+      await saveHotelier(hotelier);
+      return { message: 'OTP verified successfully' };
+    } else {
+      throw new Error('Invalid OTP');
+    }
   } else {
-    throw new Error('Invalid OTP');
+    throw new Error('Hotelier not found');
   }
 };
+
 
 const resendOtp = async (email) => {
   const hotelier = await findHotelierByEmail(email);
@@ -92,10 +107,14 @@ const resendOtp = async (email) => {
   }
 
   const otp = crypto.randomInt(100000, 999999);
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+
   hotelier.otp = otp;
+  hotelier.otpExpiry = otpExpiry;
   await saveHotelier(hotelier);
   await sendHotelierOtpEmail(hotelier.email, otp);
 };
+
 
 const logoutHotelier = async (res) => {
   res.cookie('jwtHotelier', '', {
@@ -157,7 +176,6 @@ const getHotels = async (hotelierId) => {
 
 const getHotelById = async (hotelId) => {
   try {
-    // Find the hotel by hotelId
     const hotel = await findHotelById(hotelId);
     if (!hotel) {
       return { status: 404, data: { message: 'Hotel not found' } };

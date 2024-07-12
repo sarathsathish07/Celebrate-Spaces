@@ -43,6 +43,9 @@ const authenticateUser = async (email, password) => {
       throw new Error('User is blocked');
     }
     if (!user.otpVerified) {
+      if (new Date() > user.otpExpiry) {
+        throw new Error('OTP has expired. Please request a new OTP.');
+      }
       throw new Error('Please verify your OTP before logging in');
     }
     return user;
@@ -61,11 +64,13 @@ const registerNewUser = async (name, email, password) => {
     throw new Error('User already exists and is verified.');
   } else {
     const otp = crypto.randomInt(100000, 999999);
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
     const user = await userRepository.createUser({
       name,
       email,
       password,
       otp,
+      otpExpires,
       otpVerified: false,
     });
 
@@ -77,6 +82,9 @@ const verifyUserOtp = async (email, otp) => {
   const user = await userRepository.findUserByEmail(email);
 
   if (user && user.otp.toString() === otp.trim()) {
+    if (user.otpExpires && user.otpExpires < Date.now()) {
+      throw new Error('OTP has expired');
+    }
     user.otpVerified = true;
     await userRepository.saveUser(user);
     return { message: 'OTP verified successfully' };
@@ -84,6 +92,7 @@ const verifyUserOtp = async (email, otp) => {
     throw new Error('Invalid OTP');
   }
 };
+
 const resendOtp = async (email) => {
   const user = await userRepository.findUserByEmail(email);
 
@@ -93,6 +102,7 @@ const resendOtp = async (email) => {
 
   const otp = crypto.randomInt(100000, 999999);
   user.otp = otp;
+  user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
   await userRepository.saveUser(user);
   await sendOtpEmail(user.email, otp);
 };

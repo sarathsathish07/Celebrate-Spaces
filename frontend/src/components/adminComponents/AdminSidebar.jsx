@@ -5,7 +5,7 @@ import { FaTachometerAlt, FaUsers, FaHotel, FaCheckCircle, FaComments, FaCalenda
 
 const AdminSidebar = ({ hotelierName }) => {
   return (
-    <Nav className="flex-column admin-sidebar bg-dark text-white">
+    <Nav className="flex-column admin-sidebar bg-dark text-white ">
       <LinkContainer to="/admin">
         <Nav.Link>
           <FaTachometerAlt /> Dashboard

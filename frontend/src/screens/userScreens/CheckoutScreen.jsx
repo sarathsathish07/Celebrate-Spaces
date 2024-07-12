@@ -105,7 +105,7 @@ const CheckoutScreen = () => {
             <Card.Header>Booked Room Details</Card.Header>
             <Card.Body>
               <ListGroup variant="flush">
-                <ListGroup.Item><strong>Hotel Name:</strong> {room.hotelName}</ListGroup.Item>
+                <ListGroup.Item><strong>Hotel Name:</strong> {room.hotelId.name}</ListGroup.Item>
                 <ListGroup.Item><strong>Room Type:</strong> {room?.type}</ListGroup.Item>
                 <ListGroup.Item><strong>Check-In Date:</strong> {checkInDate.toLocaleDateString()}</ListGroup.Item>
                 <ListGroup.Item><strong>Check-Out Date:</strong> {checkOutDate.toLocaleDateString()}</ListGroup.Item>

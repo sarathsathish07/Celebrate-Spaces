@@ -11,5 +11,14 @@ const getRoomByIdHandler = async (roomId) => {
     throw new Error(error.message);
   }
 };
+const getRoomsByHotelIdsService = async (hotelIds) => {
+  try {
+    return await RoomRepository.findRoomsByHotelIds(hotelIds);
+  } catch (error) {
+    throw new Error('Error fetching rooms');
+  }
+};
 
-export default { getRoomByIdHandler };
+export default { getRoomByIdHandler,
+  getRoomsByHotelIdsService
+ };

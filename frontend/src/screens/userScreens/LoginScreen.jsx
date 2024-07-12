@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoginMutation } from "../../slices/usersApiSlice";
+import { useLoginMutation,useResendOtpMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
@@ -16,6 +16,7 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useLoginMutation();
+  const [resendOtp] = useResendOtpMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -33,12 +34,19 @@ const LoginScreen = () => {
       navigate("/");
     } catch (error) {
       if (error?.data?.message === "Please verify your OTP before logging in") {
-        navigate("/verify-otp", { state: { email } });
+        try {
+          await resendOtp({ email }); 
+          toast.info("OTP has expired. Resending OTP...");
+          navigate("/verify-otp", { state: { email } }); 
+        } catch (resendError) {
+          toast.error(resendError?.data?.message || resendError.error);
+        }
       } else {
         toast.error(error?.data?.message || error.error);
       }
     }
   };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginbody">
@@ -91,20 +99,20 @@ const LoginScreen = () => {
                   Sign In
                 </Button>
 
-                <Row className="py-3">
+                <Row className="py-2">
                   <Col className="text-center">
                     New Customer? <Link to="/register">Register</Link>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col className="text-center">
-                    <Link to="/forgot-password">Forgot Password?</Link>
+                  <Col className="text-center py-2">
+                    Forgot Password? <Link to="/forgot-password">Click here</Link>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col className="text-center">
+                  <Col className="text-center py-2">
                     Are you a hotelier?{" "}
                     <Link to="/hotelier/login">Login here</Link>
                   </Col>

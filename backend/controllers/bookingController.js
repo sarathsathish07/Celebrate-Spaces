@@ -55,7 +55,8 @@ const updateBookingStatus = async (req, res) => {
 const getBookingsByUserId = asyncHandler(async (req, res) => {
   const bookings = await Booking.find({ userId: req.params.userId })
     .populate('hotelId', 'name') 
-    .populate('roomId', 'type'); 
+    .populate('roomId', 'type amenities description'); 
+  console.log(bookings);
 
   if (bookings) {
     res.json(bookings);
@@ -64,8 +65,39 @@ const getBookingsByUserId = asyncHandler(async (req, res) => {
     throw new Error('Bookings not found');
   }
 });
+const getHotelierBookings = asyncHandler(async (req, res) => {
+  const bookings = await Booking.find({ hotelierId: req.params.id })
+    .populate('hotelId')
+    .populate('roomId')
+    .populate('userId');
+  
+  if (bookings) {
+    res.json(bookings);
+  } else {
+    res.status(404);
+    throw new Error('Bookings not found');
+  }
+});
+const getAllBookings = asyncHandler(async (req, res) => {
+  const bookings = await Booking.find({})
+    .populate('hotelId')
+    .populate('roomId')
+    .populate('userId')
+    .populate('hotelierId');
+  
+  if (bookings) {
+    res.json(bookings);
+  } else {
+    res.status(404);
+    throw new Error('Bookings not found');
+  }
+});
+
+
 
 export { saveBooking ,
   updateBookingStatus,
-  getBookingsByUserId
+  getBookingsByUserId,
+  getHotelierBookings,
+  getAllBookings
 };

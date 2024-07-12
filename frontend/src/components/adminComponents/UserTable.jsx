@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
+import { Table, Container, Row, Col, Card, Button, Form as BootstrapForm } from "react-bootstrap";
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { useAdminBlockUserMutation, useAdminUnblockUserMutation } from "../../slices/adminApiSlice";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -55,63 +54,59 @@ export const UsersTable = ({ users, refetchData }) => {
   };
 
   return (
-    <>
-      <div className="containerS">
-        <div>
-          <BootstrapForm>
-            <BootstrapForm.Group className="mt-3" controlId="exampleForm.ControlInput1">
-              <BootstrapForm.Label>Search users:</BootstrapForm.Label>
-              <BootstrapForm.Control
-                style={{ width: "500px" }}
-                value={searchQuery}
-                type="text"
-                placeholder="Enter Name or email........"
-                onChange={handleSearch}
-              />
-            </BootstrapForm.Group>
-          </BootstrapForm>
-        </div>
-      </div>
-      <br />
-
-      <MDBTable align="middle">
-        <MDBTableHead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Status</th>
-            <th scope="col">Action</th>
-          </tr>
-        </MDBTableHead>
-        <MDBTableBody>
-          {filteredUsers.map((item, index) => (
-            <tr key={index}>
-              <td>
-                <div className="d-flex align-items-center">
-                  <div className="ms-3">
-                    <p className="fw-bold mb-1">{item.name}</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <p className="fw-normal mb-1">{item.email}</p>
-              </td>
-              <td>
-                <p className="fw-normal mb-1">{item.isBlocked ? "Blocked" : "Active"}</p>
-              </td>
-              <td>
-                <Button
-                  variant="transparent"
-                  size="sm"
-                  onClick={() => (item.isBlocked ? handleUnblock(item) : handleBlock(item))}
-                >
-                  {item.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </MDBTableBody>
-      </MDBTable>
-    </>
+    <Container fluid>
+      <Row>
+        <Col>
+          <Card className="mt-3">
+            <Card.Header>Users</Card.Header>
+            <Card.Body>
+              <div className="containerS">
+                <BootstrapForm>
+                  <BootstrapForm.Group className="mt-3" controlId="exampleForm.ControlInput1">
+                    <BootstrapForm.Label>Search users:</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      style={{ width: "500px" }}
+                      value={searchQuery}
+                      type="text"
+                      placeholder="Enter Name or Email..."
+                      onChange={handleSearch}
+                    />
+                  </BootstrapForm.Group>
+                </BootstrapForm>
+              </div>
+              <br />
+              <Table responsive>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((user, index) => (
+                    <tr key={index}>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.isBlocked ? "Blocked" : "Active"}</td>
+                      <td>
+                        <Button
+                          variant="transparent"
+                          size="sm"
+                          onClick={() => (user.isBlocked ? handleUnblock(user) : handleBlock(user))}
+                        >
+                          {user.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };

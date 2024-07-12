@@ -79,6 +79,10 @@ export const admiApiSlice=apiSlice.injectEndpoints({
               method: 'PATCH',
             }),
           }),
+          getAllBookings: builder.query({
+            query: () => `${ADMIN_URL}/bookings`,
+            method: 'GET',
+          }),
 
     })
 })
@@ -95,4 +99,5 @@ export const {useAdminLoginMutation,
     useGetAllHotelsDataMutation,
     useAdminListHotelMutation,
     useAdminUnlistHotelMutation, 
+    useGetAllBookingsQuery
 }= admiApiSlice

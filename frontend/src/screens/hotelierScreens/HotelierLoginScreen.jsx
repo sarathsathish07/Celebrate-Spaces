@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useHotelierLoginMutation } from "../../slices/hotelierApiSlice.js";
+import { useHotelierLoginMutation,useResendHotelierOtpMutation } from "../../slices/hotelierApiSlice.js";
 import { setCredentials } from "../../slices/hotelierAuthSlice.js";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
@@ -16,6 +16,7 @@ const HotelierLoginScreen = () => {
   const dispatch = useDispatch();
 
   const [login, { isLoading }] = useHotelierLoginMutation();
+  const [resendOtp] = useResendHotelierOtpMutation();
 
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
 
@@ -33,7 +34,13 @@ const HotelierLoginScreen = () => {
       navigate("/hotelier");
     } catch (error) {
       if (error?.data?.message === "Please verify your OTP before logging in") {
-        navigate("/hotelier/verify-otp", { state: { email } });
+        try {
+          await resendOtp({ email }); 
+          toast.info("OTP has expired. Resending OTP...");
+          navigate("/hotelier/verify-otp", { state: { email } });
+        } catch (resendError) {
+          toast.error(resendError?.data?.message || resendError.error);
+        }
       } else {
         toast.error(error?.data?.message || error.error);
       }
