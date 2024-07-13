@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Button, Container, Card, Row, Col } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import { useGetHotelsQuery } from "../../slices/hotelierApiSlice.js";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import { toast } from "react-toastify";
@@ -27,7 +26,7 @@ const RegisteredHotelsScreen = () => {
               src={`http://localhost:5000/${hotel.images[0].replace(
                 "backend\\public\\",
                 ""
-              )}`} 
+              )}`}
               alt={hotel.name}
               style={{ height: "200px", objectFit: "cover" }}
             />
@@ -40,14 +39,14 @@ const RegisteredHotelsScreen = () => {
             <Card.Text>
               <strong>Address:</strong> {hotel.address}
             </Card.Text>
-            <Link to={`/hotelier/edit-hotel/${hotel._id}`}>
-              <Button className="mt-2" variant="primary">
-                Edit Hotel
+            <Link to={`/hotelier/verify-hotel/${hotel._id}`}>
+              <Button className="mt-2" variant="info">
+                Verify
               </Button>
             </Link>
-            <Link to={`/hotelier/add-room/${hotel._id}`}>
-              <Button className="mt-2" variant="success">
-                Add Room
+            <Link to={`/hotelier/hotel-details/${hotel._id}`}>
+              <Button className="mt-2" variant="info">
+                View Details
               </Button>
             </Link>
           </Card.Body>
@@ -70,9 +69,9 @@ const RegisteredHotelsScreen = () => {
             <h1 className="my-3">Registered Hotels</h1>
           </Col>
           <Col>
-            <LinkContainer to="/hotelier/add-hotel">
+            <Link to="/hotelier/add-hotel">
               <Button className="addhotelbutton my-4">Add Hotel</Button>
-            </LinkContainer>
+            </Link>
           </Col>
         </Row>
         <Row>{renderHotels()}</Row>

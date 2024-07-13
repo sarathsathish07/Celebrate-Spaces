@@ -27,13 +27,23 @@ const hotelSchema = new mongoose.Schema({
   },
   isListed: {
     type: Boolean,
-    default: true,
+    default: false, 
   },
   hotelierId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hotelier',
     required: true,
   },
+  certificate: {
+    type: String,
+  },
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending'
+  },
+}, {
+  timestamps: true,
 });
 
 const Hotel = mongoose.model('Hotel', hotelSchema);

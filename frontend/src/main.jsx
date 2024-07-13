@@ -19,14 +19,14 @@ import ProfileScreen from "./screens/userScreens/ProfileScreen.jsx";
 import AdminHomeScreen from "./screens/adminScreens/AdminHomeScreen.jsx";
 import AdminLoginScreen from "./screens/adminScreens/AdminLoginScreen.jsx";
 import OtpVerificationScreen from "./screens/userScreens/OtpVerificationScreen.jsx";
-import { UserManagementScreen } from "./screens/adminScreens/UserManagementScreen.jsx";
+import {UserManagementScreen}  from "./screens/adminScreens/UserManagementScreen.jsx";
 import HotelierHomeScreen from "./screens/hotelierScreens/HotelierHomeScreen.jsx";
 import HotelierLoginScreen from "./screens/hotelierScreens/HotelierLoginScreen.jsx";
 import HotelierProfileScreen from "./screens/hotelierScreens/HotelierProfileScreen.jsx";
 import HotelierRegisterScreen from "./screens/hotelierScreens/HotelierRegisterScreen.jsx";
 import HotelierOtpVerificationScreen from "./screens/hotelierScreens/HotelierOtpVerificationScreen.jsx";
-import HotelierVerificationScreen from "./screens/hotelierScreens/HotelierVerificationScreen.jsx";
 import AdminVerificationScreen from "./screens/adminScreens/AdminVerificationScreen.jsx";
+import HotelVerificationScreen from "./screens/hotelierScreens/HotelVerificationScreen.jsx";
 import RegisteredHotelsScreen from "./screens/hotelierScreens/RegisteredHotelsScreen.jsx";
 import HotelsScreen from "./screens/userScreens/HotelsScreen.jsx";
 import AddHotelScreen from "./screens/hotelierScreens/AddHotelScreen.jsx";
@@ -40,6 +40,8 @@ import ResetPasswordScreen from "./screens/userScreens/ResetPasswordScreen.jsx";
 import ForgotPasswordScreen from "./screens/userScreens/ForgotPasswordScreen.jsx";
 import HotelierBookingsScreen from "./screens/hotelierScreens/HotelierBookingsScreen.jsx";
 import AdminBookingsScreen from "./screens/adminScreens/AdminBookingsScreen.jsx";
+import HotelDetailScreen from "./screens/hotelierScreens/HotelDetailsScreen.jsx";
+import EditRoomScreen from "./screens/hotelierScreens/EditRoomScreen.jsx";
 import store from "./store.js";
 import { Provider } from "react-redux";
 
@@ -76,12 +78,14 @@ const router = createBrowserRouter(
       <Route path="/hotelier" element={<HotelierPrivateRoute />}>
         <Route index element={<HotelierHomeScreen />} />
         <Route path="profile" element={<HotelierProfileScreen />} />
-        <Route path="verification" element={<HotelierVerificationScreen />} />
+        <Route path="verify-hotel/:hotelId" element={<HotelVerificationScreen />} />
         <Route path="registered-hotels" element={<RegisteredHotelsScreen />} />
         <Route path="add-hotel" element={<AddHotelScreen />} />
         <Route path="/hotelier/edit-hotel/:id" element={<EditHotelScreen />} />
         <Route path="/hotelier/add-room/:hotelId" element={<AddRoomScreen />} />
         <Route path="/hotelier/bookings" element={<HotelierBookingsScreen/>} />
+        <Route path="/hotelier/hotel-details/:id" element={<HotelDetailScreen />} />
+        <Route path="/hotelier/edit-room/:roomId" element={<EditRoomScreen />} />
       </Route>
       <Route path="/hotelier/login" element={<HotelierLoginScreen />} />
       <Route path="/hotelier/register" element={<HotelierRegisterScreen />} />

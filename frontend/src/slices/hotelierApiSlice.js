@@ -51,9 +51,9 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    uploadVerificationDetails: builder.mutation({
-      query: (formData) => ({
-        url: `${HOTELS_URL}/verification`,
+    uploadHotelCertificate: builder.mutation({
+      query: ({ hotelId, formData }) => ({
+        url: `${HOTELS_URL}/upload-certificate/${hotelId}`,
         method: 'POST',
         body: formData,
       }),
@@ -98,6 +98,13 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
     getHotelierBookings: builder.query({
       query: (id) => `${HOTELS_URL}/bookings/${id}`,
     }),
+    updateRoom: builder.mutation({
+      query: ({ roomId, formData }) => ({
+        url: `${HOTELS_URL}/rooms/${roomId}`,
+        method: "PUT",
+        body: formData,
+      }),
+    }),
   }),
   
 });
@@ -108,7 +115,7 @@ export const {
   useHotelierRegisterMutation,
   useHotelierVerifyOtpMutation,
   useHotelierUpdateUserMutation,
-  useUploadVerificationDetailsMutation,
+  useUploadHotelCertificateMutation,
   useAddHotelMutation,
   useGetHotelsQuery,
   useGetHotelByIdQuery,
@@ -117,5 +124,6 @@ export const {
   useResendHotelierOtpMutation,
   useAddRoomMutation,
   useGetRoomByIdQuery,
-  useGetHotelierBookingsQuery
+  useGetHotelierBookingsQuery,
+  useUpdateRoomMutation 
 } = hotelierApiSlice;

@@ -99,7 +99,6 @@ const updateUserProfile = expressAsyncHandler(async (req, res) => {
 
 
 const getHotels = async (req, res) => {
-  console.log("1");
   try {
     const { sort = '', amenities = '', city = '' } = req.query;
     const amenitiesArray = amenities ? amenities.split(',') : [];

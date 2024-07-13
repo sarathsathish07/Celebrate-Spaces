@@ -13,7 +13,7 @@ import { authHotelierHandler,
   resendHotelierOtpHandler,
   uploadVerificationDetailsHandler
  } from '../controllers/hotelierController.js';
- import { addRoom,getRoomById } from '../controllers/roomController.js';
+ import { addRoom,getRoomById,updateRoomHandler } from '../controllers/roomController.js';
  import { getHotelierBookings } from '../controllers/bookingController.js';
 import { protect } from '../middleware/hotelierAuthMiddleware.js';
 
@@ -26,7 +26,7 @@ router.post('/verify-otp', verifyHotelierOtpHandler);
 router.post('/resend-otp', resendHotelierOtpHandler);
 router.post('/logout', logoutHotelierHandler);
 router.route('/profile').get(protect, getHotelierProfileHandler).put( multerUploadUserProfile.single('profileImage'),protect, updateHotelierProfileHandler);
-router.post('/verification', protect, multerUploadCertificate.single('certificate'), uploadVerificationDetailsHandler);
+router.post('/upload-certificate/:hotelId', protect, multerUploadCertificate.single('certificate'), uploadVerificationDetailsHandler);
 router.post(
   "/add-hotel",
   protect, multerUploadHotelImages.array("images", 5),
@@ -36,6 +36,8 @@ router.get('/get-hotels',protect, getHotelsHandler);
 router.get('/:id', protect, getHotelByIdHandler);
 router.put('/:id', protect,multerUploadHotelImages.array("images", 5), updateHotelHandler);
 router.post('/add-room/:hotelId', protect, multerUploadRoomImages.array("images", 5), addRoom);
+router.put('/rooms/:roomId', protect, multerUploadRoomImages.array("images", 5), updateRoomHandler);
+
 router.get('/rooms/:roomId',protect, getRoomById);
 router.get('/bookings/:id',protect, getHotelierBookings);
 

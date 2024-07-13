@@ -177,15 +177,15 @@ const updateHotelierProfile = async (hotelierId, updateData,profileImage) => {
   return await saveHotelier(hotelier);
 };
 
-const uploadCertificates = async (hotelierId, certificatePath) => {
-  const hotelier = await findHotelierById(hotelierId);
-  if (!hotelier) {
-    throw new Error('Hotelier not found');
+const uploadCertificates = async (hotelId, certificatePath) => {
+  const hotel = await findHotelById(hotelId);
+  if (!hotel) {
+    throw new Error('Hotel not found');
   }
 
-  hotelier.certificates = certificatePath.replace('backend/public/', '');
-  hotelier.verificationStatus="pending"
-  return await saveHotelier(hotelier);
+  hotel.certificate = certificatePath.replace('backend/public/', '');
+  hotel.verificationStatus="pending"
+  return await hotel.save();
 };
 
 const addHotel = async (hotelierId, hotelData) => {

@@ -107,11 +107,11 @@ const updateHotelierProfileHandler = expressAsyncHandler(async (req, res) => {
 });
 
 const uploadVerificationDetailsHandler = expressAsyncHandler(async (req, res) => {
-  const { hotelierId } = req.body;
+  const hotelId = req.params.hotelId;
   const certificatePath = req.file.path;
 
   try {
-    await uploadCertificates(hotelierId, certificatePath);
+    await uploadCertificates(hotelId, certificatePath);
     res.status(200).json({ message: 'Verification details submitted successfully' });
   } catch (error) {
     res.status(404).json({ message: error.message });

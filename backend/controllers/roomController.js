@@ -50,10 +50,24 @@ const getRoomsByHotelIds = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const updateRoomHandler = async (req, res) => {
+  console.log("7");
+  const { roomId } = req.params;
+  const updateData = req.body;
+  console.log(req.files);
+
+  try {
+    const updatedRoom = await RoomService.updateRoomData(roomId, updateData, req.files);
+    res.status(200).json(updatedRoom);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating room', error: error.message });
+  }
+};
 
 
 
 export { addRoom,
   getRoomById,
-  getRoomsByHotelIds
+  getRoomsByHotelIds,
+  updateRoomHandler
  };
