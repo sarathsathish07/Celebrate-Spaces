@@ -12,9 +12,33 @@ import {
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import path from 'path';
-const fetchAcceptedHotels = async () => {
-  return await getAcceptedHotels();
+
+const fetchAcceptedHotels = async (sortOption = '', amenities = [], city = '') => {
+  const sortCriteria = {};
+  if (sortOption === 'price_low_high') {
+    sortCriteria.averagePrice = 1;
+  } else if (sortOption === 'price_high_low') {
+    sortCriteria.averagePrice = -1; 
+  }
+
+  const filterCriteria = {
+    'hotelier.verificationStatus': 'accepted',
+    isListed: true,
+  };
+
+  if (amenities.length > 0) {
+    filterCriteria.amenities = { $all: amenities };
+  }
+
+  if (city) {
+    filterCriteria.city = city;
+  }
+
+  console.log('Filter criteria:', filterCriteria);
+  return await getAcceptedHotels(sortCriteria, filterCriteria);
 };
+
+
 
 
 const sendHotelierOtpEmail = async (email, otp) => {

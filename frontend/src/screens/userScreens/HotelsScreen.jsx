@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, Row, Col } from "react-bootstrap";
+import { Container, Card, Row, Col, Button } from "react-bootstrap";
 import {
   useGetHotelsDataMutation,
   useGetRoomsDataMutation,
@@ -14,15 +14,23 @@ import { toast } from "react-toastify";
 const HotelsScreen = () => {
   const [hotels, setHotels] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [getHotels, { isLoading: isLoadingHotels }] =
-    useGetHotelsDataMutation();
+  const [sort, setSort] = useState("price_low_high");
+  const [city, setCity] = useState("");
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [filterCity, setFilterCity] = useState("");
+  const [filterAmenities, setFilterAmenities] = useState([]);
+  const [getHotels, { isLoading: isLoadingHotels }] = useGetHotelsDataMutation();
   const [getRooms, { isLoading: isLoadingRooms }] = useGetRoomsDataMutation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHotelsAndRooms = async () => {
       try {
-        const hotelResponse = await getHotels().unwrap();
+        const hotelResponse = await getHotels({
+          sort,
+          amenities: filterAmenities.length > 0 ? filterAmenities : [],
+          city: filterCity,
+        }).unwrap();
         setHotels(hotelResponse);
 
         const hotelIds = hotelResponse.map((hotel) => hotel._id);
@@ -35,10 +43,32 @@ const HotelsScreen = () => {
     };
 
     fetchHotelsAndRooms();
-  }, [getHotels, getRooms]);
+  }, [getHotels, getRooms, sort, filterAmenities, filterCity]);
 
   const handleHotelClick = (id) => {
     navigate(`/hotels/${id}`);
+  };
+
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
+  };
+
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
+  };
+
+  const handleAmenityChange = (e) => {
+    const amenity = e.target.value;
+    if (e.target.checked) {
+      setSelectedAmenities([...selectedAmenities, amenity]);
+    } else {
+      setSelectedAmenities(selectedAmenities.filter((item) => item !== amenity));
+    }
+  };
+
+  const applyFilters = () => {
+    setFilterCity(city);
+    setFilterAmenities(selectedAmenities);
   };
 
   const calculateAveragePrice = (hotelId) => {
@@ -66,22 +96,23 @@ const HotelsScreen = () => {
       <Container>
         <Row>
           <Col md={3}>
-            <HotelsSidebar />
+            <HotelsSidebar
+              onSortChange={handleSortChange}
+              onCityChange={handleCityChange}
+              onAmenityChange={handleAmenityChange}
+            />
+            <Button variant="primary" className="my-3" onClick={applyFilters}>
+              Apply Filters
+            </Button>
           </Col>
           <Col md={9} className="mt-5">
             <Row>
               {hotels.map((hotel) => (
                 <Col key={hotel._id} md={4} className="mb-4">
-                  <Card
-                    className="hotel-card"
-                    onClick={() => handleHotelClick(hotel._id)}
-                  >
+                  <Card className="hotel-card" onClick={() => handleHotelClick(hotel._id)}>
                     <Card.Img
                       variant="top"
-                      src={`http://localhost:5000/${hotel.images[0].replace(
-                        "backend\\public\\",
-                        ""
-                      )}`}
+                      src={`http://localhost:5000/${hotel.images[0].replace("backend\\public\\", "")}`}
                       alt={hotel.name}
                       className="hotel-image"
                     />
@@ -94,9 +125,7 @@ const HotelsScreen = () => {
                         </Col>
                         <Col>
                           <Card.Text className="mb-0">Avg Price</Card.Text>
-                          <Card.Text>
-                            Rs {calculateAveragePrice(hotel._id)}
-                          </Card.Text>
+                          <Card.Text>Rs {calculateAveragePrice(hotel._id)}</Card.Text>
                         </Col>
                       </Row>
                     </Card.Body>

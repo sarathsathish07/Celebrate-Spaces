@@ -52,11 +52,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       })
     }),
     getHotelsData: builder.mutation({
-      query: () => ({
-        url: `${USERS_URL}/hotels`, 
+      query: ({ sort = 'price_low_high', amenities = [], city = '' }) => ({
+        url: `${USERS_URL}/hotels`,
         method: 'GET',
+        params: { sort, amenities, city },
       }),
     }),
+    
+    
     getHotelById: builder.query({
       query: (id) => ({
         url: `${USERS_URL}/hotels/${id}`,

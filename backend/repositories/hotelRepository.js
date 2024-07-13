@@ -1,8 +1,8 @@
 import Hotel from '../models/hotelModel.js';
 import Hotelier from "../models/hotelierModel.js";
 
-const getAcceptedHotels = async () => {
-  return await Hotel.aggregate([
+const getAcceptedHotels = async (sortCriteria, filterCriteria) => {
+  const pipeline = [
     {
       $lookup: {
         from: 'hoteliers',
@@ -15,9 +15,19 @@ const getAcceptedHotels = async () => {
       $unwind: '$hotelier',
     },
     {
-      $match: {
-        'hotelier.verificationStatus': 'accepted',
-        isListed: true,
+      $match: filterCriteria,
+    },
+    {
+      $lookup: {
+        from: 'rooms',
+        localField: '_id',
+        foreignField: 'hotelId',
+        as: 'rooms',
+      },
+    },
+    {
+      $addFields: {
+        averagePrice: { $avg: "$rooms.price" },
       },
     },
     {
@@ -30,10 +40,20 @@ const getAcceptedHotels = async () => {
         amenities: 1,
         isListed: 1,
         hotelierId: 1,
+        averagePrice: 1,
       },
     },
-  ]);
+  ];
+
+  if (Object.keys(sortCriteria).length > 0) {
+    pipeline.push({
+      $sort: sortCriteria,
+    });
+  }
+
+  return await Hotel.aggregate(pipeline);
 };
+
 
 const findHotelierByEmail = async (email) => {
   return await Hotelier.findOne({ email });

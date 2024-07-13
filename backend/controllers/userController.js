@@ -99,14 +99,26 @@ const updateUserProfile = expressAsyncHandler(async (req, res) => {
 
 
 const getHotels = async (req, res) => {
+  console.log("1");
   try {
-    const hotels = await fetchAcceptedHotels();
+    const { sort = '', amenities = '', city = '' } = req.query;
+    const amenitiesArray = amenities ? amenities.split(',') : [];
+    console.log('Received sort:', sort);
+    console.log('Received amenities:', amenitiesArray);
+    console.log('Received city:', city);
+    const hotels = await fetchAcceptedHotels(sort, amenitiesArray, city);
+    console.log('Fetched hotels:', hotels);
     res.json(hotels);
   } catch (error) {
     console.error('Error fetching hotels:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
+
+
 const getHotelById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   const hotel = await userService.getSingleHotelById(id);
