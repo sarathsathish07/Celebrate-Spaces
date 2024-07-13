@@ -6,6 +6,7 @@ import { useSaveBookingMutation, useUpdateBookingStatusMutation } from '../../sl
 import Loader from '../../components/userComponents/Loader.jsx';
 import { toast } from 'react-toastify';
 import { Container, Row, Col, Card, ListGroup, Button, Form } from 'react-bootstrap';
+import Footer from '../../components/userComponents/Footer';
 
 const CheckoutScreen = () => {
   const [paymentMethod, setPaymentMethod] = useState('wallet');
@@ -88,7 +89,8 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <Container>
+    <div>
+<Container style={{height:'80vh'}}>
       <Row className="my-4">
         <Col md={8}>
           <Card>
@@ -154,6 +156,9 @@ const CheckoutScreen = () => {
         </Col>
       </Row>
     </Container>
+    <Footer/>
+    </div>
+    
   );
 };
 

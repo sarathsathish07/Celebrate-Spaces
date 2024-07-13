@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Container } from "react-bootstrap";
 import { useAddHotelMutation } from "../../slices/hotelierApiSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
-import FormContainer from "../../components/userComponents/FormContainer";
+import Footer from '../../components/userComponents/Footer';
 
 const AddHotelScreen = () => {
   const [name, setName] = useState("");
@@ -28,35 +28,41 @@ const AddHotelScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const trimmedName = name.trim();
+    const trimmedCity = city.trim();
+    const trimmedAddress = address.trim();
+    const trimmedDescription = description.trim();
+    const trimmedAmenities = amenities.trim();
+
     if (
-      !name ||
-      !city ||
-      !address ||
+      !trimmedName ||
+      !trimmedCity ||
+      !trimmedAddress ||
       !selectedImages.length ||
-      !description ||
-      !amenities
+      !trimmedDescription ||
+      !trimmedAmenities
     ) {
       toast.error("All fields are required");
       return;
     }
 
-    if (!validateNameAndCity(name)) {
+    if (!validateNameAndCity(trimmedName)) {
       toast.error("Name cannot contain numbers or special characters");
       return;
     }
 
-    if (!validateNameAndCity(city)) {
+    if (!validateNameAndCity(trimmedCity)) {
       toast.error("City cannot contain numbers or special characters");
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("city", city);
-      formData.append("address", address);
-      formData.append("description", description);
-      formData.append("amenities", amenities);
+      formData.append("name", trimmedName);
+      formData.append("city", trimmedCity);
+      formData.append("address", trimmedAddress);
+      formData.append("description", trimmedDescription);
+      formData.append("amenities", trimmedAmenities);
       for (let i = 0; i < selectedImages.length; i++) {
         formData.append("images", selectedImages[i]);
       }
@@ -70,17 +76,12 @@ const AddHotelScreen = () => {
   };
 
   return (
-    <HotelierLayout>
-      <FormContainer
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          padding: "20px",
-          borderRadius: "10px",
-        }}
-      >
+
+      <HotelierLayout>
+      <Container className="px-4 w-75" style={{ maxHeight: "100vh", overflowY: "auto" }}>
         <h1 className="my-3">Add Hotel</h1>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="name">
+          <Form.Group controlId="name" className="mb-3">
             <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
@@ -89,7 +90,7 @@ const AddHotelScreen = () => {
               onChange={(e) => setName(e.target.value)}
             />
           </Form.Group>
-          <Form.Group controlId="city">
+          <Form.Group controlId="city" className="mb-3">
             <Form.Label>City</Form.Label>
             <Form.Control
               type="text"
@@ -98,7 +99,7 @@ const AddHotelScreen = () => {
               onChange={(e) => setCity(e.target.value)}
             />
           </Form.Group>
-          <Form.Group controlId="address">
+          <Form.Group controlId="address" className="mb-3">
             <Form.Label>Address</Form.Label>
             <Form.Control
               type="text"
@@ -107,7 +108,7 @@ const AddHotelScreen = () => {
               onChange={(e) => setAddress(e.target.value)}
             />
           </Form.Group>
-          <Form.Group controlId="images">
+          <Form.Group controlId="images" className="mb-3">
             <Form.Label>Images</Form.Label>
             <Form.Control
               type="file"
@@ -127,7 +128,7 @@ const AddHotelScreen = () => {
                 ))}
             </div>
           </Form.Group>
-          <Form.Group controlId="description">
+          <Form.Group controlId="description" className="mb-3">
             <Form.Label>Description</Form.Label>
             <Form.Control
               type="text"
@@ -136,7 +137,7 @@ const AddHotelScreen = () => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
-          <Form.Group controlId="amenities">
+          <Form.Group controlId="amenities" className="mb-3">
             <Form.Label>Amenities</Form.Label>
             <Form.Control
               type="text"
@@ -148,13 +149,13 @@ const AddHotelScreen = () => {
           <Button
             variant="primary"
             type="submit"
-            className="my-3"
+            className="my-3 mb-3"
             style={{ backgroundColor: "#082b43" }}
           >
             Add Hotel
           </Button>
         </Form>
-      </FormContainer>
+      </Container>
     </HotelierLayout>
   );
 };

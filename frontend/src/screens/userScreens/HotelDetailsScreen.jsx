@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Image, Nav, Tab, Card, Button, Modal, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 const HotelDetailsScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { data: hotel, error, isLoading } = useGetHotelByIdQuery(id);
+  const { data: hotel, error, isLoading, refetch } = useGetHotelByIdQuery(id);
   const [activeKey, setActiveKey] = useState('description');
   const mainImageRef = useRef(null);
 
@@ -22,6 +22,9 @@ const HotelDetailsScreen = () => {
   const [roomCount, setRoomCount] = useState(1);
 
   const baseURL = 'http://localhost:5000/';
+  useEffect(()=>{
+    refetch()
+  },[refetch])
 
   const handleBookNow = (roomId) => {
     setSelectedRoom(roomId);

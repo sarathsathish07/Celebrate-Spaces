@@ -75,6 +75,26 @@ const EditRoomScreen = () => {
       return;
     }
 
+    if (isNaN(formData.price) || formData.price <= 0) {
+      toast.error("Price must be a positive number");
+      return;
+    }
+
+    if (isNaN(formData.area) || formData.area <= 0) {
+      toast.error("Area must be a positive number");
+      return;
+    }
+
+    if (isNaN(formData.occupancy) || formData.occupancy <= 0) {
+      toast.error("Occupancy must be a positive number");
+      return;
+    }
+
+    if (isNaN(formData.noOfRooms) || formData.noOfRooms <= 0) {
+      toast.error("Number of Rooms must be a positive number");
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("type", formData.type);

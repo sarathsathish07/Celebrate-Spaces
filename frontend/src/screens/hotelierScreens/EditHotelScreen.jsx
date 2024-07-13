@@ -55,21 +55,42 @@ const EditHotelScreen = () => {
     });
   };
 
+  const validateNameAndCity = (value) => {
+    const regex = /^[A-Za-z\s'-]+$/;
+    return regex.test(value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (!formData.name || !formData.city || !formData.address || !formData.description || !formData.amenities) {
+    const trimmedName = formData.name.trim();
+    const trimmedCity = formData.city.trim();
+    const trimmedAddress = formData.address.trim();
+    const trimmedDescription = formData.description.trim();
+    const trimmedAmenities = formData.amenities.trim();
+  
+    if (!trimmedName || !trimmedCity || !trimmedAddress || !trimmedDescription || !trimmedAmenities) {
       toast.error("All fields are required");
+      return;
+    }
+
+    if (!validateNameAndCity(trimmedName)) {
+      toast.error("Name cannot contain numbers or special characters");
+      return;
+    }
+
+    if (!validateNameAndCity(trimmedCity)) {
+      toast.error("City cannot contain numbers or special characters");
       return;
     }
   
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("city", formData.city);
-      formDataToSend.append("address", formData.address);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("amenities", formData.amenities);
+      formDataToSend.append("name", trimmedName);
+      formDataToSend.append("city", trimmedCity);
+      formDataToSend.append("address", trimmedAddress);
+      formDataToSend.append("description", trimmedDescription);
+      formDataToSend.append("amenities", trimmedAmenities);
   
       imagesToDelete.forEach((image) => {
         formDataToSend.append("removeImages", image);
@@ -102,23 +123,54 @@ const EditHotelScreen = () => {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="name" className="mb-3">
             <Form.Label>Name</Form.Label>
-            <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
+            <Form.Control
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
           <Form.Group controlId="city" className="mb-3">
             <Form.Label>City</Form.Label>
-            <Form.Control type="text" name="city" value={formData.city} onChange={handleChange} required />
+            <Form.Control
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
           <Form.Group controlId="address" className="mb-3">
             <Form.Label>Address</Form.Label>
-            <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} required />
+            <Form.Control
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
           <Form.Group controlId="description" className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={3} name="description" value={formData.description} onChange={handleChange} required />
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
           <Form.Group controlId="amenities" className="mb-3">
             <Form.Label>Amenities</Form.Label>
-            <Form.Control type="text" name="amenities" value={formData.amenities} onChange={handleChange} required />
+            <Form.Control
+              type="text"
+              name="amenities"
+              value={formData.amenities}
+              onChange={handleChange}
+              required
+            />
           </Form.Group>
           <Form.Group controlId="images" className="mb-3">
             <Form.Label>Images</Form.Label>
@@ -126,7 +178,7 @@ const EditHotelScreen = () => {
               {formData.images.map((image, index) => (
                 <Col key={index} md={3} className="mb-3 position-relative">
                   <Card style={{ width: "100%", height: "100%" }}>
-                    {typeof image === 'string' && (
+                    {typeof image === "string" && (
                       <Card.Img
                         variant="top"
                         src={`http://localhost:5000/${image.replace("backend\\public\\", "")}`}
@@ -146,9 +198,16 @@ const EditHotelScreen = () => {
                 </Col>
               ))}
             </Row>
-            <Form.Control type="file" name="images" onChange={handleImageChange} multiple />
+            <Form.Control
+              type="file"
+              name="images"
+              onChange={handleImageChange}
+              multiple
+            />
           </Form.Group>
-          <Button type="submit" className="mb-3">Update Hotel</Button>
+          <Button type="submit" className="mb-3">
+            Update Hotel
+          </Button>
         </Form>
       </Container>
     </HotelierLayout>

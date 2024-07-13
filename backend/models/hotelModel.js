@@ -40,7 +40,7 @@ const hotelSchema = new mongoose.Schema({
   verificationStatus: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending'
+    default: null
   },
 }, {
   timestamps: true,

@@ -38,8 +38,14 @@ const AdminVerificationScreen = () => {
   };
 
   const handleReject = async () => {
+    const trimmedReason = rejectionReason.trim();
+    if (!trimmedReason) {
+      toast.error("Rejection reason cannot be empty");
+      return;
+    }
+
     try {
-      await rejectVerification({ adminId: selectedHotelId, reason: rejectionReason });
+      await rejectVerification({ adminId: selectedHotelId, reason: trimmedReason });
       refetch();
       toast.success("Verification request rejected");
       closeRejectModal();
@@ -47,7 +53,6 @@ const AdminVerificationScreen = () => {
       console.error("Error rejecting verification:", error);
     }
   };
-  
 
   const openCertificateModal = (certificate) => {
     const adjustedCertificatePath = certificate.replace("backend\\public\\", "");

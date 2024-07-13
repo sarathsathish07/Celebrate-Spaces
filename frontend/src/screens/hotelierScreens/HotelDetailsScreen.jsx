@@ -22,14 +22,8 @@ const HotelDetailScreen = () => {
 
   return (
     <HotelierLayout>
-      <Container>
-        {/* <Row className="my-3">
-          <Col>
-            <h1>{hotel.name}</h1>
-          </Col>
-
-        </Row> */}
-        <Row className="my-5">
+      <Container className="px-4">
+        <Row className="my-5 mx-5">
           <Col md={10}>
             <Card className="mb-3">
             <h1>{hotel.name}</h1>
@@ -69,13 +63,13 @@ const HotelDetailScreen = () => {
             </Card>
           </Col>
         </Row>
+        <Row className="mx-5">
         <h2>Rooms</h2>
-        <Row>
           {hotel.rooms.map((room) => (
             <Col key={room._id} md={4} className="mb-4">
               <Card className="h-100 shadow roomsCard">
                 <Card.Body>
-                  <Card.Title>{room.name}</Card.Title>
+                  <Card.Title>{room.type}</Card.Title>
                   <Card.Text>
                     <strong>Price:</strong> Rs {room.price}
                   </Card.Text>

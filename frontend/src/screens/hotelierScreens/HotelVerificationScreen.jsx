@@ -10,6 +10,7 @@ import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 
 const HotelVerificationScreen = () => {
   const [certificate, setCertificate] = useState(null);
+  const [validationError, setValidationError] = useState("");
   const navigate = useNavigate();
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
   const { hotelId } = useParams();
@@ -17,8 +18,15 @@ const HotelVerificationScreen = () => {
   const [uploadHotelCertificate, { isLoading }] = useUploadHotelCertificateMutation();
 
   const handleCertificateChange = (e) => {
-    if (e.target.files.length > 0) {
-      setCertificate(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setValidationError("Please upload a valid image file");
+        setCertificate(null);
+      } else {
+        setValidationError("");
+        setCertificate(file);
+      }
     }
   };
 
@@ -57,6 +65,7 @@ const HotelVerificationScreen = () => {
         <Form.Group controlId="certificates" className="my-3">
           <Form.Label>Upload Certificate</Form.Label>
           <Form.Control type="file" onChange={handleCertificateChange} />
+          {validationError && <div className="text-danger mt-2">{validationError}</div>}
         </Form.Group>
 
         {isLoading && <Loader />}
@@ -77,7 +86,7 @@ const HotelVerificationScreen = () => {
         </div>
       </div>
       <HotelierLayout>
-        <Container className="profile-container">
+      <Container className="px-4 w-75 my-5">
           <Row>
             <Col md={8}>
               <Card className="profile-card">

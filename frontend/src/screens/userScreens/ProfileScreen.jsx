@@ -20,6 +20,7 @@ import {
 } from "../../slices/usersApiSlice";
 import bgImage from "../../assets/images/bgimage.jpg";
 import defaultProfileImage from "../../assets/images/5856.jpg";
+import Footer from '../../components/userComponents/Footer';
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -260,6 +261,7 @@ const ProfileScreen = () => {
           </Col>
         </Row>
       </Container>
+      <Footer/>
     </div>
   );
 };

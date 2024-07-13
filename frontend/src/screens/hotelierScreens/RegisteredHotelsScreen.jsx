@@ -41,7 +41,7 @@ const RegisteredHotelsScreen = () => {
             </Card.Text>
             {hotel.verificationStatus !== "accepted" && (
               <Link to={`/hotelier/verify-hotel/${hotel._id}`}>
-                <Button className="mt-2">Verify</Button>
+                <Button className="mt-2">Verify</Button><br/>
               </Link>
             )}
             <Link to={`/hotelier/hotel-details/${hotel._id}`}>

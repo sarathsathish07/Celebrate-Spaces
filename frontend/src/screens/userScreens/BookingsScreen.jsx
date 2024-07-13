@@ -5,6 +5,7 @@ import { useGetBookingsQuery } from "../../slices/usersApiSlice.js";
 import Loader from "../../components/userComponents/Loader";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
 import bgImage from "../../assets/images/bgimage.jpg";
+import Footer from '../../components/userComponents/Footer';
 
 const BookingsScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -97,6 +98,7 @@ const BookingsScreen = () => {
           </Col>
         </Row>
       </Container>
+      <Footer/>
     </div>
   );
 };

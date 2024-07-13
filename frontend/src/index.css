@@ -143,9 +143,7 @@ html {
 }
 
 .hotelier-sidebar {
-  background-color: #9caeb8;
-  padding: 20px;
-  height: 100%;
+
 }
 .admin-sidebar {
   background-color: rgb(33, 37, 41);
@@ -201,12 +199,12 @@ html {
   padding: 20px;
   background-color: #ebebeb;
   border-right: 1px solid #dee2e6;
-  height: 100vh;
   border-radius: 30px;
   margin-top: 50px;
   margin-left: 30px;
   display: flex;
   justify-content: center;
+  height: 70vh;
 }
 
 .sidebar h4 {

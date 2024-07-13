@@ -93,7 +93,7 @@ const HotelsScreen = () => {
           <h1>Find Your Dream Luxury Hotel</h1>
         </div>
       </div>
-      <Container>
+      <Container style={{height:'90vh'}}>
         <Row>
           <Col md={3}>
             <HotelsSidebar

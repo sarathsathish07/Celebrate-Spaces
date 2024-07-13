@@ -29,7 +29,16 @@ const AddRoomScreen = () => {
   };
 
   const handleImageChange = (e) => {
-    setSelectedImages(e.target.files);
+    const files = Array.from(e.target.files);
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+    const validImages = files.filter(file => validImageTypes.includes(file.type));
+    
+    if (validImages.length !== files.length) {
+      toast.error("Only image files are allowed (jpeg, png, gif)");
+      return;
+    }
+
+    setSelectedImages(validImages);
   };
 
   const handleRemoveImage = (index) => {
@@ -43,30 +52,40 @@ const AddRoomScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Trim and validate form data
+    const trimmedFormData = {
+      type: formData.type.trim(),
+      price: formData.price.trim(),
+      area: formData.area.trim(),
+      occupancy: formData.occupancy.trim(),
+      noOfRooms: formData.noOfRooms.trim(),
+      description: formData.description.trim(),
+      amenities: formData.amenities.trim(),
+    };
+
     if (
-      !formData.type ||
-      !formData.price ||
-      !formData.area ||
-      !formData.occupancy ||
-      !formData.noOfRooms ||
+      !trimmedFormData.type ||
+      !trimmedFormData.price ||
+      !trimmedFormData.area ||
+      !trimmedFormData.occupancy ||
+      !trimmedFormData.noOfRooms ||
       !selectedImages.length ||
-      !formData.description ||
-      !formData.amenities
+      !trimmedFormData.description ||
+      !trimmedFormData.amenities
     ) {
-      toast.error("All fields are required");
+      toast.error("All fields are required and cannot be empty");
       return;
     }
 
-    
     try {
       const formDataObj = new FormData();
-      formDataObj.append("type", formData.type);
-      formDataObj.append("price", formData.price);
-      formDataObj.append("area", formData.area);
-      formDataObj.append("occupancy", formData.occupancy);
-      formDataObj.append("noOfRooms", formData.noOfRooms);
-      formDataObj.append("description", formData.description);
-      formDataObj.append("amenities", formData.amenities);
+      formDataObj.append("type", trimmedFormData.type);
+      formDataObj.append("price", trimmedFormData.price);
+      formDataObj.append("area", trimmedFormData.area);
+      formDataObj.append("occupancy", trimmedFormData.occupancy);
+      formDataObj.append("noOfRooms", trimmedFormData.noOfRooms);
+      formDataObj.append("description", trimmedFormData.description);
+      formDataObj.append("amenities", trimmedFormData.amenities);
       for (let i = 0; i < selectedImages.length; i++) {
         formDataObj.append("images", selectedImages[i]);
       }
@@ -81,7 +100,7 @@ const AddRoomScreen = () => {
 
   return (
     <HotelierLayout>
-      <Container className="px-4 w-75">
+      <Container className="px-4 w-75" style={{ maxHeight: "100vh", overflowY: "auto" }}>
         <h1 className="my-3">Add Room</h1>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="type" className="mb-3">

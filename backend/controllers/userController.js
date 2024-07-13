@@ -121,6 +121,7 @@ const getHotels = async (req, res) => {
 const getHotelById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   const hotel = await userService.getSingleHotelById(id);
+  console.log(hotel);
   if (hotel) {
     res.status(200).json(hotel);
   } else {
