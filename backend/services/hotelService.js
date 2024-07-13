@@ -22,7 +22,7 @@ const fetchAcceptedHotels = async (sortOption = '', amenities = [], city = '') =
   }
 
   const filterCriteria = {
-    'hotelier.verificationStatus': 'accepted',
+    verificationStatus: 'accepted',
     isListed: true,
   };
 

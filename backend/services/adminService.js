@@ -64,25 +64,35 @@ const getVerificationDetails = async () => {
   return await adminRepository.getPendingHotelierVerifications();
 };
 
-const acceptVerification = async (hotelierId) => {
-  const hotelier = await adminRepository.findHotelierById(hotelierId);
-  if (!hotelier) {
-    throw new Error('Hotelier not found');
+const acceptVerification = async (hotelId) => {
+  const hotel = await adminRepository.findHotelById(hotelId);
+  if (!hotel) {
+    throw new Error('Hotel not found');
   }
-  hotelier.verificationStatus = 'accepted';
-  await adminRepository.saveHotelier(hotelier);
+  hotel.verificationStatus = 'accepted';
+  await adminRepository.saveHotel(hotel);
+  const hotelier = await adminRepository.findHotelierById(hotel.hotelierId);
+    if (!hotelier) {
+      return res.status(404).json({ message: 'Hotelier not found' });
+    }
   await sendVerificationEmail(hotelier.email, 'Verification Accepted', 'Your verification request has been accepted.');
 };
 
-const rejectVerification = async (hotelierId) => {
-  const hotelier = await adminRepository.findHotelierById(hotelierId);
+const rejectVerification = async (hotelId, reason) => {
+  const hotel = await adminRepository.findHotelById(hotelId);
+  if (!hotel) {
+    throw new Error('Hotelier not found');
+  }
+  hotel.verificationStatus = 'rejected';
+  await adminRepository.saveHotel(hotel);
+  const hotelier = await adminRepository.findHotelierById(hotel.hotelierId);
   if (!hotelier) {
     throw new Error('Hotelier not found');
   }
-  hotelier.verificationStatus = 'rejected';
-  await adminRepository.saveHotelier(hotelier);
-  await sendVerificationEmail(hotelier.email, 'Verification Rejected', 'Your verification request has been rejected.');
+  const message = `Your verification request has been rejected for the following reason: ${reason}`;
+  await sendVerificationEmail(hotelier.email, 'Verification Rejected', message);
 };
+
 
 const sendVerificationEmail = async (recipient, subject, message) => {
   try {

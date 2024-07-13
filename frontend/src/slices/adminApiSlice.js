@@ -42,11 +42,13 @@ export const admiApiSlice=apiSlice.injectEndpoints({
           }),
       
           adminRejectVerification: builder.mutation({
-            query: (adminId) => ({
+            query: ({ adminId, reason }) => ({
               url: `${ADMIN_URL}/verification/${adminId}/reject`,
               method: 'PUT',
+              body: { reason },
             }),
           }),
+          
           adminBlockUser: builder.mutation({
             query: (body) => ({
               url: `${ADMIN_URL}/block-user`,

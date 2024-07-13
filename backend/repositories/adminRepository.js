@@ -53,7 +53,7 @@ const createUser = asyncHandler(async (name, email, password) => {
 });
 
 const getPendingHotelierVerifications = asyncHandler(async () => {
-  return await Hotelier.find({ verificationStatus: 'pending' }).select('-password');
+  return await Hotel.find({ verificationStatus: 'pending' }).select('-password');
 });
 
 // const acceptVerification = asyncHandler(async (hotelierId) => {
@@ -104,9 +104,15 @@ const unlistHotel = asyncHandler(async (hotelId) => {
 const findHotelierById = async (id) => {
   return await Hotelier.findById(id);
 };
+const findHotelById = async (id) => {
+  return await Hotel.findById(id);
+};
 
 const saveHotelier = async (hotelier) => {
   return await hotelier.save();
+};
+const saveHotel = async (hotel) => {
+  return await hotel.save();
 };
 
 export {
@@ -121,4 +127,6 @@ export {
   unlistHotel,
   findHotelierById,
   saveHotelier,
+  findHotelById,
+  saveHotel
 };

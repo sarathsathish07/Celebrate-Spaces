@@ -20,8 +20,8 @@ import {protect} from '../middleware/adminAuthMiddleware.js'
   router.post('/get-user',protect,getAllUsers)
   router.put('/update-user',updateUser)
   router.get('/verification',getVerificationDetails)
-  router.put('/verification/:hotelierId/accept',acceptVerification)
-  router.put('/verification/:hotelierId/reject',rejectVerification)
+  router.put('/verification/:hotelId/accept',acceptVerification)
+  router.put('/verification/:adminId/reject', rejectVerification);
   router.patch('/block-user',blockUser)
   router.patch('/unblock-user',unblockUser)
   router.get('/get-hotels', protect, getAllHotels);

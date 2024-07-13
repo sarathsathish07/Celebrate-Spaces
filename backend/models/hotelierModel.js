@@ -32,14 +32,6 @@ const hotelierSchema = mongoose.Schema({
   otpExpiry: {
     type: Date,
   },
-  verificationStatus: {
-    type: String,
-    enum: ['pending', 'accepted', 'rejected'],
-    default: null
-  },
-  certificates: {
-    type: String,
-  }
 }, {
   timestamps: true
 });
