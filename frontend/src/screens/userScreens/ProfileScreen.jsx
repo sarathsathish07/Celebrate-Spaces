@@ -27,7 +27,7 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [currentPassword, setCurrentPassword] = useState(""); // New state for current password
+  const [currentPassword, setCurrentPassword] = useState(""); 
   const [profileImage, setProfileImage] = useState(null);
 
   const dispatch = useDispatch();
@@ -54,11 +54,16 @@ const ProfileScreen = () => {
   }, [userInfo, refetch]);
 
   const handleImageChange = (e) => {
-    if (e.target.files.length > 0) {
-      const file = e.target.files[0];
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image')) {
+        toast.error('Please select an image file.');
+        return;
+      }
       setProfileImage(file);
     }
   };
+  
 
   const validateName = (name) => {
     if (name.trim() === "") {

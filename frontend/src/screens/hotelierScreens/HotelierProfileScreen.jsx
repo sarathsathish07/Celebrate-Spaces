@@ -37,9 +37,14 @@ const HotelierProfileScreen = () => {
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
+      if (file && !file.type.startsWith('image')) {
+        toast.error('Only image files are allowed');
+        return;
+      }
       setProfileImage(file);
     }
   };
+  
 
   const validateName = (name) => {
     if (name.trim() === '') {

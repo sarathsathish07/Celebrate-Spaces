@@ -17,7 +17,15 @@ const AddHotelScreen = () => {
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
-    setSelectedImages(e.target.files);
+    const files = Array.from(e.target.files);
+    const validImages = files.filter((file) => file.type.startsWith("image/"));
+
+    if (validImages.length !== files.length) {
+      toast.error("Only images are allowed");
+      return;
+    }
+
+    setSelectedImages(validImages);
   };
 
   const validateNameAndCity = (value) => {
@@ -76,8 +84,7 @@ const AddHotelScreen = () => {
   };
 
   return (
-
-      <HotelierLayout>
+    <HotelierLayout>
       <Container className="px-4 w-75" style={{ maxHeight: "100vh", overflowY: "auto" }}>
         <h1 className="my-3">Add Hotel</h1>
         <Form onSubmit={handleSubmit}>
@@ -117,7 +124,7 @@ const AddHotelScreen = () => {
             />
             <div className="mt-3">
               {selectedImages &&
-                Array.from(selectedImages).map((image, index) => (
+                selectedImages.map((image, index) => (
                   <img
                     key={index}
                     src={URL.createObjectURL(image)}

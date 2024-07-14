@@ -44,8 +44,16 @@ const EditHotelScreen = () => {
   };
 
   const handleImageChange = (e) => {
-    setSelectedImages(e.target.files);
+    const files = e.target.files;
+    const imageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  
+    const selectedValidImages = Array.from(files).filter(file =>
+      imageTypes.includes(file.type)
+    );
+  
+    setSelectedImages(selectedValidImages);
   };
+  
 
   const handleRemoveImage = (index) => {
     setImagesToDelete((prev) => [...prev, formData.images[index]]);
