@@ -1,97 +1,60 @@
 import asyncHandler from 'express-async-handler';
 import Booking from '../models/bookingModel.js';
+import { checkAvailability,createBooking,updateBookingStatusService,getBookingsByUserIdService,getHotelierBookingsService,getAllBookingsService } from '../services/bookingService.js';
+
 
 const saveBooking = asyncHandler(async (req, res) => {
-  const {
-    hotelId,
-    roomId,
-    checkInDate,
-    checkOutDate,
-    paymentMethod,
-    paymentStatus,
-    hotelierId,
-    roomsBooked,
-    totalAmount,
-  } = req.body;
-
-  const booking = new Booking({
+  const bookingData = {
     userId: req.user._id,
-    hotelId,
-    roomId,
-    checkInDate,
-    checkOutDate,
-    paymentMethod,
-    paymentStatus,
+    ...req.body,
     bookingDate: Date.now(),
-    bookingStatus: paymentStatus === 'completed' ? 'confirmed' : 'pending',
-    hotelierId,
-    roomsBooked,
-    totalAmount,
-  });
-
-  const createdBooking = await booking.save();
-  console.log(createdBooking);
+    bookingStatus: req.body.paymentStatus === 'completed' ? 'confirmed' : 'pending',
+  };
+  const createdBooking = await createBooking(bookingData);
   res.status(201).json(createdBooking);
 });
 
-const updateBookingStatus = async (req, res) => {
-  console.log("1");
-  try {
-    const { bookingId, paymentStatus } = req.body;
-
-    const booking = await Booking.findById(bookingId);
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-
-    booking.paymentStatus = paymentStatus;
-    await booking.save();
-
-    res.status(200).json(booking);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const updateBookingStatus = asyncHandler(async (req, res) => {
+  const { bookingId, paymentStatus } = req.body;
+  const updatedBooking = await updateBookingStatusService(bookingId, paymentStatus);
+  if (!updatedBooking) {
+    return res.status(404).json({ message: 'Booking not found' });
   }
-};
-const getBookingsByUserId = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find({ userId: req.params.userId })
-    .populate('hotelId', 'name') 
-    .populate('roomId', 'type amenities description'); 
-  console.log(bookings);
+  res.status(200).json(updatedBooking);
+});
 
+const getBookingsByUserId = asyncHandler(async (req, res) => {
+  const bookings = await getBookingsByUserIdService(req.params.userId);
   if (bookings) {
     res.json(bookings);
   } else {
-    res.status(404);
-    throw new Error('Bookings not found');
+    res.status(404).json({ message: 'Bookings not found' });
   }
 });
 const getHotelierBookings = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find({ hotelierId: req.params.id })
-    .populate('hotelId')
-    .populate('roomId')
-    .populate('userId');
-  
+  const bookings = await getHotelierBookingsService(req.params.id);
   if (bookings) {
     res.json(bookings);
   } else {
-    res.status(404);
-    throw new Error('Bookings not found');
+    res.status(404).json({ message: 'Bookings not found' });
   }
 });
 const getAllBookings = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find({})
-    .populate('hotelId')
-    .populate('roomId')
-    .populate('userId')
-    .populate('hotelierId');
-  
+  const bookings = await getAllBookingsService();
   if (bookings) {
     res.json(bookings);
   } else {
-    res.status(404);
-    throw new Error('Bookings not found');
+    res.status(404).json({ message: 'Bookings not found' });
   }
 });
+const checkRoomAvailability = asyncHandler(async (req, res) => {
+  const { roomId, checkInDate, checkOutDate, roomCount } = req.body;
+
+  const availability = await checkAvailability(roomId, checkInDate, checkOutDate, roomCount);
+
+  res.json(availability);
+});
+
 
 
 
@@ -99,5 +62,6 @@ export { saveBooking ,
   updateBookingStatus,
   getBookingsByUserId,
   getHotelierBookings,
-  getAllBookings
+  getAllBookings,
+  checkRoomAvailability
 };

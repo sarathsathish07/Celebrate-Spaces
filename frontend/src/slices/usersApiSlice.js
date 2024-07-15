@@ -66,6 +66,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    checkRoomAvailability: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/check-availability`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
     saveBooking: builder.mutation({
       query: (data) => ({
         url: `${USERS_URL}/booking`,
@@ -127,5 +134,6 @@ export const {
   useGetBookingsQuery,
   useSendPasswordResetEmailMutation,
   useResetPasswordMutation,
-  useGetRoomsDataMutation 
+  useGetRoomsDataMutation,
+  useCheckRoomAvailabilityMutation 
 } = usersApiSlice

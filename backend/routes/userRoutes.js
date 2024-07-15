@@ -11,7 +11,7 @@ import { authUser,
   sendPasswordResetEmail,
   resetPassword
 } from '../controllers/userController.js';
-import { saveBooking,updateBookingStatus,getBookingsByUserId } from '../controllers/bookingController.js';
+import { saveBooking,updateBookingStatus,getBookingsByUserId,checkRoomAvailability } from '../controllers/bookingController.js';
 import { getRoomsByHotelIds } from '../controllers/roomController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { multerUploadUserProfile } from "../config/multerConfig.js";
@@ -31,6 +31,7 @@ router.get('/hotels',getHotels )
 router.post('/rooms', getRoomsByHotelIds);
 router.get('/hotels/:id', getHotelById);
 router.post('/booking',protect, saveBooking);
+router.post('/check-availability',protect, checkRoomAvailability);
 router.put('/booking/update-status',protect, updateBookingStatus);
 router.get('/bookings/:userId', protect, getBookingsByUserId);
 

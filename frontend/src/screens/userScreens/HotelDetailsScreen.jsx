@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Image, Nav, Tab, Card, Button, Modal, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useGetHotelByIdQuery } from '../../slices/usersApiSlice';
+import { useGetHotelByIdQuery, useCheckRoomAvailabilityMutation, useSaveBookingMutation } from '../../slices/usersApiSlice';
 import Loader from '../../components/userComponents/Loader';
 import Footer from '../../components/userComponents/Footer';
 import { toast } from 'react-toastify';
@@ -12,6 +12,8 @@ const HotelDetailsScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: hotel, error, isLoading, refetch } = useGetHotelByIdQuery(id);
+  const [checkRoomAvailability] = useCheckRoomAvailabilityMutation();
+  const [saveBooking] = useSaveBookingMutation();
   const [activeKey, setActiveKey] = useState('description');
   const mainImageRef = useRef(null);
 
@@ -39,7 +41,7 @@ const HotelDetailsScreen = () => {
     setRoomCount(1);
   };
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -53,15 +55,31 @@ const HotelDetailsScreen = () => {
       return;
     }
 
-    const queryParams = {
-      hotelId: id,
-      room: selectedRoom,
-      checkInDate: checkInDate.toISOString(),
-      checkOutDate: checkOutDate.toISOString(),
-      roomCount: roomCount
-    };
-    const queryString = new URLSearchParams(queryParams).toString();
-    navigate(`/booking?${queryString}`);
+    try {
+      const availabilityResponse = await checkRoomAvailability({
+        roomId: selectedRoom,
+        checkInDate,
+        checkOutDate,
+        roomCount,
+      }).unwrap();
+
+      if (!availabilityResponse.isAvailable) {
+        toast.error('Room is not available for the selected dates');
+        return;
+      }
+
+      const queryParams = {
+        hotelId: id,
+        room: selectedRoom,
+        checkInDate: checkInDate.toISOString(),
+        checkOutDate: checkOutDate.toISOString(),
+        roomCount: roomCount,
+      };
+      const queryString = new URLSearchParams(queryParams).toString();
+      navigate(`/booking?${queryString}`);
+    } catch (error) {
+      toast.error('Error checking room availability');
+    }
   };
 
   if (isLoading) return <Loader />;
@@ -120,10 +138,10 @@ const HotelDetailsScreen = () => {
                   <Nav.Link eventKey="reviews">Reviews</Nav.Link>
                 </Nav.Item>
               </Nav>
-              <Tab.Content>
+              <Tab.Content className="mt-3">
                 <Tab.Pane eventKey="description">
                   <p>{hotel?.description}</p>
-                  <h5>Top Facilities</h5>
+                  <h4>Amenities</h4>
                   <ul>
                     {hotel?.amenities?.map((amenity, index) => (
                       <li key={index}>{amenity}</li>
@@ -133,23 +151,27 @@ const HotelDetailsScreen = () => {
                 <Tab.Pane eventKey="rooms">
                   <Row>
                     {hotel?.rooms?.map((room) => (
-                      <Col key={room._id} md={4}>
-                        <Card className="hotel-card room-card">
-                          <Card.Img 
-                            variant="top" 
-                            src={`${baseURL}${room.images[0].replace("backend\\public\\", "")}`} 
-                            alt={room.type} 
-                            className="room-image" 
+                      <Col md={4} key={room._id} className="mb-3">
+                        <Card>
+                          <Card.Img
+                            variant="top"
+                            src={`${baseURL}${room.images[0].replace(
+                              "backend\\public\\",
+                              ""
+                            )}`}
+                            alt="Room Image"
+                            className="hotel-details-room-image"
                           />
-                          <Card.Body className="room-card-body">
-                            <Card.Title>{room.type}</Card.Title>
+                          <Card.Body>
+                            <Card.Title>{room.name}</Card.Title>
                             <Card.Text>
-                              <strong>Price:</strong> Rs {room.price}<br />
-                              <strong>Area:</strong> {room.area} sq.ft<br />
-                              <strong>Occupancy:</strong> {room.occupancy}<br />
-                              <strong>Amenities:</strong> {room.amenities.join(', ')}
+                              {room.description}
+                              <br />
+                              <strong>Price:</strong> ${room.price}/night
                             </Card.Text>
-                            <Button variant="primary" onClick={() => handleBookNow(room._id)}>Book Now</Button>
+                            <Button onClick={() => handleBookNow(room._id)}>
+                              Book Now
+                            </Button>
                           </Card.Body>
                         </Card>
                       </Col>
@@ -157,56 +179,59 @@ const HotelDetailsScreen = () => {
                   </Row>
                 </Tab.Pane>
                 <Tab.Pane eventKey="reviews">
-                  {/* Add review section here */}
+                  <h4>Reviews</h4>
+                  {/* Add reviews display logic here */}
                 </Tab.Pane>
               </Tab.Content>
             </Tab.Container>
           </Col>
         </Row>
-
-        <Modal show={showModal} onHide={handleCloseModal} className="modal-custom">
-          <Modal.Header closeButton className="modal-header-custom">
-            <Modal.Title>Book Room</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="checkInDate" className='modal-group'>
-                <Form.Label className='modal-label'>Check-In Date</Form.Label>
-                <DatePicker 
-                  selected={checkInDate} 
-                  onChange={(date) => setCheckInDate(date)} 
-                  className="form-control datepicker"
-                  minDate={new Date()}
-                />
-              </Form.Group>
-              <Form.Group controlId="checkOutDate" className='modal-group'>
-                <Form.Label className='modal-label'>Check-Out Date</Form.Label>
-                <DatePicker 
-                  selected={checkOutDate} 
-                  onChange={(date) => setCheckOutDate(date)} 
-                  className="form-control datepicker"
-                  minDate={checkInDate}
-                />
-              </Form.Group>
-              <Form.Group controlId="roomCount" className="form-group-inline">
-                <Form.Label className='modal-label'>Rooms</Form.Label>
-                <Form.Control 
-                  type="number" 
-                  value={roomCount} 
-                  onChange={(e) => setRoomCount(e.target.value)} 
-                  min="1"
-                  className="form-room"
-                />
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer className="modal-footer-custom">
-            <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-            <Button variant="primary" onClick={handleBooking}>Book</Button>
-          </Modal.Footer>
-        </Modal>
       </Container>
-      <Footer/>
+      <Footer />
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Room</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="checkInDate">
+              <Form.Label>Check-In Date</Form.Label>
+              <DatePicker
+                selected={checkInDate}
+                onChange={(date) => setCheckInDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+              />
+            </Form.Group>
+            <Form.Group controlId="checkOutDate">
+              <Form.Label>Check-Out Date</Form.Label>
+              <DatePicker
+                selected={checkOutDate}
+                onChange={(date) => setCheckOutDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+              />
+            </Form.Group>
+            <Form.Group controlId="roomCount">
+              <Form.Label>Room Count</Form.Label>
+              <Form.Control
+                type="number"
+                value={roomCount}
+                onChange={(e) => setRoomCount(Number(e.target.value))}
+                min={1}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleBooking}>
+            Book Now
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
