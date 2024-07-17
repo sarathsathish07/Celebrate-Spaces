@@ -2,39 +2,48 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Table, Container, Row, Col, Card, Button, Collapse, Form } from "react-bootstrap";
 import Rating from 'react-rating';
-import { useGetBookingsQuery, useAddReviewMutation } from "../../slices/usersApiSlice.js";
+import { useGetBookingsQuery, useAddReviewMutation, useGetReviewsQuery } from "../../slices/usersApiSlice.js";
 import Loader from "../../components/userComponents/Loader";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
 import bgImage from "../../assets/images/bgimage.jpg";
 import Footer from '../../components/userComponents/Footer';
+import 'font-awesome/css/font-awesome.min.css';
 
 const BookingsScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  const { data: bookings, isLoading, refetch } = useGetBookingsQuery();
+  const { data: bookings, isLoading: bookingsLoading, refetch: refetchBookings } = useGetBookingsQuery();
+  const { data: reviews, isLoading: reviewsLoading, refetch: refetchReviews } = useGetReviewsQuery();
+
   const [addReview, { isLoading: isAddingReview }] = useAddReviewMutation();
   const [expandedRow, setExpandedRow] = useState(null);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
-  const [submittedReviews, setSubmittedReviews] = useState({});
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
   };
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    refetchBookings();
+    refetchReviews();
+  }, [refetchBookings, refetchReviews]);
 
-  const handleReviewSubmit = async (bookingId) => {
+  const getReviewForBooking = (bookingId) => {
+    return reviews.find((review) => review.bookingId === bookingId);
+  };
+
+  const handleReviewSubmit = async (bookingId, hotelId) => {
     try {
-      const result = await addReview({ rating, review, bookingId }).unwrap();
-      setSubmittedReviews((prevReviews) => ({ ...prevReviews, [bookingId]: result }));
+      const result = await addReview({ rating, review, bookingId, hotelId }).unwrap();
+      setRating(0);
+      setReview('');
+      refetchReviews(); // Fetch reviews again after submitting
     } catch (error) {
       console.error('Failed to submit review:', error);
     }
   };
 
-  if (isLoading) return <Loader />;
+  if (bookingsLoading || reviewsLoading) return <Loader />;
 
   return (
     <div>
@@ -98,15 +107,15 @@ const BookingsScreen = () => {
                                     <p><strong>Amenities:</strong> {booking.roomId.amenities.join(", ")}</p>
                                     <p><strong>Description:</strong> {booking.roomId.description}</p>
 
-                                    {submittedReviews[booking._id] ? (
+                                    {getReviewForBooking(booking._id) ? (
                                       <div>
-                                        <p><strong>Rating:</strong> {submittedReviews[booking._id].rating}</p>
-                                        <p><strong>Review:</strong> {submittedReviews[booking._id].review}</p>
+                                        <p><strong>Rating:</strong> {getReviewForBooking(booking._id).rating}</p>
+                                        <p><strong>Review:</strong> {getReviewForBooking(booking._id).review}</p>
                                       </div>
                                     ) : (
-                                      <Form onSubmit={(e) => { e.preventDefault(); handleReviewSubmit(booking._id); }}>
+                                      <Form onSubmit={(e) => { e.preventDefault(); handleReviewSubmit(booking._id, booking.hotelId._id); }}>
                                         <Form.Group controlId="rating">
-                                          <Form.Label>Rating</Form.Label>
+                                          <Form.Label style={{marginRight:"10px"}}><strong>Rating</strong></Form.Label>
                                           <Rating
                                             initialRating={rating}
                                             emptySymbol="fa fa-star-o fa-2x"
@@ -115,13 +124,13 @@ const BookingsScreen = () => {
                                             onChange={(rate) => setRating(rate)}
                                           />
                                         </Form.Group>
-                                        <Form.Group controlId="review">
-                                          <Form.Label>Review</Form.Label>
+                                        <Form.Group controlId="review" style={{marginBottom:"10px"}}>
                                           <Form.Control
                                             as="textarea"
                                             rows={3}
                                             value={review}
                                             onChange={(e) => setReview(e.target.value)}
+                                            placeholder="Comment your review"
                                             required
                                           />
                                         </Form.Group>

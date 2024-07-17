@@ -155,6 +155,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getReviewsByHotelId: builder.query({
+      query: (hotelId) => `${USERS_URL}/reviews/${hotelId}`,
+    }),
+    getReviews: builder.query({
+      query: () => `${USERS_URL}/reviews`,
+    }),
   })
 })
 
@@ -181,5 +187,7 @@ export const {
   useAddCashToWalletMutation,
   useGetWalletBalanceQuery ,
   useUpdateWalletMutation ,
-  useAddReviewMutation
+  useAddReviewMutation,
+  useGetReviewsByHotelIdQuery,
+  useGetReviewsQuery
 } = usersApiSlice

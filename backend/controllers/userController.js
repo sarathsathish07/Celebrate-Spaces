@@ -248,6 +248,7 @@ const addReview = expressAsyncHandler(async (req, res) => {
       hotelId: booking.hotelId._id,
       rating,
       review,
+      bookingId: booking._id
     });
 
     await newReview.save();
@@ -258,10 +259,21 @@ const addReview = expressAsyncHandler(async (req, res) => {
     throw new Error('Booking not found');
   }
 });
+const getReviews = expressAsyncHandler(async (req, res) => {
+  const reviews = await RatingReview.find({ hotelId: req.params.hotelId })
+    .populate('userId', 'name')
+  res.json(reviews);
+});
+const getBookingReviews = expressAsyncHandler(async (req, res) => {
+  console.log("1");
+  const reviews = await RatingReview.find().populate('userId', 'name').populate('hotelId', 'name');
+  console.log(reviews);
+  res.json(reviews);
+});
 
 
 export {
-  authUser,
+  authUser, 
   registerUser,
   logoutUser,
   getUserProfile,
@@ -276,5 +288,7 @@ export {
   getWalletTransactions,
   addCashToWallet,
   getWalletBalance,
-  addReview
+  addReview,
+  getReviews,
+  getBookingReviews
 };

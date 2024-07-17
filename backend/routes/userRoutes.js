@@ -13,7 +13,9 @@ import { authUser,
   googleLogin,getWalletTransactions,
   addCashToWallet,
   getWalletBalance,
-  addReview
+  addReview,
+  getReviews,
+  getBookingReviews
 } from '../controllers/userController.js';
 import { saveBooking,updateBookingStatus,getBookingsByUserId,checkRoomAvailability } from '../controllers/bookingController.js';
 import { getRoomsByHotelIds } from '../controllers/roomController.js';
@@ -35,6 +37,8 @@ router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfil
 router.get('/hotels',getHotels )
 router.post('/rooms', getRoomsByHotelIds);
 router.get('/hotels/:id', getHotelById);
+router.get('/reviews/:hotelId',getReviews );
+router.get('/reviews',getBookingReviews );
 router.post('/booking',protect, saveBooking);
 router.post('/check-availability',protect, checkRoomAvailability);
 router.put('/booking/update-status',protect, updateBookingStatus);

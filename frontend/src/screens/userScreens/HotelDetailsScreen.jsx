@@ -1,20 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Image, Nav, Tab, Card, Button, Modal, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useGetHotelByIdQuery, useCheckRoomAvailabilityMutation, useSaveBookingMutation } from '../../slices/usersApiSlice';
+import { useGetHotelByIdQuery, useCheckRoomAvailabilityMutation, useSaveBookingMutation, useGetReviewsByHotelIdQuery } from '../../slices/usersApiSlice';
 import Loader from '../../components/userComponents/Loader';
 import Footer from '../../components/userComponents/Footer';
 import { toast } from 'react-toastify';
+import Rating from 'react-rating';
+import 'font-awesome/css/font-awesome.min.css';
 
 const HotelDetailsScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [activeKey, setActiveKey] = useState('description');
   const { data: hotel, error, isLoading, refetch } = useGetHotelByIdQuery(id);
+  const { data: reviews, isLoading: isLoadingReviews, refetch: refetchReviews } = useGetReviewsByHotelIdQuery(id, {
+    skip: activeKey !== 'reviews',
+  });
   const [checkRoomAvailability] = useCheckRoomAvailabilityMutation();
   const [saveBooking] = useSaveBookingMutation();
-  const [activeKey, setActiveKey] = useState('description');
   const mainImageRef = useRef(null);
 
   const [showModal, setShowModal] = useState(false);
@@ -24,9 +29,12 @@ const HotelDetailsScreen = () => {
   const [roomCount, setRoomCount] = useState(1);
 
   const baseURL = 'http://localhost:5000/';
-  useEffect(()=>{
-    refetch()
-  },[refetch])
+  useEffect(() => {
+    refetch();
+    if (activeKey === 'reviews') {
+      refetchReviews();
+    }
+  }, [refetch, activeKey, refetchReviews]);
 
   const handleBookNow = (roomId) => {
     setSelectedRoom(roomId);
@@ -90,15 +98,12 @@ const HotelDetailsScreen = () => {
 
   return (
     <div>
-      <Container className="hotel-details-content">
+      <Container className="hotel-details-content mb-5">
         <Row className="mb-3">
           <Col md={8}>
             <Image
               ref={mainImageRef}
-              src={`${baseURL}${hotel?.images[0].replace(
-                "backend\\public\\",
-                ""
-              )}`}
+              src={`${baseURL}${hotel?.images[0].replace("backend\\public\\", "")}`}
               alt="Hotel Main Image"
               fluid
               className="hotel-details-main-image"
@@ -109,10 +114,7 @@ const HotelDetailsScreen = () => {
               {hotel?.images?.slice(1).map((image, index) => (
                 <div className="side-image-wrapper" key={index}>
                   <Image
-                    src={`${baseURL}${image.replace(
-                      "backend\\public\\",
-                      ""
-                    )}`}
+                    src={`${baseURL}${image.replace("backend\\public\\", "")}`}
                     alt={`Hotel Image ${index + 2}`}
                     fluid
                     className="hotel-details-side-image"
@@ -155,10 +157,7 @@ const HotelDetailsScreen = () => {
                         <Card>
                           <Card.Img
                             variant="top"
-                            src={`${baseURL}${room.images[0].replace(
-                              "backend\\public\\",
-                              ""
-                            )}`}
+                            src={`${baseURL}${room.images[0].replace("backend\\public\\", "")}`}
                             alt="Room Image"
                             className="hotel-details-room-image"
                           />
@@ -180,7 +179,34 @@ const HotelDetailsScreen = () => {
                 </Tab.Pane>
                 <Tab.Pane eventKey="reviews">
                   <h4>Reviews</h4>
-                
+                  {isLoadingReviews ? (
+                    <Loader />
+                  ) : reviews && reviews.length > 0 ? (
+                    <Row>
+                      {reviews.map((review) => (
+                        <Col md={4} key={review._id} className="mb-3">
+                          <Card>
+                            <Card.Body>
+                              <Card.Title>{review.userId.name}</Card.Title>
+                              <Card.Text>
+                              <Rating
+                                initialRating={review.rating}
+                                readonly
+                                emptySymbol={<i className="fa fa-star-o" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
+                                fullSymbol={<i className="fa fa-star" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
+                              />
+
+
+                              </Card.Text>
+                              <Card.Text>{review.review}</Card.Text>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      ))}
+                    </Row>
+                  ) : (
+                    <p>No reviews yet.</p>
+                  )}
                 </Tab.Pane>
               </Tab.Content>
             </Tab.Container>
@@ -224,7 +250,7 @@ const HotelDetailsScreen = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="secondary" onClick={handleCloseModal}> 
             Close
           </Button>
           <Button variant="primary" onClick={handleBooking}>
