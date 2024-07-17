@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler';
-import Booking from '../models/bookingModel.js';
 import { checkAvailability,createBooking,updateBookingStatusService,getBookingsByUserIdService,getHotelierBookingsService,getAllBookingsService } from '../services/bookingService.js';
-
+import Wallet from '../models/walletModel.js';
 
 const saveBooking = asyncHandler(async (req, res) => {
   const bookingData = {
@@ -10,6 +9,24 @@ const saveBooking = asyncHandler(async (req, res) => {
     bookingDate: Date.now(),
     bookingStatus: req.body.paymentStatus === 'completed' ? 'confirmed' : 'pending',
   };
+
+  if (req.body.paymentMethod === 'wallet') {
+    const wallet = await Wallet.findOne({ user: req.user._id });
+    if (!wallet || wallet.balance < req.body.totalAmount) {
+      res.status(400);
+      throw new Error('Insufficient wallet balance');
+    }
+
+    wallet.balance -= req.body.totalAmount;
+    const newTransaction = {
+      user: req.user._id,
+      amount: req.body.totalAmount,
+      transactionType: 'debit',
+    };
+    wallet.transactions.push(newTransaction);
+    await wallet.save();
+  }
+
   const createdBooking = await createBooking(bookingData);
   res.status(201).json(createdBooking);
 });
@@ -24,15 +41,16 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
 });
 
 const getBookingsByUserId = asyncHandler(async (req, res) => {
-  const bookings = await getBookingsByUserIdService(req.params.userId);
+  const bookings = await getBookingsByUserIdService(req.user._id);
   if (bookings) {
     res.json(bookings);
   } else {
     res.status(404).json({ message: 'Bookings not found' });
   }
 });
+
 const getHotelierBookings = asyncHandler(async (req, res) => {
-  const bookings = await getHotelierBookingsService(req.params.id);
+  const bookings = await getHotelierBookingsService(req.hotelier._id);
   if (bookings) {
     res.json(bookings);
   } else {

@@ -1,14 +1,6 @@
 import Booking from '../models/bookingModel.js';
 
- const checkRoomAvailability = async (roomId, checkInDate, checkOutDate) => {
-  const bookings = await Booking.find({
-    roomId,
-    checkInDate: { $lt: checkOutDate },
-    checkOutDate: { $gt: checkInDate }
-  });
 
-  return bookings;
-};
 
 const saveNewBooking = async (bookingData) => {
   const booking = new Booking(bookingData);
@@ -42,7 +34,6 @@ const findAllBookings = async () => {
 };
 
 export{
-  checkRoomAvailability,
   saveNewBooking,
   findBookingById,
   saveUpdatedBooking,

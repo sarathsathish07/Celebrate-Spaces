@@ -11,6 +11,7 @@ const protect = expressAsyncHandler(async (req,res,next)=>{
     try {
       const decoded  =jwt.verify(token,process.env.JWT_SECRET_HOTELIER)
       req.hotelier = await Hotelier.findById(decoded.userId).select('-password')
+      console.log(req.hotelier);
       next()
     } catch (error) {
       req.status(401)

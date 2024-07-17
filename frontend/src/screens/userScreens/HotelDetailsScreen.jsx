@@ -163,7 +163,7 @@ const HotelDetailsScreen = () => {
                             className="hotel-details-room-image"
                           />
                           <Card.Body>
-                            <Card.Title>{room.name}</Card.Title>
+                            <Card.Title>{room.type}</Card.Title>
                             <Card.Text>
                               {room.description}
                               <br />
@@ -180,7 +180,7 @@ const HotelDetailsScreen = () => {
                 </Tab.Pane>
                 <Tab.Pane eventKey="reviews">
                   <h4>Reviews</h4>
-                  {/* Add reviews display logic here */}
+                
                 </Tab.Pane>
               </Tab.Content>
             </Tab.Container>

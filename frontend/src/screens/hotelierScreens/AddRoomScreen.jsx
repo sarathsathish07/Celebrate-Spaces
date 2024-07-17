@@ -52,7 +52,6 @@ const AddRoomScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Trim and validate form data
     const trimmedFormData = {
       type: formData.type.trim(),
       price: formData.price.trim(),

@@ -54,7 +54,6 @@ const rejectVerification = expressAsyncHandler(async (req, res) => {
   try {
     const { adminId } = req.params; 
     const { reason } = req.body;  
-    console.log(adminId,reason);  
 
     await adminService.rejectVerification(adminId, reason); 
     res.json({ message: 'Verification rejected' });

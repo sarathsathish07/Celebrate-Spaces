@@ -1,7 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Table, Container, Row, Col, Card, Button, Collapse } from "react-bootstrap";
-import { useGetBookingsQuery } from "../../slices/usersApiSlice.js";
+import { Table, Container, Row, Col, Card, Button, Collapse, Form } from "react-bootstrap";
+import Rating from 'react-rating';
+import { useGetBookingsQuery, useAddReviewMutation } from "../../slices/usersApiSlice.js";
 import Loader from "../../components/userComponents/Loader";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
 import bgImage from "../../assets/images/bgimage.jpg";
@@ -9,8 +10,12 @@ import Footer from '../../components/userComponents/Footer';
 
 const BookingsScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  const { data: bookings, isLoading,refetch } = useGetBookingsQuery(userInfo._id);
+  const { data: bookings, isLoading, refetch } = useGetBookingsQuery();
+  const [addReview, { isLoading: isAddingReview }] = useAddReviewMutation();
   const [expandedRow, setExpandedRow] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState('');
+  const [submittedReviews, setSubmittedReviews] = useState({});
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
@@ -19,6 +24,15 @@ const BookingsScreen = () => {
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  const handleReviewSubmit = async (bookingId) => {
+    try {
+      const result = await addReview({ rating, review, bookingId }).unwrap();
+      setSubmittedReviews((prevReviews) => ({ ...prevReviews, [bookingId]: result }));
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+    }
+  };
 
   if (isLoading) return <Loader />;
 
@@ -83,6 +97,39 @@ const BookingsScreen = () => {
                                     <p><strong>Check-Out Date:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
                                     <p><strong>Amenities:</strong> {booking.roomId.amenities.join(", ")}</p>
                                     <p><strong>Description:</strong> {booking.roomId.description}</p>
+
+                                    {submittedReviews[booking._id] ? (
+                                      <div>
+                                        <p><strong>Rating:</strong> {submittedReviews[booking._id].rating}</p>
+                                        <p><strong>Review:</strong> {submittedReviews[booking._id].review}</p>
+                                      </div>
+                                    ) : (
+                                      <Form onSubmit={(e) => { e.preventDefault(); handleReviewSubmit(booking._id); }}>
+                                        <Form.Group controlId="rating">
+                                          <Form.Label>Rating</Form.Label>
+                                          <Rating
+                                            initialRating={rating}
+                                            emptySymbol="fa fa-star-o fa-2x"
+                                            fullSymbol="fa fa-star fa-2x"
+                                            fractions={2}
+                                            onChange={(rate) => setRating(rate)}
+                                          />
+                                        </Form.Group>
+                                        <Form.Group controlId="review">
+                                          <Form.Label>Review</Form.Label>
+                                          <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            value={review}
+                                            onChange={(e) => setReview(e.target.value)}
+                                            required
+                                          />
+                                        </Form.Group>
+                                        <Button type="submit" variant="primary" disabled={isAddingReview}>
+                                          Submit Review
+                                        </Button>
+                                      </Form>
+                                    )}
                                   </Card.Body>
                                 </Card>
                               </div>
@@ -98,7 +145,7 @@ const BookingsScreen = () => {
           </Col>
         </Row>
       </Container>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

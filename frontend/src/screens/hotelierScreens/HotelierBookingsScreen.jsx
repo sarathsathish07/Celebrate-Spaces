@@ -8,7 +8,7 @@ import { FaChevronDown } from 'react-icons/fa';
 
 const HotelierBookingsScreen = () => {
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
-  const { data: bookings, isLoading, refetch } = useGetHotelierBookingsQuery(hotelierInfo._id);
+  const { data: bookings, isLoading, refetch } = useGetHotelierBookingsQuery();
   const [expandedRow, setExpandedRow] = useState(null);
 
   const toggleRow = (bookingId) => {

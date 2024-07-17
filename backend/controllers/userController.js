@@ -2,6 +2,10 @@ import expressAsyncHandler from 'express-async-handler';
 import * as userService from '../services/userService.js';
 import { fetchAcceptedHotels } from '../services/hotelService.js';
 import { generateToken } from '../services/userService.js';
+import User from '../models/userModel.js';
+import Wallet from '../models/walletModel.js';
+import RatingReview from '../models/ratingReviewModel.js';
+import Booking from '../models/bookingModel.js';
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -18,6 +22,41 @@ const authUser = expressAsyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
+const googleLogin = async (req, res) => {
+  const name = req.body.googleName;
+  const email = req.body.googleEmail;
+  const user = await User.findOne({ email });
+
+  if (user) {
+    if (user.isBlocked === false) {
+      generateToken(res, user._id);
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      });
+    } else {
+      res.status(401).json({ message: 'User is blocked or not authorized' });
+      return;
+    }
+  } else {
+    const newUser = await User.create({
+      name,
+      email,
+    });
+    if (newUser) {
+      generateToken(res, newUser._id);
+      res.status(201).json({
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid user data' });
+    }
+  }
+};
+
 
 const registerUser = expressAsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -102,11 +141,7 @@ const getHotels = async (req, res) => {
   try {
     const { sort = '', amenities = '', city = '' } = req.query;
     const amenitiesArray = amenities ? amenities.split(',') : [];
-    console.log('Received sort:', sort);
-    console.log('Received amenities:', amenitiesArray);
-    console.log('Received city:', city);
     const hotels = await fetchAcceptedHotels(sort, amenitiesArray, city);
-    console.log('Fetched hotels:', hotels);
     res.json(hotels);
   } catch (error) {
     console.error('Error fetching hotels:', error);
@@ -115,13 +150,9 @@ const getHotels = async (req, res) => {
 };
 
 
-
-
-
 const getHotelById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   const hotel = await userService.getSingleHotelById(id);
-  console.log(hotel);
   if (hotel) {
     res.status(200).json(hotel);
   } else {
@@ -153,6 +184,82 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const getWalletTransactions = expressAsyncHandler(async (req, res) => {
+  const wallet = await Wallet.findOne({ user: req.user._id });
+
+  if (!wallet) {
+    res.status(404);
+    throw new Error('Wallet not found');
+  }
+
+  res.json(wallet.transactions);
+});
+
+const addCashToWallet = expressAsyncHandler(async (req, res) => {
+  let { amount } = req.body;
+
+  amount = Number(amount);
+
+  if (amount <= 0) {
+    res.status(400);
+    throw new Error('Invalid amount');
+  }
+
+  let wallet = await Wallet.findOne({ user: req.user._id });
+
+  if (!wallet) {
+    wallet = new Wallet({
+      user: req.user._id,
+      balance: 0,
+      transactions: [],
+    });
+  }
+
+  wallet.balance += amount;
+
+  const newTransaction = {
+    user: req.user._id,
+    amount,
+    transactionType: 'credit',
+  };
+
+  wallet.transactions.push(newTransaction);
+  await wallet.save();
+
+  res.status(201).json(newTransaction);
+});
+
+const getWalletBalance = expressAsyncHandler(async (req, res) => {
+  const wallet = await Wallet.findOne({ user: req.user._id });
+  if (!wallet) {
+    res.status(404);
+    throw new Error('Wallet not found');
+  }
+  res.json({ balance: wallet.balance });
+});
+const addReview = expressAsyncHandler(async (req, res) => {
+  const { rating, review, bookingId } = req.body;
+
+  const booking = await Booking.findById(bookingId).populate('userId hotelId');
+
+  if (booking) {
+    const newReview = new RatingReview({
+      userId: booking.userId._id,
+      hotelId: booking.hotelId._id,
+      rating,
+      review,
+    });
+
+    await newReview.save();
+
+    res.status(201).json(newReview);
+  } else {
+    res.status(404);
+    throw new Error('Booking not found');
+  }
+});
+
+
 export {
   authUser,
   registerUser,
@@ -164,5 +271,10 @@ export {
   resendOtp,
   getHotelById,
   sendPasswordResetEmail,
-  resetPassword
+  resetPassword,
+  googleLogin,
+  getWalletTransactions,
+  addCashToWallet,
+  getWalletBalance,
+  addReview
 };

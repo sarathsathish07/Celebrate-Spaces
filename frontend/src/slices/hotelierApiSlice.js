@@ -96,7 +96,7 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
       query: (roomId) => `${HOTELS_URL}/rooms/${roomId}`,
     }),
     getHotelierBookings: builder.query({
-      query: (id) => `${HOTELS_URL}/bookings/${id}`,
+      query: () => `${HOTELS_URL}/bookings`,
     }),
     updateRoom: builder.mutation({
       query: ({ roomId, formData }) => ({

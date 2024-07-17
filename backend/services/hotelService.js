@@ -34,7 +34,6 @@ const fetchAcceptedHotels = async (sortOption = '', amenities = [], city = '') =
     filterCriteria.city = city;
   }
 
-  console.log('Filter criteria:', filterCriteria);
   return await getAcceptedHotels(sortCriteria, filterCriteria);
 };
 

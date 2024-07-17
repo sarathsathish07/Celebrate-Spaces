@@ -142,9 +142,6 @@ html {
   color: white;
 }
 
-.hotelier-sidebar {
-
-}
 .admin-sidebar {
   background-color: rgb(33, 37, 41);
   padding: 20px;
@@ -448,8 +445,8 @@ html {
   margin-bottom: 40px;
 }
 
-.room-image {
-  height: 150px;
+.hotel-details-room-image {
+  height: 180px;
   object-fit: cover;
 }
 

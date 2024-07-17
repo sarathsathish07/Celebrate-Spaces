@@ -42,6 +42,7 @@ import HotelierBookingsScreen from "./screens/hotelierScreens/HotelierBookingsSc
 import AdminBookingsScreen from "./screens/adminScreens/AdminBookingsScreen.jsx";
 import HotelDetailScreen from "./screens/hotelierScreens/HotelDetailsScreen.jsx";
 import EditRoomScreen from "./screens/hotelierScreens/EditRoomScreen.jsx";
+import WalletScreen from "./screens/userScreens/WalletScreen.jsx";
 import store from "./store.js";
 import { Provider } from "react-redux";
 
@@ -58,10 +59,11 @@ const router = createBrowserRouter(
       <Route path="/hotels" element={<HotelsScreen />} />
 
       <Route path="" element={<PrivateRoute />}>
-        <Route path="profile" element={<ProfileScreen />} />
+        <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/hotels/:id" element={<HotelDetailsScreen />} />
         <Route path="/booking" element={<CheckoutScreen/>} />
         <Route path="/bookings" element={<BookingsScreen/>} />
+        <Route path="/wallet" element={<WalletScreen/>} />
       </Route>
 
       {/* Admin Routes */}

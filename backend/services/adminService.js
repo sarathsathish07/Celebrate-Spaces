@@ -102,7 +102,6 @@ const sendVerificationEmail = async (recipient, subject, message) => {
       subject: subject,
       text: message,
     });
-    console.log('Email sent successfully');
   } catch (error) {
     console.error('Error sending email:', error);
     throw error;

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoginMutation,useResendOtpMutation } from "../../slices/usersApiSlice";
+import { useLoginMutation,useResendOtpMutation,useGoogleLoginMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
+import { jwtDecode } from 'jwt-decode';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
 import loginImage from "../../assets/images/hotel1.jpg";
@@ -11,6 +13,7 @@ import loginImage from "../../assets/images/hotel1.jpg";
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleLogin] = useGoogleLoginMutation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,6 +49,27 @@ const LoginScreen = () => {
       }
     }
   };
+  const handleSuccess = async (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      const googleName = decoded.name;
+      const googleEmail = decoded.email;
+  
+      const responseFromApiCall = await googleLogin({
+        googleName,
+        googleEmail,
+      }).unwrap();
+      dispatch(setCredentials({ ...responseFromApiCall }));
+      navigate("/");
+    } catch (error) {
+      if (error.status === 401 && error.data.message === "User is blocked or not authorized") {
+        toast.error("User is blocked or not authorized");
+      } else {
+        toast.error(error.data?.message || "An error occurred during Google login");
+      }
+    }
+  };
+  
   
 
   return (
@@ -53,7 +77,7 @@ const LoginScreen = () => {
       <div className="position-absolute top-0 start-0 p-3">
         <h1 className="toptitle">Celebrate Spaces</h1>
       </div>
-      <Card style={{ width: "50rem", height: "60vh", borderRadius: "15px" }}>
+      <Card style={{ width: "50rem", height: "70vh", borderRadius: "15px" }}>
         <Row className="no-gutters" style={{ height: "100%" }}>
           <Col md={6}>
             <img
@@ -118,6 +142,16 @@ const LoginScreen = () => {
                   </Col>
                 </Row>
               </Form>
+              <div className="text-center my-4" style={{display:"flex",justifyContent:'center'}}>
+              <GoogleOAuthProvider  clientId="684114676709-5r4de1pbjcdhccojbdmtrpcoc46e3bv4.apps.googleusercontent.com">
+                  <GoogleLogin
+                    onSuccess={handleSuccess}
+                    onError={() => {
+                      console.log("Login Failed");
+                    }}
+                  />
+                </GoogleOAuthProvider>
+              </div>
             </Card.Body>
           </Col>
         </Row>

@@ -147,7 +147,6 @@ const getHotelByIdHandler = expressAsyncHandler(async (req, res) => {
 const updateHotelHandler = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-  console.log(req.files);
 
   try {
     const updatedHotel = await updateHotelData(id, updateData,req.files);

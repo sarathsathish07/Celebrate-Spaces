@@ -51,10 +51,8 @@ const getRoomsByHotelIds = async (req, res) => {
   }
 };
 const updateRoomHandler = async (req, res) => {
-  console.log("7");
   const { roomId } = req.params;
   const updateData = req.body;
-  console.log(req.files);
 
   try {
     const updatedRoom = await RoomService.updateRoomData(roomId, updateData, req.files);

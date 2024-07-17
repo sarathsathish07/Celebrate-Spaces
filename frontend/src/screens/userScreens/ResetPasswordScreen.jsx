@@ -16,7 +16,6 @@ const ResetPasswordScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    // Password validation
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;

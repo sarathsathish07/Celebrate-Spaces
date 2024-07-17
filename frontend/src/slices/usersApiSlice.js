@@ -11,6 +11,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data
       })
     }),
+    googleLogin:builder.mutation({
+      query:(data)=>({
+         url:`${USERS_URL}/googleLogin`,
+         method:'POST',
+         body:data
+      })
+  }),
     register: builder.mutation({
       query: (data)=>({
         url: `${USERS_URL}`,
@@ -88,8 +95,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getBookings: builder.query({
-      query: (userId) => ({
-        url: `${USERS_URL}/bookings/${userId}`,
+      query: () => ({
+        url: `${USERS_URL}/bookings`,
         method: 'GET',
       }),
     }),
@@ -115,12 +122,46 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: { hotelIds },
       }),
     }),
+    getWalletTransactions: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/wallet`,
+        method: 'GET',
+      }),
+    }),
+    getWalletBalance : builder.query({
+      query: () => ({
+        url: `${USERS_URL}/wallet/balance`,
+        method: 'GET',
+      }),
+    }),
+    addCashToWallet: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/wallet/add-cash`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    updateWallet: builder.mutation({
+      query: (amount) => ({
+        url: `${USERS_URL}/wallet/update`,
+        method: 'PUT',
+        body: { amount },
+      }),
+    }),
+    addReview: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/add-review`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   })
 })
 
 
 export const { 
   useLoginMutation, 
+  useGoogleLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
   useVerifyOtpMutation,
@@ -135,5 +176,10 @@ export const {
   useSendPasswordResetEmailMutation,
   useResetPasswordMutation,
   useGetRoomsDataMutation,
-  useCheckRoomAvailabilityMutation 
+  useCheckRoomAvailabilityMutation ,
+  useGetWalletTransactionsQuery,
+  useAddCashToWalletMutation,
+  useGetWalletBalanceQuery ,
+  useUpdateWalletMutation ,
+  useAddReviewMutation
 } = usersApiSlice

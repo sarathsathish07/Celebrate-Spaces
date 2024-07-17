@@ -1,17 +1,25 @@
-import { checkRoomAvailability, saveNewBooking,findBookingById,saveUpdatedBooking,findBookingsByUserId,findBookingsByHotelierId,findAllBookings } from '../repositories/bookingRepository.js';
+import {  saveNewBooking,findBookingById,saveUpdatedBooking,findBookingsByUserId,findBookingsByHotelierId,findAllBookings } from '../repositories/bookingRepository.js';
+import Room from '../models/roomModel.js';
+import Booking from '../models/bookingModel.js';
 
- const checkAvailability = async (roomId, checkInDate, checkOutDate, roomCount) => {
-  const bookings = await checkRoomAvailability(roomId, new Date(checkInDate), new Date(checkOutDate));
+const checkAvailability = async (roomId, checkInDate, checkOutDate, roomCount) => {
+  const room = await Room.findById(roomId);
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  const bookings = await Booking.find({
+    roomId,
+    checkInDate: { $lt: new Date(checkOutDate) },
+    checkOutDate: { $gt: new Date(checkInDate) },
+  });
 
   const totalBookedRooms = bookings.reduce((acc, booking) => acc + booking.roomsBooked, 0);
 
-  return { isAvailable: totalBookedRooms + roomCount <= roomCount };
-};
+  const isAvailable = totalBookedRooms + roomCount <= room.noOfRooms;
 
-//  const bookRoom = async (bookingData) => {
-//   const booking = await createBooking(bookingData);
-//   return booking;
-// };
+  return { isAvailable };
+};
 
 const updateBookingStatusService = async (bookingId, paymentStatus) => {
   const booking = await findBookingById(bookingId);
