@@ -14,6 +14,8 @@ import {
   resendOtp
 } from '../services/hotelService.js';
 import generateHotelierToken from "../utils/generateHotelierToken.js";
+import Hotel from "../models/hotelModel.js";
+import Booking from "../models/bookingModel.js";
 
 const authHotelierHandler = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -155,6 +157,57 @@ const updateHotelHandler = async (req, res) => {
     res.status(500).json({ message: 'Error updating hotel', error: error.message });
   }
 };
+const getHotelierStats = async (req, res) => {
+  try {
+    const hotelierId = req.hotelier._id;
+
+    const totalHotels = await Hotel.countDocuments({ hotelierId });
+    const totalBookings = await Booking.countDocuments({ hotelierId });
+    const totalRevenue = await Booking.aggregate([
+      { $match: { hotelierId } },
+      { $group: { _id: null, totalAmount: { $sum: '$totalAmount' } } },
+    ]);
+
+    const monthlyBookings = await Booking.aggregate([
+      { $match: { hotelierId } },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$bookingDate" },
+            year: { $year: "$bookingDate" }
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    const yearlyBookings = await Booking.aggregate([
+      { $match: { hotelierId } },
+      {
+        $group: {
+          _id: { year: { $year: "$bookingDate" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1 } }
+    ]);
+
+    res.json({
+      totalHotels,
+      totalBookings,
+      totalRevenue: totalRevenue.length > 0 ? totalRevenue[0].totalAmount : 0,
+      monthlyBookings: monthlyBookings.map(({ _id, count }) => ({
+        month: `${_id.year}-${_id.month.toString().padStart(2, '0')}`,
+        count
+      })),
+      yearlyBookings: yearlyBookings.map(({ _id, count }) => ({ year: _id.year, count }))
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
 
 
 export {
@@ -169,5 +222,6 @@ export {
   getHotelsHandler,
   getHotelByIdHandler,
   updateHotelHandler,
-  resendHotelierOtpHandler
+  resendHotelierOtpHandler,
+  getHotelierStats
 };

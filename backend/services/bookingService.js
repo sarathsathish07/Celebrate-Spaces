@@ -27,6 +27,7 @@ const updateBookingStatusService = async (bookingId, paymentStatus) => {
     return null;
   }
   booking.paymentStatus = paymentStatus;
+  booking.bookingStatus='confirmed'
   return await saveUpdatedBooking(booking);
 };
 

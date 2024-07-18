@@ -37,7 +37,7 @@ const BookingsScreen = () => {
       const result = await addReview({ rating, review, bookingId, hotelId }).unwrap();
       setRating(0);
       setReview('');
-      refetchReviews(); // Fetch reviews again after submitting
+      refetchReviews();
     } catch (error) {
       console.error('Failed to submit review:', error);
     }

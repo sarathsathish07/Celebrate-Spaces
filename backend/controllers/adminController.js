@@ -1,6 +1,10 @@
 import expressAsyncHandler from 'express-async-handler';
 import * as adminService from '../services/adminService.js';
 import { generateAdminToken } from '../services/adminService.js';
+import User from '../models/userModel.js';
+import Hotel from '../models/hotelModel.js';
+import Hotelier from '../models/hotelierModel.js';
+import Booking from '../models/bookingModel.js';
 
 const authAdmin = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -90,6 +94,56 @@ const unlistHotel = expressAsyncHandler(async (req, res) => {
   const result = await adminService.unlistHotel(hotelId);
   res.status(200).json(result);
 });
+const getAdminStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalHoteliers = await Hotelier.countDocuments();
+    const totalHotels = await Hotel.countDocuments();
+    const totalRevenue = await Booking.aggregate([
+      { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" } } }
+    ]);
+
+    const monthlyBookings = await Booking.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$bookingDate" },
+            year: { $year: "$bookingDate" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+    console.log("month",monthlyBookings);
+
+    const yearlyBookings = await Booking.aggregate([
+      {
+        $group: {
+          _id: { year: { $year: "$bookingDate" } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.year": 1 } }
+    ]);
+    console.log("year",yearlyBookings);
+
+    res.json({
+      totalUsers,
+      totalHoteliers,
+      totalHotels,
+      totalRevenue: totalRevenue[0]?.totalRevenue || 0,
+      monthlyBookings: monthlyBookings.map(({ _id, count }) => ({
+        month: `${_id.year}-${_id.month.toString().padStart(2, '0')}`,
+        count
+      })),
+      yearlyBookings: yearlyBookings.map(({ _id, count }) => ({ year: _id.year, count }))
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 
 export {
   authAdmin,
@@ -103,5 +157,6 @@ export {
   unblockUser,
   getAllHotels,
   listHotel,
-  unlistHotel
+  unlistHotel,
+  getAdminStats
 };

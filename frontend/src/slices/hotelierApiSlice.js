@@ -105,6 +105,12 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         body: formData,
       }),
     }),
+    getHotelierDashboardStats: builder.query({
+      query: () => ({
+        url: `${HOTELS_URL}/dashboard`,
+        method: 'GET',
+      }),
+    }),
   }),
   
 });
@@ -125,5 +131,6 @@ export const {
   useAddRoomMutation,
   useGetRoomByIdQuery,
   useGetHotelierBookingsQuery,
-  useUpdateRoomMutation 
+  useUpdateRoomMutation ,
+  useGetHotelierDashboardStatsQuery
 } = hotelierApiSlice;

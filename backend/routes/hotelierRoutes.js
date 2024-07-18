@@ -11,7 +11,8 @@ import { authHotelierHandler,
   getHotelByIdHandler,
   updateHotelHandler,
   resendHotelierOtpHandler,
-  uploadVerificationDetailsHandler
+  uploadVerificationDetailsHandler,
+  getHotelierStats
  } from '../controllers/hotelierController.js';
  import { addRoom,getRoomById,updateRoomHandler } from '../controllers/roomController.js';
  import { getHotelierBookings } from '../controllers/bookingController.js';
@@ -34,11 +35,11 @@ router.post(
 );
 router.get('/get-hotels',protect, getHotelsHandler);
 router.get('/bookings',protect, getHotelierBookings);
+router.get('/dashboard',protect,getHotelierStats),
 router.get('/:id', protect, getHotelByIdHandler);
 router.put('/:id', protect,multerUploadHotelImages.array("images", 5), updateHotelHandler);
 router.post('/add-room/:hotelId', protect, multerUploadRoomImages.array("images", 5), addRoom);
 router.put('/rooms/:roomId', protect, multerUploadRoomImages.array("images", 5), updateRoomHandler);
-
 router.get('/rooms/:roomId',protect, getRoomById);
 
 

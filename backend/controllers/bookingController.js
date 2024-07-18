@@ -11,6 +11,8 @@ const saveBooking = asyncHandler(async (req, res) => {
   };
 
   if (req.body.paymentMethod === 'wallet') {
+    bookingData.paymentStatus='completed'
+    bookingData.bookingStatus='confirmed'
     const wallet = await Wallet.findOne({ user: req.user._id });
     if (!wallet || wallet.balance < req.body.totalAmount) {
       res.status(400);

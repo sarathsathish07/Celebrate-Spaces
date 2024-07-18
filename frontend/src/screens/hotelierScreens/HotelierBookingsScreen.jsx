@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Table, Container, Row, Col, Card, Button, Collapse } from 'react-bootstrap';
 import { useGetHotelierBookingsQuery } from '../../slices/hotelierApiSlice';
 import Loader from '../../components/userComponents/Loader';
-import Sidebar from '../../components/hotelierComponents/HotelierSidebar';
+import HotelierLayout from '../../components/hotelierComponents/HotelierLayout';
 import { FaChevronDown } from 'react-icons/fa';
 
 const HotelierBookingsScreen = () => {
@@ -22,12 +22,10 @@ const HotelierBookingsScreen = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <Container fluid>
+    <HotelierLayout>
+<Container>
       <Row>
-        <Col md={3}>
-          <Sidebar hotelierName={hotelierInfo.name} />
-        </Col>
-        <Col md={9}>
+        <Col md={12}>
           <Card className="mt-5">
             <Card.Header>Bookings</Card.Header>
             <Card.Body>
@@ -84,6 +82,8 @@ const HotelierBookingsScreen = () => {
         </Col>
       </Row>
     </Container>
+    </HotelierLayout>
+    
   );
 };
 

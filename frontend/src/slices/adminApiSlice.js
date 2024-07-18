@@ -85,6 +85,9 @@ export const admiApiSlice=apiSlice.injectEndpoints({
             query: () => `${ADMIN_URL}/bookings`,
             method: 'GET',
           }),
+          getAdminStats: builder.query({
+            query: () => `${ADMIN_URL}/stats`,
+          }),
 
     })
 })
@@ -101,5 +104,6 @@ export const {useAdminLoginMutation,
     useGetAllHotelsDataMutation,
     useAdminListHotelMutation,
     useAdminUnlistHotelMutation, 
-    useGetAllBookingsQuery
+    useGetAllBookingsQuery,
+    useGetAdminStatsQuery 
 }= admiApiSlice

@@ -6,15 +6,14 @@ import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
 import { setCredentials } from "../../slices/hotelierAuthSlice.js";
 import { useHotelierUpdateUserMutation, useGetHotelierProfileQuery } from "../../slices/hotelierApiSlice.js";
-import bgImage from '../../assets/images/bgimage.jpg';
-import defaultProfileImage from '../../assets/images/5856.jpg';
+import HotelierLayout from "../../components/hotelierComponents/HotelierLayout.jsx";
+
 
 const HotelierProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [profileImage, setProfileImage] = useState(null);
   const dispatch = useDispatch();
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
   const { data: userProfile, isLoading: profileLoading, refetch } = useGetHotelierProfileQuery();
@@ -24,7 +23,6 @@ const HotelierProfileScreen = () => {
     if (userProfile) {
       setName(userProfile.name);
       setEmail(userProfile.email);
-      setProfileImage(userProfile.profileImageName);
     }
   }, [userProfile]);
 
@@ -34,16 +32,7 @@ const HotelierProfileScreen = () => {
     }
   }, [hotelierInfo, refetch]);
 
-  const handleImageChange = (e) => {
-    if (e.target.files.length > 0) {
-      const file = e.target.files[0];
-      if (file && !file.type.startsWith('image')) {
-        toast.error('Only image files are allowed');
-        return;
-      }
-      setProfileImage(file);
-    }
-  };
+
   
 
   const validateName = (name) => {
@@ -99,7 +88,6 @@ const HotelierProfileScreen = () => {
       formData.append('name', name);
       formData.append('email', email);
       if (password) formData.append('password', password);
-      if (profileImage) formData.append('profileImage', profileImage);
 
       const responseFromApiCall = await updateProfile(formData).unwrap();
       await refetch();
@@ -110,50 +98,13 @@ const HotelierProfileScreen = () => {
     }
   };
 
-  const getImageUrl = (imageName) => {
-    if (!imageName) return defaultProfileImage;
-    return `http://localhost:5000/UserProfileImages/${imageName.replace('backend\\public\\', '')}`;
-  };
-
   if (profileLoading) return <Loader />;
 
   return (
-    <div>
-      <div className="position-relative">
-        <img
-          src={bgImage}
-          alt="background"
-          className="background-image"
-        />
-        <div className="overlay-text">
-          <h1>My Profile</h1>
-        </div>
-      </div>
-      <Container className="profile-container">
+    <HotelierLayout>
+ <Container className="profile-container">
         <Row>
-          <Col md={3} className="sidebar-container">
-            <div className="sidebarprofile">
-              <Image
-                src={profileImage ? (typeof profileImage === 'string' ? getImageUrl(profileImage) : URL.createObjectURL(profileImage)) : defaultProfileImage}
-                className="sidebar-image"
-                alt={name}
-              />
-              <Nav className="flex-column">
-                <LinkContainer to="/hotelier/profile">
-                  <Nav.Link>My Profile</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/hotelier/verification">
-                  <Nav.Link>Verification</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/wallet">
-                  <Nav.Link>Wallet</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/messages">
-                  <Nav.Link>Messages</Nav.Link>
-                </LinkContainer>
-              </Nav>
-            </div>
-          </Col>
+          <Col md={2}></Col>
           <Col md={8}>
             <Card className="profile-card">
               <Card.Header className="profile-card-header">
@@ -201,15 +152,6 @@ const HotelierProfileScreen = () => {
                       className="profile-input"
                     />
                   </Form.Group>
-                  <Form.Group className="my-3" controlId="profileImage">
-                    <Form.Label>Profile Picture</Form.Label>
-                    <Form.Control
-                      type="file"
-                      onChange={handleImageChange}
-                      className="profile-input"
-                    />
-                    {isLoading && <Loader />}
-                  </Form.Group>
                   <Button
                     type="submit"
                     className="profile-button"
@@ -224,7 +166,9 @@ const HotelierProfileScreen = () => {
           </Col>
         </Row>
       </Container>
-    </div>
+    </HotelierLayout>
+     
+
   );
 };
 
