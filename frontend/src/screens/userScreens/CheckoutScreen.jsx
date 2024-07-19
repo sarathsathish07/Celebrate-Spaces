@@ -75,8 +75,10 @@ const CheckoutScreen = () => {
           name: 'Hotel Booking',
           description: 'Booking Transaction',
           handler: async (response) => {
+            const { razorpay_payment_id: paymentId } = response;
             const paymentResult = {
               bookingId: bookingResponse._id,
+              paymentId,
               paymentStatus: 'completed',
             };
             await updateBookingStatus(paymentResult).unwrap();

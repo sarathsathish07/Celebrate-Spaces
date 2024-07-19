@@ -265,11 +265,41 @@ const getReviews = expressAsyncHandler(async (req, res) => {
   res.json(reviews);
 });
 const getBookingReviews = expressAsyncHandler(async (req, res) => {
-  console.log("1");
   const reviews = await RatingReview.find().populate('userId', 'name').populate('hotelId', 'name');
-  console.log(reviews);
   res.json(reviews);
 });
+
+
+const cancelBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    booking.bookingStatus = 'cancelled';
+    await booking.save();
+
+    const wallet = await Wallet.findOne({ user: booking.userId });
+    wallet.balance += booking.totalAmount;
+    wallet.transactions.push({
+      user: booking.userId,
+      amount: booking.totalAmount,
+      transactionType: 'credit',
+    });
+    await wallet.save();
+
+    res.status(200).json({ message: 'Booking successfully cancelled and amount refunded to wallet' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
 
 
 export {
@@ -290,5 +320,6 @@ export {
   getWalletBalance,
   addReview,
   getReviews,
-  getBookingReviews
+  getBookingReviews,
+  cancelBooking
 };

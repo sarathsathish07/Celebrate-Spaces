@@ -21,11 +21,12 @@ const checkAvailability = async (roomId, checkInDate, checkOutDate, roomCount) =
   return { isAvailable };
 };
 
-const updateBookingStatusService = async (bookingId, paymentStatus) => {
+const updateBookingStatusService = async (paymentId,bookingId, paymentStatus) => {
   const booking = await findBookingById(bookingId);
   if (!booking) {
     return null;
   }
+  booking.paymentId = paymentId;
   booking.paymentStatus = paymentStatus;
   booking.bookingStatus='confirmed'
   return await saveUpdatedBooking(booking);

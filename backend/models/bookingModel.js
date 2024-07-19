@@ -57,6 +57,9 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  paymentId: { 
+    type: String,
+  },
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

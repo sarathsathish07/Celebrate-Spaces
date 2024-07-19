@@ -161,6 +161,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     getReviews: builder.query({
       query: () => `${USERS_URL}/reviews`,
     }),
+    cancelBooking: builder.mutation({
+      query: ({ bookingId, refundMethod }) => ({
+        url: `${USERS_URL}/cancel-booking/${bookingId}`,
+        method: 'PUT',
+        body: { refundMethod },
+      }),
+    }),
   })
 })
 
@@ -185,9 +192,10 @@ export const {
   useCheckRoomAvailabilityMutation ,
   useGetWalletTransactionsQuery,
   useAddCashToWalletMutation,
-  useGetWalletBalanceQuery ,
-  useUpdateWalletMutation ,
+  useGetWalletBalanceQuery,
+  useUpdateWalletMutation,
   useAddReviewMutation,
   useGetReviewsByHotelIdQuery,
-  useGetReviewsQuery
+  useGetReviewsQuery,
+  useCancelBookingMutation
 } = usersApiSlice

@@ -34,8 +34,8 @@ const saveBooking = asyncHandler(async (req, res) => {
 });
 
 const updateBookingStatus = asyncHandler(async (req, res) => {
-  const { bookingId, paymentStatus } = req.body;
-  const updatedBooking = await updateBookingStatusService(bookingId, paymentStatus);
+  const { paymentId,bookingId, paymentStatus } = req.body;
+  const updatedBooking = await updateBookingStatusService(paymentId,bookingId, paymentStatus);
   if (!updatedBooking) {
     return res.status(404).json({ message: 'Booking not found' });
   }
