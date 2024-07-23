@@ -162,14 +162,14 @@ const getHotelierStats = async (req, res) => {
     const hotelierId = req.hotelier._id;
 
     const totalHotels = await Hotel.countDocuments({ hotelierId });
-    const totalBookings = await Booking.countDocuments({ hotelierId });
+    const totalBookings = await Booking.countDocuments({ hotelierId, bookingStatus: 'confirmed' });
     const totalRevenue = await Booking.aggregate([
-      { $match: { hotelierId } },
+      { $match: { hotelierId, bookingStatus: 'confirmed' } },
       { $group: { _id: null, totalAmount: { $sum: '$totalAmount' } } },
     ]);
 
     const monthlyBookings = await Booking.aggregate([
-      { $match: { hotelierId } },
+      { $match: { hotelierId, bookingStatus: 'confirmed' } },
       {
         $group: {
           _id: {
@@ -183,7 +183,7 @@ const getHotelierStats = async (req, res) => {
     ]);
 
     const yearlyBookings = await Booking.aggregate([
-      { $match: { hotelierId } },
+      { $match: { hotelierId, bookingStatus: 'confirmed' } },
       {
         $group: {
           _id: { year: { $year: "$bookingDate" } },
@@ -208,6 +208,7 @@ const getHotelierStats = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 }
+
 
 
 export {

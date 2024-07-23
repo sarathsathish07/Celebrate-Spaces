@@ -63,6 +63,8 @@ export const HotelsTable = ({ hotels, refetchData }) => {
                 </BootstrapForm>
               </div>
               <br />
+              <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+
               <Table responsive>
                 <thead>
                   <tr>
@@ -93,6 +95,7 @@ export const HotelsTable = ({ hotels, refetchData }) => {
                   ))}
                 </tbody>
               </Table>
+              </div>
             </Card.Body>
           </Card>
         </Col>

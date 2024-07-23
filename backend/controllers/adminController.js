@@ -100,10 +100,12 @@ const getAdminStats = async (req, res) => {
     const totalHoteliers = await Hotelier.countDocuments();
     const totalHotels = await Hotel.countDocuments();
     const totalRevenue = await Booking.aggregate([
+      { $match: { bookingStatus: 'confirmed' } },
       { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" } } }
     ]);
 
     const monthlyBookings = await Booking.aggregate([
+      { $match: { bookingStatus: 'confirmed' } },
       {
         $group: {
           _id: {
@@ -115,9 +117,9 @@ const getAdminStats = async (req, res) => {
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } }
     ]);
-    console.log("month",monthlyBookings);
 
     const yearlyBookings = await Booking.aggregate([
+      { $match: { bookingStatus: 'confirmed' } },
       {
         $group: {
           _id: { year: { $year: "$bookingDate" } },
@@ -126,7 +128,6 @@ const getAdminStats = async (req, res) => {
       },
       { $sort: { "_id.year": 1 } }
     ]);
-    console.log("year",yearlyBookings);
 
     res.json({
       totalUsers,
@@ -140,9 +141,11 @@ const getAdminStats = async (req, res) => {
       yearlyBookings: yearlyBookings.map(({ _id, count }) => ({ year: _id.year, count }))
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
 
 
 export {

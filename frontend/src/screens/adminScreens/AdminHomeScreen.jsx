@@ -3,7 +3,7 @@ import { Row, Col, Card, Container } from 'react-bootstrap';
 import { FaUsers, FaHotel, FaMoneyBill } from 'react-icons/fa';
 import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import { useGetAdminStatsQuery } from '../../slices/adminApiSlice'; 
+import { useGetAdminStatsQuery } from '../../slices/adminApiSlice.js'; 
 import AdminLayout from '../../components/adminComponents/AdminLayout';
 ChartJS.register(...registerables);
 
@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const monthlyChartRef = useRef(null);
   const yearlyChartRef = useRef(null);
 
+  
   useEffect(() => {
     refetch();
   }, [refetch]);

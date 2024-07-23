@@ -23,6 +23,7 @@ const BookingsScreen = () => {
   const [review, setReview] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showRefundPolicyModal, setShowRefundPolicyModal] = useState(false);
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
@@ -48,12 +49,26 @@ const BookingsScreen = () => {
     }
   };
 
+  // const calculateRefundPercentage = (checkInDate) => {
+  //   const today = new Date();
+  //   const checkIn = new Date(checkInDate);
+  //   const diffDays = Math.ceil((checkIn - today) / (1000 * 60 * 60 * 24));
+
+  //   if (diffDays > 2) {
+  //     return 100;
+  //   } else if (diffDays > 1) {
+  //     return 50;
+  //   } else {
+  //     return 0;
+  //   }
+  // };
+
   const handleCancelBooking = async () => {
     try {
       await cancelBooking({ bookingId: selectedBooking }).unwrap();
       setShowCancelModal(false);
       refetchBookings();
-      toast.success('Booking successfully canceled! Money will be added to your wallet.'); 
+      toast.success('Booking successfully canceled!'); 
     } catch (error) {
       console.error('Failed to cancel booking:', error);
       toast.error('Failed to cancel booking. Please try again.'); 
@@ -66,6 +81,8 @@ const BookingsScreen = () => {
   };
 
   if (bookingsLoading || reviewsLoading) return <Loader />;
+  const sortedBookings = [...bookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+
 
   return (
     <div>
@@ -97,7 +114,7 @@ const BookingsScreen = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {bookings.map((booking) => (
+                    {sortedBookings.map((booking) => (
                       <React.Fragment key={booking._id}>
                         <tr>
                           <td>{booking.hotelId.name}</td>
@@ -119,63 +136,72 @@ const BookingsScreen = () => {
                                   <Card.Body>
                                     <Row>
                                       <Col md={9}>
-                                        <p><strong>Hotel Name:</strong> {booking.hotelId.name}</p>
-                                        <p><strong>Room Type:</strong> {booking.roomId.type}</p>
-                                        <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
+                                        <p><strong>Hotel:</strong> {booking.hotelId.name}</p>
+                                        <p><strong>Room:</strong> {booking.roomId.type}</p>
+                                        <p><strong>Check-in Date:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
+                                        <p><strong>Check-out Date:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
                                         <p><strong>Booking Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</p>
-                                        <p><strong>Total Amount:</strong> {booking.totalAmount}</p>
-                                        <p><strong>Check-In Date:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
-                                        <p><strong>Check-Out Date:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
-                                        <p><strong>Amenities:</strong> {booking.roomId.amenities.join(", ")}</p>
-                                        <p><strong>Description:</strong> {booking.roomId.description}</p>
+                                        <p><strong>Total Amount:</strong> Rs {booking.totalAmount}</p>
+                                        <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
+                                        <p><strong>Status:</strong> {booking.bookingStatus}</p>
                                       </Col>
                                       <Col>
-                                        {booking.bookingStatus !== 'cancelled' && (
+                                        {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (
                                           <Button
                                             variant="danger"
                                             onClick={() => {
                                               setSelectedBooking(booking._id);
                                               setShowCancelModal(true);
                                             }}
-                                            className="float-right"
+                                            className="me-2"
                                           >
                                             Cancel Booking
                                           </Button>
                                         )}
+                                      
                                       </Col>
                                     </Row>
                                     {getReviewForBooking(booking._id) ? (
-                                      <div>
-                                        <p><strong>Rating:</strong> {getReviewForBooking(booking._id).rating}</p>
+                                      <>
+                                        <h5 className="mt-4">Review</h5>
+                                        <p><strong>Rating:</strong> <Rating initialRating={getReviewForBooking(booking._id).rating} readonly emptySymbol="fa fa-star-o fa-2x" fullSymbol="fa fa-star fa-2x" /></p>
                                         <p><strong>Review:</strong> {getReviewForBooking(booking._id).review}</p>
-                                      </div>
+                                      </>
                                     ) : (
-                                      booking.bookingStatus !== 'cancelled' && isPastCheckoutDate(booking.checkOutDate) && (
-                                        <Form onSubmit={(e) => { e.preventDefault(); handleReviewSubmit(booking._id, booking.hotelId._id); }}>
-                                          <Form.Group controlId="rating">
-                                            <Form.Label style={{ marginRight: "10px" }}><strong>Rating</strong></Form.Label>
-                                            <Rating
-                                              initialRating={rating}
-                                              emptySymbol={<i className="fa fa-star-o fa-2x" style={{ color: 'gold' }}></i>}
-                                              fullSymbol={<i className="fa fa-star fa-2x" style={{ color: 'gold' }}></i>}
-                                              fractions={2}
-                                              onChange={(rate) => setRating(rate)}
-                                            />
-                                          </Form.Group>
-                                          <Form.Group controlId="review">
-                                            <Form.Label><strong>Review</strong></Form.Label>
-                                            <Form.Control
-                                              as="textarea"
-                                              rows={3}
-                                              value={review}
-                                              onChange={(e) => setReview(e.target.value)}
-                                            />
-                                          </Form.Group>
-                                          <Button variant="primary" type="submit" disabled={isAddingReview}>
-                                            {isAddingReview ? 'Submitting...' : 'Submit Review'}
-                                          </Button>
-                                        </Form>
-                                      )
+                                      <>
+                                        {booking.bookingStatus === 'confirmed' && isPastCheckoutDate(booking.checkOutDate) && (
+                                          <>
+                                            <h5 className="mt-4">Add Review</h5>
+                                            <Form>
+                                              <Form.Group controlId="rating">
+                                                <Form.Label style={{ marginRight: "10px" }}><strong>Rating</strong></Form.Label>
+                                                <Rating
+                                                  initialRating={rating}
+                                                  emptySymbol="fa fa-star-o fa-2x"
+                                                  fullSymbol="fa fa-star fa-2x"
+                                                  onChange={(value) => setRating(value)}
+                                                />
+                                              </Form.Group>
+                                              <Form.Group controlId="review">
+                                                <Form.Label><strong>Review</strong></Form.Label>
+                                                <Form.Control
+                                                  as="textarea"
+                                                  rows={3}
+                                                  value={review}
+                                                  onChange={(e) => setReview(e.target.value)}
+                                                />
+                                              </Form.Group>
+                                              <Button
+                                                variant="primary"
+                                                onClick={() => handleReviewSubmit(booking._id, booking.hotelId._id)}
+                                                disabled={isAddingReview}
+                                              >
+                                                {isAddingReview ? 'Submitting...' : 'Submit Review'}
+                                              </Button>
+                                            </Form>
+                                          </>
+                                        )}
+                                      </>
                                     )}
                                   </Card.Body>
                                 </Card>
@@ -186,29 +212,48 @@ const BookingsScreen = () => {
                       </React.Fragment>
                     ))}
                   </tbody>
+                  <Button variant="link" onClick={() => setShowRefundPolicyModal(true)}>
+                                          View Refund Policy
+                                        </Button>
                 </Table>
               </Card.Body>
             </Card>
           </Col>
         </Row>
       </Container>
-      <Footer />
       <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Cancel Booking</Modal.Title>
+          <Modal.Title>Confirm Cancellation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to cancel this booking? The refund amount will be added to your wallet.
+          <p>Are you sure you want to cancel this booking?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowCancelModal(false)}>
             Close
           </Button>
           <Button variant="danger" onClick={handleCancelBooking}>
-            Confirm Cancel
+            Confirm Cancellation
           </Button>
         </Modal.Footer>
       </Modal>
+      <Modal show={showRefundPolicyModal} onHide={() => setShowRefundPolicyModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Refund Policy</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Our refund policy is as follows:</p>
+          <ul>
+            <li>100% refund if canceled at least 2 days prior to the check-in date.</li>
+            <li>50% refund if canceled at least 1 day prior to the check-in date.</li>
+            <li>No refund if canceled less than 1 day prior to the check-in date.</li>
+          </ul>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRefundPolicyModal(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+      <Footer />
     </div>
   );
 };

@@ -188,8 +188,7 @@ const getWalletTransactions = expressAsyncHandler(async (req, res) => {
   const wallet = await Wallet.findOne({ user: req.user._id });
 
   if (!wallet) {
-    res.status(404);
-    throw new Error('Wallet not found');
+    return res.json([]);
   }
 
   res.json(wallet.transactions);
@@ -232,8 +231,7 @@ const addCashToWallet = expressAsyncHandler(async (req, res) => {
 const getWalletBalance = expressAsyncHandler(async (req, res) => {
   const wallet = await Wallet.findOne({ user: req.user._id });
   if (!wallet) {
-    res.status(404);
-    throw new Error('Wallet not found');
+    return res.json({ balance: 0 });
   }
   res.json({ balance: wallet.balance });
 });
@@ -279,23 +277,36 @@ const cancelBooking = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
+    const today = new Date();
+    const checkInDate = new Date(booking.checkInDate);
+    let refundPercentage = 0;
+
+    const diffDays = Math.ceil((checkInDate - today) / (1000 * 60 * 60 * 24));
+    if (diffDays > 2) {
+      refundPercentage = 100;
+    } else if (diffDays >= 1) {
+      refundPercentage = 50;
+    }
+
     booking.bookingStatus = 'cancelled';
     await booking.save();
 
     const wallet = await Wallet.findOne({ user: booking.userId });
-    wallet.balance += booking.totalAmount;
+    const refundAmount = (booking.totalAmount * refundPercentage) / 100;
+    wallet.balance += refundAmount;
     wallet.transactions.push({
       user: booking.userId,
-      amount: booking.totalAmount,
+      amount: refundAmount,
       transactionType: 'credit',
     });
     await wallet.save();
 
-    res.status(200).json({ message: 'Booking successfully cancelled and amount refunded to wallet' });
+    res.status(200).json({ message: `Booking successfully cancelled and ${refundPercentage}% amount refunded to wallet` });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 

@@ -72,7 +72,7 @@ const router = createBrowserRouter(
         <Route path="get-user" element={<UserManagementScreen />} />
         <Route path="verification" element={<AdminVerificationScreen />} />
         <Route path="get-hotels" element={<HotelsManagementScreen />} />
-        <Route path="/admin/bookings" element={<AdminBookingsScreen/>} />
+        <Route path="bookings" element={<AdminBookingsScreen/>} />
       </Route>
       <Route path="/admin/login" element={<AdminLoginScreen />} />
 

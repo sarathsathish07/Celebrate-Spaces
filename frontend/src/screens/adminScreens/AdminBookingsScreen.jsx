@@ -33,6 +33,8 @@ const AdminBookingsScreen = () => {
   );
 
   if (isLoading) return <Loader />;
+  const sortedBookings = [...filteredBookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+
 
   return (
     <AdminLayout>
@@ -57,54 +59,56 @@ const AdminBookingsScreen = () => {
                   </BootstrapForm>
                 </div>
                 <br />
-                <Table responsive>
-                  <thead>
-                    <tr>
-                      <th>Hotel</th>
-                      <th>Room</th>
-                      <th>Guest Name</th>
-                      <th>Booking Date</th>
-                      <th>Total Amount</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredBookings.map((booking) => (
-                      <React.Fragment key={booking._id}>
-                        <tr>
-                          <td>{booking.hotelId.name}</td>
-                          <td>{booking.roomId.type}</td>
-                          <td>{booking.userId.name}</td> 
-                          <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
-                          <td>{booking.totalAmount}</td>
-                          <td>
-                            <Button variant="link" onClick={() => toggleRow(booking._id)}>
-                              {expandedRow === booking._id ? 'Hide Details' : 'View Details'}{' '}
-                              <FaChevronDown />
-                            </Button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colSpan="8">
-                            <Collapse in={expandedRow === booking._id}>
-                              <div>
-                                <Card className="mt-2">
-                                  <Card.Body>
-                                    <p><strong>Guest Name:</strong> {booking.userId.name}</p>
-                                    <p><strong>Email:</strong> {booking.userId.email}</p>
-                                    <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
-                                    <p><strong>Check-In:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
-                                    <p><strong>Check-Out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
-                                  </Card.Body>
-                                </Card>
-                              </div>
-                            </Collapse>
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </Table>
+                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>Hotel</th>
+                        <th>Room</th>
+                        <th>Guest Name</th>
+                        <th>Booking Date</th>
+                        <th>Total Amount</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedBookings.map((booking) => (
+                        <React.Fragment key={booking._id}>
+                          <tr>
+                            <td>{booking.hotelId.name}</td>
+                            <td>{booking.roomId.type}</td>
+                            <td>{booking.userId.name}</td>
+                            <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
+                            <td>{booking.totalAmount}</td>
+                            <td>
+                              <Button variant="link" onClick={() => toggleRow(booking._id)}>
+                                {expandedRow === booking._id ? 'Hide Details' : 'View Details'}{' '}
+                                <FaChevronDown />
+                              </Button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colSpan="8">
+                              <Collapse in={expandedRow === booking._id}>
+                                <div>
+                                  <Card className="mt-2">
+                                    <Card.Body>
+                                      <p><strong>Guest Name:</strong> {booking.userId.name}</p>
+                                      <p><strong>Email:</strong> {booking.userId.email}</p>
+                                      <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
+                                      <p><strong>Check-In:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
+                                      <p><strong>Check-Out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
+                                    </Card.Body>
+                                  </Card>
+                                </div>
+                              </Collapse>
+                            </td>
+                          </tr>
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
               </Card.Body>
             </Card>
           </Col>

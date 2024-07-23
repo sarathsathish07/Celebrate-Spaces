@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAddCashToWalletMutation, useGetWalletTransactionsQuery, useGetWalletBalanceQuery } from '../../slices/usersApiSlice';
-import { Container,Nav, Row, Col, Card, ListGroup, Button, Form,Image } from 'react-bootstrap';
+import { Container, Nav, Row, Col, Card, ListGroup, Button, Form, Image } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Loader from '../../components/userComponents/Loader';
 import Footer from '../../components/userComponents/Footer';
 import bgImage from "../../assets/images/bgimage.jpg";
-import { LinkContainer } from "react-router-bootstrap";
 import { useSelector } from "react-redux";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
-
 import defaultProfileImage from "../../assets/images/5856.jpg";
-
-
 
 const WalletScreen = () => {
   const [amount, setAmount] = useState('');
-  const { data: transactions, isLoading: isLoadingTransactions, error: transactionsError, refetch: refetchTransactions } = useGetWalletTransactionsQuery();
-  const { data: balance, isLoading: isLoadingBalance, error: balanceError, refetch: refetchBalance } = useGetWalletBalanceQuery();
+  const { data: transactions = [], isLoading: isLoadingTransactions, error: transactionsError, refetch: refetchTransactions } = useGetWalletTransactionsQuery();
+  const { data: balance = { balance: 0 }, isLoading: isLoadingBalance, error: balanceError, refetch: refetchBalance } = useGetWalletBalanceQuery();
   const [addCashToWallet, { isLoading: isAdding }] = useAddCashToWalletMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -62,7 +58,7 @@ const WalletScreen = () => {
     rzp.open();
   };
 
-  const sortedTransactions = transactions ? [...transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) : [];
+  const sortedTransactions = [...transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <div>
@@ -74,7 +70,7 @@ const WalletScreen = () => {
       </div>
       <Container className="profile-container">
         <Row className="my-4">
-        <Col md={3} className="sidebar-container">
+          <Col md={3} className="sidebar-container">
             <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
           </Col>
           <Col md={6}>

@@ -75,6 +75,8 @@ export const UsersTable = ({ users, refetchData }) => {
                 </BootstrapForm>
               </div>
               <br />
+              <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+
               <Table responsive>
                 <thead>
                   <tr>
@@ -103,6 +105,7 @@ export const UsersTable = ({ users, refetchData }) => {
                   ))}
                 </tbody>
               </Table>
+              </div>
             </Card.Body>
           </Card>
         </Col>
