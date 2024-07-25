@@ -210,6 +210,87 @@ const getHotelierStats = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 }
+const getHotelierSalesReport = async (req, res) => {
+  const { from, to } = req.body;
+  const hotelierId = req.hotelier._id;
+
+  try {
+    if (!from || !to) {
+      return res.status(400).json({ message: 'Date range is required' });
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+
+    const bookings = await Booking.aggregate([
+      {
+        $match: {
+          bookingDate: { $gte: fromDate, $lte: toDate },
+          bookingStatus: 'confirmed',
+          hotelierId: hotelierId
+        }
+      },
+      {
+        $lookup: {
+          from: 'hotels',
+          localField: 'hotelId',
+          foreignField: '_id',
+          as: 'hotelDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'roomId',
+          foreignField: '_id',
+          as: 'roomDetails'
+        }
+      },
+      {
+        $unwind: '$hotelDetails'
+      },
+      {
+        $unwind: '$userDetails'
+      },
+      {
+        $unwind: '$roomDetails'
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$bookingDate" } },
+          totalSales: { $sum: '$totalAmount' },
+          userName: { $first: '$userDetails.name' },
+          hotelName: { $first: '$hotelDetails.name' },
+          roomName: { $first: '$roomDetails.type' },
+          checkInDate: { $first: '$checkInDate' },
+          checkOutDate: { $first: '$checkOutDate' },
+          paymentMethod: { $first: '$paymentMethod' },
+          bookingStatus: { $first: '$bookingStatus' }
+        }
+      }
+    ]);
+
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error fetching sales report:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
 
 
 
@@ -226,5 +307,6 @@ export {
   getHotelByIdHandler,
   updateHotelHandler,
   resendHotelierOtpHandler,
-  getHotelierStats
+  getHotelierStats,
+  getHotelierSalesReport
 };

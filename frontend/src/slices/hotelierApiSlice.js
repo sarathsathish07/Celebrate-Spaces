@@ -111,6 +111,13 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getHotelierSalesReport: builder.mutation({
+      query: ({ from, to }) => ({
+        url: `${HOTELS_URL}/salesReport`,
+        method: 'POST',
+        body: { from, to },
+      }),
+    }),
   }),
   
 });
@@ -132,5 +139,6 @@ export const {
   useGetRoomByIdQuery,
   useGetHotelierBookingsQuery,
   useUpdateRoomMutation ,
-  useGetHotelierDashboardStatsQuery
+  useGetHotelierDashboardStatsQuery,
+  useGetHotelierSalesReportMutation 
 } = hotelierApiSlice;

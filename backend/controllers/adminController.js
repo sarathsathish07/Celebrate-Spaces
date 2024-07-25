@@ -147,6 +147,92 @@ const getAdminStats = async (req, res) => {
   }
 };
 
+  const getSalesReport = async (req, res) => {
+    const { from, to } = req.body;
+
+    try {
+      if (!from || !to) {
+        return res.status(400).json({ message: 'Date range is required' });
+      }
+
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid date format' });
+      }
+
+      const bookings = await Booking.aggregate([
+        {
+          $match: {
+            bookingDate: { $gte: fromDate, $lte: toDate },
+            bookingStatus: 'confirmed',
+          }
+        },
+        {
+          $lookup: {
+            from: 'hotels', 
+            localField: 'hotelId',
+            foreignField: '_id',
+            as: 'hotel'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users', 
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'rooms', 
+            localField: 'roomId',
+            foreignField: '_id',
+            as: 'room'
+          }
+        },
+        {
+          $unwind: { path: '$hotel', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $unwind: { path: '$user', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $unwind: { path: '$room', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$bookingDate" } },
+            totalSales: { $sum: "$totalAmount" },
+            userName: { $first: "$user.name" }, 
+            hotelName: { $first: "$hotel.name" }, 
+            roomName: { $first: "$room.type" }, 
+            checkInDate: { $first: "$checkInDate" },
+            checkOutDate: { $first: "$checkOutDate" },
+            paymentMethod: { $first: "$paymentMethod" },
+            paymentStatus: { $first: "$paymentStatus" },
+            bookingStatus: { $first: "$bookingStatus" },
+            hotelierId: { $first: "$hotelierId" },
+            roomsBooked: { $first: "$roomsBooked" },
+            paymentId: { $first: "$paymentId" },
+          }
+        },
+        {
+          $sort: { _id: 1 }
+        }
+      ]);
+
+      res.json(bookings);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
+
+
 
 
 export {
@@ -162,5 +248,6 @@ export {
   getAllHotels,
   listHotel,
   unlistHotel,
-  getAdminStats
+  getAdminStats,
+  getSalesReport
 };

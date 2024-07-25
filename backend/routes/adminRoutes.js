@@ -12,7 +12,8 @@ import { authAdmin,
   getAllHotels,
   listHotel,
   unlistHotel,
-  getAdminStats } from '../controllers/adminController.js'
+  getAdminStats,
+  getSalesReport } from '../controllers/adminController.js'
   import { getAllBookings } from '../controllers/bookingController.js'
 import {protect} from '../middleware/adminAuthMiddleware.js'
 
@@ -30,6 +31,7 @@ import {protect} from '../middleware/adminAuthMiddleware.js'
   router.patch('/unlist-hotel/:hotelId', protect, unlistHotel);
   router.get('/bookings', protect, getAllBookings);
   router.get('/stats',protect, getAdminStats);
+  router.post('/sales-report',protect,getSalesReport)
   
   
   

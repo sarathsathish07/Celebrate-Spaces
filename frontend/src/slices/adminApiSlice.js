@@ -88,6 +88,13 @@ export const admiApiSlice=apiSlice.injectEndpoints({
           getAdminStats: builder.query({
             query: () => `${ADMIN_URL}/stats`,
           }),
+          getSalesReport: builder.query({
+            query: ({ from, to }) => ({
+                url: `${ADMIN_URL}/sales-report`,
+                method: 'POST',
+                body: { from, to }
+            }),
+        }),
 
     })
 })
@@ -105,5 +112,6 @@ export const {useAdminLoginMutation,
     useAdminListHotelMutation,
     useAdminUnlistHotelMutation, 
     useGetAllBookingsQuery,
-    useGetAdminStatsQuery 
+    useGetAdminStatsQuery ,
+    useGetSalesReportQuery
 }= admiApiSlice
