@@ -9,6 +9,7 @@ import Footer from '../../components/userComponents/Footer';
 import { toast } from 'react-toastify';
 import Rating from 'react-rating';
 import 'font-awesome/css/font-awesome.min.css';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const HotelDetailsScreen = () => {
   const navigate = useNavigate();
@@ -90,6 +91,16 @@ const HotelDetailsScreen = () => {
     }
   };
 
+  const mapContainerStyle = {
+    width: '100%',
+    height: '400px',
+  };
+
+  const mapCenter = {
+    lat: hotel?.latitude || 0,
+    lng: hotel?.longitude || 0,
+  };
+
   if (isLoading) return <Loader />;
   if (error) {
     toast.error(error?.data?.message || 'Error fetching hotel details');
@@ -149,6 +160,16 @@ const HotelDetailsScreen = () => {
                       <li key={index}>{amenity}</li>
                     ))}
                   </ul>
+                  <h4>Location</h4>
+                  <LoadScript googleMapsApiKey="AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM">
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={mapCenter}
+                      zoom={18}
+                    >
+                      <Marker position={mapCenter} />
+                    </GoogleMap>
+                  </LoadScript>
                 </Tab.Pane>
                 <Tab.Pane eventKey="rooms">
                   <Row>
@@ -181,31 +202,24 @@ const HotelDetailsScreen = () => {
                   <h4>Reviews</h4>
                   {isLoadingReviews ? (
                     <Loader />
-                  ) : reviews && reviews.length > 0 ? (
-                    <Row>
-                      {reviews.map((review) => (
-                        <Col md={4} key={review._id} className="mb-3">
-                          <Card>
-                            <Card.Body>
-                              <Card.Title>{review.userId.name}</Card.Title>
-                              <Card.Text>
-                              <Rating
-                                initialRating={review.rating}
-                                readonly
-                                emptySymbol={<i className="fa fa-star-o" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
-                                fullSymbol={<i className="fa fa-star" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
-                              />
-
-
-                              </Card.Text>
-                              <Card.Text>{review.review}</Card.Text>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      ))}
-                    </Row>
+                  ) : reviews?.length > 0 ? (
+                    reviews.map((review, index) => (
+                      <div key={index} className="review">
+                        <Rating
+                          emptySymbol="fa fa-star-o fa-2x"
+                          fullSymbol="fa fa-star fa-2x"
+                          fractions={2}
+                          initialRating={review.rating}
+                          readonly
+                        />
+                        <p>{review.comment}</p>
+                        <p>
+                          <strong>By:</strong> {review.user?.name}
+                        </p>
+                      </div>
+                    ))
                   ) : (
-                    <p>No reviews yet.</p>
+                    <p>No reviews available</p>
                   )}
                 </Tab.Pane>
               </Tab.Content>
@@ -221,36 +235,38 @@ const HotelDetailsScreen = () => {
         <Modal.Body>
           <Form>
             <Form.Group controlId="checkInDate">
-              <Form.Label>Check-In Date</Form.Label>
+              <Form.Label>Check-in Date</Form.Label>
               <DatePicker
                 selected={checkInDate}
                 onChange={(date) => setCheckInDate(date)}
+                minDate={new Date()}
                 dateFormat="yyyy-MM-dd"
                 className="form-control"
               />
             </Form.Group>
             <Form.Group controlId="checkOutDate">
-              <Form.Label>Check-Out Date</Form.Label>
+              <Form.Label>Check-out Date</Form.Label>
               <DatePicker
                 selected={checkOutDate}
                 onChange={(date) => setCheckOutDate(date)}
+                minDate={checkInDate}
                 dateFormat="yyyy-MM-dd"
                 className="form-control"
               />
             </Form.Group>
             <Form.Group controlId="roomCount">
-              <Form.Label>Room Count</Form.Label>
+              <Form.Label>Number of Rooms</Form.Label>
               <Form.Control
                 type="number"
                 value={roomCount}
-                onChange={(e) => setRoomCount(Number(e.target.value))}
+                onChange={(e) => setRoomCount(e.target.value)}
                 min={1}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}> 
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
           <Button variant="primary" onClick={handleBooking}>

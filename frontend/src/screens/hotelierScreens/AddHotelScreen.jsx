@@ -13,6 +13,8 @@ const AddHotelScreen = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [description, setDescription] = useState("");
   const [amenities, setAmenities] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [addHotel] = useAddHotelMutation();
   const navigate = useNavigate();
 
@@ -33,6 +35,12 @@ const AddHotelScreen = () => {
     return regex.test(value);
   };
 
+  const validateCoordinates = (lat, lng) => {
+    const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6}$/;
+    const lngRegex = /^-?(([-+]?)([\d]{1,3})((\.)(\d+))?)/;
+    return latRegex.test(lat) && lngRegex.test(lng);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,6 +49,8 @@ const AddHotelScreen = () => {
     const trimmedAddress = address.trim();
     const trimmedDescription = description.trim();
     const trimmedAmenities = amenities.trim();
+    const trimmedLatitude = latitude.trim();
+    const trimmedLongitude = longitude.trim();
 
     if (
       !trimmedName ||
@@ -48,7 +58,9 @@ const AddHotelScreen = () => {
       !trimmedAddress ||
       !selectedImages.length ||
       !trimmedDescription ||
-      !trimmedAmenities
+      !trimmedAmenities ||
+      !trimmedLatitude ||
+      !trimmedLongitude
     ) {
       toast.error("All fields are required");
       return;
@@ -64,6 +76,11 @@ const AddHotelScreen = () => {
       return;
     }
 
+    if (!validateCoordinates(trimmedLatitude, trimmedLongitude)) {
+      toast.error("Invalid latitude or longitude");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", trimmedName);
@@ -71,6 +88,8 @@ const AddHotelScreen = () => {
       formData.append("address", trimmedAddress);
       formData.append("description", trimmedDescription);
       formData.append("amenities", trimmedAmenities);
+      formData.append("latitude", trimmedLatitude);
+      formData.append("longitude", trimmedLongitude);
       for (let i = 0; i < selectedImages.length; i++) {
         formData.append("images", selectedImages[i]);
       }
@@ -151,6 +170,24 @@ const AddHotelScreen = () => {
               placeholder="Enter amenities separated by commas"
               value={amenities}
               onChange={(e) => setAmenities(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="latitude" className="mb-3">
+            <Form.Label>Latitude</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter latitude"
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="longitude" className="mb-3">
+            <Form.Label>Longitude</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter longitude"
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
             />
           </Form.Group>
           <Button

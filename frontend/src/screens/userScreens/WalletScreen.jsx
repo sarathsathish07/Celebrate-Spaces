@@ -7,7 +7,6 @@ import Footer from '../../components/userComponents/Footer';
 import bgImage from "../../assets/images/bgimage.jpg";
 import { useSelector } from "react-redux";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
-import defaultProfileImage from "../../assets/images/5856.jpg";
 
 const WalletScreen = () => {
   const [amount, setAmount] = useState('');

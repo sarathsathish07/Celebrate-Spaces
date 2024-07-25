@@ -17,6 +17,8 @@ const EditHotelScreen = () => {
     address: "",
     description: "",
     amenities: "",
+    latitude: "",
+    longitude: "",
     images: [],
   });
   const [selectedImages, setSelectedImages] = useState([]);
@@ -30,6 +32,8 @@ const EditHotelScreen = () => {
         address: hotel.address,
         description: hotel.description,
         amenities: hotel.amenities.join(", "),
+        latitude: hotel.latitude || "",
+        longitude: hotel.longitude || "",
         images: hotel.images || [],
       });
     }
@@ -46,14 +50,13 @@ const EditHotelScreen = () => {
   const handleImageChange = (e) => {
     const files = e.target.files;
     const imageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-  
+
     const selectedValidImages = Array.from(files).filter(file =>
       imageTypes.includes(file.type)
     );
-  
+
     setSelectedImages(selectedValidImages);
   };
-  
 
   const handleRemoveImage = (index) => {
     setImagesToDelete((prev) => [...prev, formData.images[index]]);
@@ -68,16 +71,23 @@ const EditHotelScreen = () => {
     return regex.test(value);
   };
 
+  const validateCoordinates = (lat, lng) => {
+    const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.\d{1,6}$/;
+    const lngRegex = /^-?(([-+]?)([\d]{1,3})(\.\d+)?)/;
+    return latRegex.test(lat) && lngRegex.test(lng);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const trimmedName = formData.name.trim();
     const trimmedCity = formData.city.trim();
     const trimmedAddress = formData.address.trim();
     const trimmedDescription = formData.description.trim();
     const trimmedAmenities = formData.amenities.trim();
-  
-    if (!trimmedName || !trimmedCity || !trimmedAddress || !trimmedDescription || !trimmedAmenities) {
+
+
+    if (!trimmedName || !trimmedCity || !trimmedAddress || !trimmedDescription || !trimmedAmenities || !formData.latitude || !formData.longitude) {
       toast.error("All fields are required");
       return;
     }
@@ -91,7 +101,12 @@ const EditHotelScreen = () => {
       toast.error("City cannot contain numbers or special characters");
       return;
     }
-  
+
+    if (!validateCoordinates(formData.latitude, formData.longitude)) {
+      toast.error("Invalid latitude or longitude");
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("name", trimmedName);
@@ -99,15 +114,17 @@ const EditHotelScreen = () => {
       formDataToSend.append("address", trimmedAddress);
       formDataToSend.append("description", trimmedDescription);
       formDataToSend.append("amenities", trimmedAmenities);
-  
+      formDataToSend.append("latitude", formData.latitude);
+      formDataToSend.append("longitude", formData.longitude);
+
       imagesToDelete.forEach((image) => {
         formDataToSend.append("removeImages", image);
       });
-  
+
       for (let i = 0; i < selectedImages.length; i++) {
         formDataToSend.append("images", selectedImages[i]);
       }
-  
+
       await updateHotel({ id, formData: formDataToSend }).unwrap();
       refetch();
       toast.success("Hotel updated successfully");
@@ -116,7 +133,6 @@ const EditHotelScreen = () => {
       toast.error(error?.data?.message || error?.error || "Error updating hotel");
     }
   };
-  
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
@@ -176,6 +192,26 @@ const EditHotelScreen = () => {
               type="text"
               name="amenities"
               value={formData.amenities}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="latitude" className="mb-3">
+            <Form.Label>Latitude</Form.Label>
+            <Form.Control
+              type="text"
+              name="latitude"
+              value={formData.latitude}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="longitude" className="mb-3">
+            <Form.Label>Longitude</Form.Label>
+            <Form.Control
+              type="text"
+              name="longitude"
+              value={formData.longitude}
               onChange={handleChange}
               required
             />

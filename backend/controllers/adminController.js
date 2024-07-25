@@ -94,6 +94,7 @@ const unlistHotel = expressAsyncHandler(async (req, res) => {
   const result = await adminService.unlistHotel(hotelId);
   res.status(200).json(result);
 });
+
 const getAdminStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();

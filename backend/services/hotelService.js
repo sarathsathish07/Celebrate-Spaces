@@ -226,6 +226,8 @@ const updateHotelData = async (hotelId, updateData, files) => {
     hotel.address = updateData.address || hotel.address;
     hotel.description = updateData.description || hotel.description;
     hotel.amenities = updateData.amenities ? updateData.amenities.split(",").map(item => item.trim()) : hotel.amenities;
+    hotel.latitude = updateData.latitude || hotel.latitude
+    hotel.longitude = updateData.longitude || hotel.longitude
 
     if (files && files.length > 0) {
       const newImages = files.map(file => path.relative("backend/public", file.path).replace(/\\/g, "/"));

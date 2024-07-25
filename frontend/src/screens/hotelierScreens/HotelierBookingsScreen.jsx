@@ -121,7 +121,7 @@ const HotelierBookingsScreen = () => {
                                           <p><strong>Check-In:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
                                           <p><strong>Check-Out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
                                         </Col>
-                                        <Col>
+                                        {/* <Col>
                                           {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (
                                             <Button
                                               variant="danger"
@@ -140,7 +140,7 @@ const HotelierBookingsScreen = () => {
                                               Booking Cancelled
                                             </div>
                                           )}
-                                        </Col>
+                                        </Col> */}
                                       </Row>
                                     </Card.Body>
                                   </Card>

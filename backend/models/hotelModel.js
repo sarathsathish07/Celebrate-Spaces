@@ -27,7 +27,7 @@ const hotelSchema = new mongoose.Schema({
   },
   isListed: {
     type: Boolean,
-    default: false, 
+    default: false,
   },
   hotelierId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,7 +40,15 @@ const hotelSchema = new mongoose.Schema({
   verificationStatus: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],
-    default: null
+    default: null,
+  },
+  latitude: {
+    type: Number,
+
+  },
+  longitude: {
+    type: Number,
+
   },
 }, {
   timestamps: true,

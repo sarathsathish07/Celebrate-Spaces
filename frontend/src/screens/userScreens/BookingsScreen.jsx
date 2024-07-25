@@ -8,7 +8,7 @@ import Sidebar from "../../components/userComponents/Sidebar.jsx";
 import bgImage from "../../assets/images/bgimage.jpg";
 import Footer from '../../components/userComponents/Footer';
 import 'font-awesome/css/font-awesome.min.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const BookingsScreen = () => {
@@ -39,6 +39,10 @@ const BookingsScreen = () => {
   };
 
   const handleReviewSubmit = async (bookingId, hotelId) => {
+    if (rating === 0 || review.trim() === '') {
+      toast.error('Please provide a rating and a review.');
+      return;
+    }
     try {
       const result = await addReview({ rating, review, bookingId, hotelId }).unwrap();
       setRating(0);
@@ -48,20 +52,6 @@ const BookingsScreen = () => {
       console.error('Failed to submit review:', error);
     }
   };
-
-  // const calculateRefundPercentage = (checkInDate) => {
-  //   const today = new Date();
-  //   const checkIn = new Date(checkInDate);
-  //   const diffDays = Math.ceil((checkIn - today) / (1000 * 60 * 60 * 24));
-
-  //   if (diffDays > 2) {
-  //     return 100;
-  //   } else if (diffDays > 1) {
-  //     return 50;
-  //   } else {
-  //     return 0;
-  //   }
-  // };
 
   const handleCancelBooking = async () => {
     try {
@@ -213,8 +203,8 @@ const BookingsScreen = () => {
                     ))}
                   </tbody>
                   <Button variant="link" onClick={() => setShowRefundPolicyModal(true)}>
-                                          View Refund Policy
-                                        </Button>
+                     View Refund Policy
+                  </Button>
                 </Table>
               </Card.Body>
             </Card>

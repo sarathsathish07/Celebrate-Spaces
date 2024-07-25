@@ -121,7 +121,7 @@ const uploadVerificationDetailsHandler = expressAsyncHandler(async (req, res) =>
 });
 
 const addHotelHandler = expressAsyncHandler(async (req, res) => {
-  const { name, city, address, description, amenities } = req.body;
+  const { name, city, address, description, amenities,latitude, longitude } = req.body;
   const images = req.files.map((file) => file.path);
 
   const response = await addHotel(req.hotelier._id, {
@@ -131,6 +131,8 @@ const addHotelHandler = expressAsyncHandler(async (req, res) => {
     images,
     description,
     amenities: amenities.split(",").map((amenity) => amenity.trim()),
+    latitude,
+    longitude,
     isListed: true,
   });
   res.status(response.status).json(response.data);
