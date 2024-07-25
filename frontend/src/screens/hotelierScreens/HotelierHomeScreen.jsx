@@ -7,6 +7,8 @@ import { useGetHotelierDashboardStatsQuery, useGetHotelierSalesReportMutation } 
 import HotelierLayout from '../../components/hotelierComponents/HotelierLayout.jsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 ChartJS.register(...registerables);
 
@@ -46,11 +48,18 @@ const HotelierDashboard = () => {
   };
 
   const handleGenerateReport = async () => {
-    if (dateRange.from && dateRange.to) {
-      const response = await getSalesReport({ from: dateRange.from, to: dateRange.to });
-      if (response.data) {
-        setReportPreview(response.data);
-      }
+    const { from, to } = dateRange;
+    if (!from || !to) {
+      toast.error('Both from and to dates are required.');
+      return;
+    }
+    if (new Date(from) >= new Date(to)) {
+      toast.error('To date must be after from date.');
+      return;
+    }
+    const response = await getSalesReport({ from, to });
+    if (response.data) {
+      setReportPreview(response.data);
     }
   };
 
@@ -99,134 +108,134 @@ const HotelierDashboard = () => {
   return (
     <HotelierLayout>
       <div style={{ maxHeight: '700px', overflowY: 'auto' }}>
-      <Container>
-        <Row className="my-4 mx-3">
-          <Col md={4}>
-            <Card className="bg-info text-white text-center">
-              <Card.Body>
-                <FaHotel size={40} />
-                <h4>Total Hotels</h4>
-                <h2>{stats.totalHotels}</h2>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="bg-success text-white text-center">
-              <Card.Body>
-                <FaMoneyBill size={40} />
-                <h4>Total Revenue</h4>
-                <h2>Rs {stats.totalRevenue}</h2>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="bg-warning text-white text-center">
-              <Card.Body>
-                <FaHotel size={40} />
-                <h4>Total Bookings</h4>
-                <h2>{stats.totalBookings}</h2>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        <Container>
+          <Row className="my-4 mx-3">
+            <Col md={4}>
+              <Card className="bg-info text-white text-center">
+                <Card.Body>
+                  <FaHotel size={40} />
+                  <h4>Total Hotels</h4>
+                  <h2>{stats.totalHotels}</h2>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={4}>
+              <Card className="bg-success text-white text-center">
+                <Card.Body>
+                  <FaMoneyBill size={40} />
+                  <h4>Total Revenue</h4>
+                  <h2>Rs {stats.totalRevenue}</h2>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={4}>
+              <Card className="bg-warning text-white text-center">
+                <Card.Body>
+                  <FaHotel size={40} />
+                  <h4>Total Bookings</h4>
+                  <h2>{stats.totalBookings}</h2>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
 
-        <Row className="my-4 mx-3">
-          <Col md={6}>
-            <Card style={{backgroundColor:"white"}}>
-              <Card.Body>
-                <Bar ref={monthlyChartRef} data={monthlyBookingsData} />
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={6}>
-            <Card style={{backgroundColor:"white"}}>
-              <Card.Body>
-                <Line ref={yearlyChartRef} data={yearlyBookingsData} />
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+          <Row className="my-4 mx-3">
+            <Col md={6}>
+              <Card style={{ backgroundColor: 'white' }}>
+                <Card.Body>
+                  <Bar ref={monthlyChartRef} data={monthlyBookingsData} />
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
+              <Card style={{ backgroundColor: 'white' }}>
+                <Card.Body>
+                  <Line ref={yearlyChartRef} data={yearlyBookingsData} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
 
-        <Row className="my-5 mx-3">
-          <Col md={12}>
-            <Card>
-              <Card.Body>
-                <h3>Sales Report</h3>
-                <Form>
-                  <Row>
-                    <Col md={5}>
-                      <Form.Group controlId="from">
-                        <Form.Label>From</Form.Label>
-                        <Form.Control
-                          type="date"
-                          name="from"
-                          value={dateRange.from}
-                          onChange={handleDateRangeChange}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={5}>
-                      <Form.Group controlId="to">
-                        <Form.Label>To</Form.Label>
-                        <Form.Control
-                          type="date"
-                          name="to"
-                          value={dateRange.to}
-                          onChange={handleDateRangeChange}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={2} className="d-flex align-items-end">
-                      <Button onClick={handleGenerateReport} className="w-100">
-                        Generate Report
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form>
+          <Row className="my-5 mx-3">
+            <Col md={12}>
+              <Card>
+                <Card.Body>
+                  <h3>Sales Report</h3>
+                  <Form>
+                    <Row>
+                      <Col md={5}>
+                        <Form.Group controlId="from">
+                          <Form.Label>From</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="from"
+                            value={dateRange.from}
+                            onChange={handleDateRangeChange}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col md={5}>
+                        <Form.Group controlId="to">
+                          <Form.Label>To</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="to"
+                            value={dateRange.to}
+                            onChange={handleDateRangeChange}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col md={2} className="d-flex align-items-end">
+                        <Button onClick={handleGenerateReport} className="w-100">
+                          Generate Report
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
 
-                {reportPreview && (
-                  <div className="mt-4">
-                    <h4>Report Preview</h4>
-                    <Table id="reportTable" striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Amount</th>
-                          <th>Guest</th>
-                          <th>Hotel</th>
-                          <th>Room</th>
-                          <th>Check-In</th>
-                          <th>Check-Out</th>
-                          <th>Pay Method</th>
-                          <th>Booking Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reportPreview.map((item, index) => (
-                          <tr key={index}>
-                            <td>{item._id}</td>
-                            <td>Rs {item.totalSales}</td>
-                            <td>{item.userName}</td>
-                            <td>{item.hotelName}</td>
-                            <td>{item.roomName}</td>
-                            <td>{new Date(item.checkInDate).toLocaleDateString()}</td>
-                            <td>{new Date(item.checkOutDate).toLocaleDateString()}</td>
-                            <td>{item.paymentMethod}</td>
-                            <td>{item.bookingStatus}</td>
+                  {reportPreview && (
+                    <div className="mt-4">
+                      <h4>Report Preview</h4>
+                      <Table id="reportTable" striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Guest</th>
+                            <th>Hotel</th>
+                            <th>Room</th>
+                            <th>Check-In</th>
+                            <th>Check-Out</th>
+                            <th>Pay Method</th>
+                            <th>Booking Status</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                    <Button onClick={handleDownloadReport} className="mt-3">
-                      Download Report as PDF
-                    </Button>
-                  </div>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                        </thead>
+                        <tbody>
+                          {reportPreview.map((item, index) => (
+                            <tr key={index}>
+                              <td>{item._id}</td>
+                              <td>Rs {item.totalSales}</td>
+                              <td>{item.userName}</td>
+                              <td>{item.hotelName}</td>
+                              <td>{item.roomName}</td>
+                              <td>{new Date(item.checkInDate).toLocaleDateString()}</td>
+                              <td>{new Date(item.checkOutDate).toLocaleDateString()}</td>
+                              <td>{item.paymentMethod}</td>
+                              <td>{item.bookingStatus}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                      <Button onClick={handleDownloadReport} className="mt-3">
+                        Download Report as PDF
+                      </Button>
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </HotelierLayout>
   );

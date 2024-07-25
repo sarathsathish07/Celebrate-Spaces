@@ -7,6 +7,8 @@ import { useGetAdminStatsQuery, useGetSalesReportQuery } from '../../slices/admi
 import AdminLayout from '../../components/adminComponents/AdminLayout';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 ChartJS.register(...registerables);
 
@@ -50,10 +52,18 @@ const AdminDashboard = () => {
   };
 
   const handleGenerateReport = async () => {
-    if (dateRange.from && dateRange.to) {
-      await fetchSalesReport({ from: dateRange.from, to: dateRange.to });
-      setReportPreview(salesReport);
+    if (!dateRange.from || !dateRange.to) {
+      toast.error('Both From and To dates are required.');
+      return;
     }
+
+    if (new Date(dateRange.to) < new Date(dateRange.from)) {
+      toast.error('To date must be after From date.');
+      return;
+    }
+
+    await fetchSalesReport({ from: dateRange.from, to: dateRange.to });
+    setReportPreview(salesReport);
   };
 
   const handleDownloadReport = async () => {
@@ -233,6 +243,7 @@ const AdminDashboard = () => {
           </Col>
         </Row>
       </Container>
+      <ToastContainer />
       </div>
     </AdminLayout>
   );
