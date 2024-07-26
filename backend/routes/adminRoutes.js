@@ -13,7 +13,8 @@ import { authAdmin,
   listHotel,
   unlistHotel,
   getAdminStats,
-  getSalesReport } from '../controllers/adminController.js'
+  getSalesReport,
+  sendNotification } from '../controllers/adminController.js'
   import { getAllBookings } from '../controllers/bookingController.js'
 import {protect} from '../middleware/adminAuthMiddleware.js'
 
@@ -32,6 +33,7 @@ import {protect} from '../middleware/adminAuthMiddleware.js'
   router.get('/bookings', protect, getAllBookings);
   router.get('/stats',protect, getAdminStats);
   router.post('/sales-report',protect,getSalesReport)
+  router.post('/send-notification', protect, sendNotification);
   
   
   

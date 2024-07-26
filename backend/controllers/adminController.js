@@ -5,6 +5,7 @@ import User from '../models/userModel.js';
 import Hotel from '../models/hotelModel.js';
 import Hotelier from '../models/hotelierModel.js';
 import Booking from '../models/bookingModel.js';
+import Notification from '../models/notificationModel.js';
 
 const authAdmin = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -230,6 +231,14 @@ const getAdminStats = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+  const sendNotification = expressAsyncHandler(async (req, res) => {
+    const { message } = req.body;
+  
+    const notification = new Notification({ message });
+    await notification.save();
+  
+    res.status(201).json({ message: 'Notification sent' });
+  });
 
 
 
@@ -249,5 +258,6 @@ export {
   listHotel,
   unlistHotel,
   getAdminStats,
-  getSalesReport
+  getSalesReport,
+  sendNotification
 };

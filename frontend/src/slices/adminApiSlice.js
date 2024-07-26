@@ -95,6 +95,13 @@ export const admiApiSlice=apiSlice.injectEndpoints({
                 body: { from, to }
             }),
         }),
+        sendNotification: builder.mutation({
+          query: (data) => ({
+            url: `${ADMIN_URL}/send-notification`,
+            method: 'POST',
+            body: data
+          })
+        }),
 
     })
 })
@@ -113,5 +120,6 @@ export const {useAdminLoginMutation,
     useAdminUnlistHotelMutation, 
     useGetAllBookingsQuery,
     useGetAdminStatsQuery ,
-    useGetSalesReportQuery
+    useGetSalesReportQuery,
+    useSendNotificationMutation
 }= admiApiSlice

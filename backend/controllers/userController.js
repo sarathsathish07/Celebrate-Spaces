@@ -6,6 +6,7 @@ import User from '../models/userModel.js';
 import Wallet from '../models/walletModel.js';
 import RatingReview from '../models/ratingReviewModel.js';
 import Booking from '../models/bookingModel.js';
+import Notification from '../models/notificationModel.js';
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -306,8 +307,42 @@ const cancelBooking = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+ const getUnreadNotifications = async (req, res) => {
+  try {
+    const userId = req.user._id; 
+    const notifications = await Notification.find({
+      readBy: { $ne: userId },
+    }).sort({ createdAt: -1 }); 
+    
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id; 
+    
+    const notification = await Notification.findById(id);
+    
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
 
+    if (notification.readBy.includes(userId)) {
+      return res.status(400).json({ message: 'Notification already marked as read' });
+    }
+
+    notification.readBy.push(userId);
+    await notification.save();
+    
+    res.json({ message: 'Notification marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
@@ -332,5 +367,7 @@ export {
   addReview,
   getReviews,
   getBookingReviews,
-  cancelBooking
+  cancelBooking,
+  getUnreadNotifications,
+  markNotificationAsRead 
 };

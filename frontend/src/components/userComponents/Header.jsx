@@ -1,9 +1,9 @@
-import React from 'react';
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { Navbar, Nav, Container, NavDropdown, Badge, Dropdown } from 'react-bootstrap';
+import { FaSignInAlt, FaSignOutAlt, FaBell } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useLogoutMutation } from '../../slices/usersApiSlice';
+import { useLogoutMutation, useFetchUnreadNotificationsQuery, useMarkNotificationAsReadMutation } from '../../slices/usersApiSlice';
 import { logout } from '../../slices/authSlice';
 import { useLocation } from 'react-router-dom';
 
@@ -12,6 +12,11 @@ const Header = () => {
   const dispatch = useDispatch();
   const [logoutApiCall] = useLogoutMutation();
   const location = useLocation();
+  const dropdownRef = useRef(null);
+
+  const { data: notifications = [], refetch } = useFetchUnreadNotificationsQuery();
+  const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const logoutHandler = async () => {
     try {
@@ -22,7 +27,47 @@ const Header = () => {
     }
   };
 
+  const handleNotificationClick = async (id) => {
+    try {
+      await markNotificationAsRead(id).unwrap();
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleIconClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = async (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
+        try {
+          await Promise.all(
+            notifications.map(notification => markNotificationAsRead(notification._id).unwrap())
+          );
+          refetch();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications, notifications, markNotificationAsRead, refetch]);
+
   const isHomepage = location.pathname === '/';
+  const notificationIconColor = isHomepage ? 'black' : 'white';
 
   return (
     <header>
@@ -48,7 +93,28 @@ const Header = () => {
               </LinkContainer>
             </Nav>
             {userInfo ? (
-              <Nav className="ms-auto">
+              <Nav className="ms-auto align-items-center">
+                <div className="position-relative mx-3" ref={dropdownRef} onClick={handleIconClick}>
+                  <FaBell style={{ color: notificationIconColor, cursor: 'pointer' }} />
+                  {notifications.length > 0 && (
+                    <Badge pill bg="danger" className="notification-badge position-absolute start-60 translate-middle">
+                      {notifications.length}
+                    </Badge>
+                  )}
+                  {showNotifications && (
+                    <Dropdown.Menu show className="position-absolute">
+                      {notifications.length === 0 ? (
+                        <Dropdown.Item>No unread notifications</Dropdown.Item>
+                      ) : (
+                        notifications.map((notification) => (
+                          <Dropdown.Item key={notification._id} onClick={() => handleNotificationClick(notification._id)}>
+                            {notification.message}
+                          </Dropdown.Item>
+                        ))
+                      )}
+                    </Dropdown.Menu>
+                  )}
+                </div>
                 <NavDropdown
                   title={userInfo.name}
                   id='username'

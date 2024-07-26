@@ -16,7 +16,9 @@ import { authUser,
   addReview,
   getReviews,
   getBookingReviews,
-  cancelBooking
+  cancelBooking,
+  getUnreadNotifications,
+  markNotificationAsRead
 } from '../controllers/userController.js';
 import { saveBooking,updateBookingStatus,getBookingsByUserId,checkRoomAvailability } from '../controllers/bookingController.js';
 import { getRoomsByHotelIds } from '../controllers/roomController.js';
@@ -50,5 +52,7 @@ router.get('/wallet/balance', protect, getWalletBalance);
 router.put('/wallet/update', protect, getWalletBalance);
 router.post('/add-review', protect, addReview);
 router.put('/cancel-booking/:bookingId', protect, cancelBooking);
+router.get('/notifications/unread',protect, getUnreadNotifications);
+router.put('/notifications/:id/read',protect, markNotificationAsRead);
 
 export default router

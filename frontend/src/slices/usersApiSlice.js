@@ -168,6 +168,15 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: { refundMethod },
       }),
     }),
+    fetchUnreadNotifications: builder.query({
+      query: () => `${USERS_URL}/notifications/unread`,
+    }),
+    markNotificationAsRead: builder.mutation({
+      query: (id) => ({
+        url: `${USERS_URL}/notifications/${id}/read`,
+        method: 'PUT',
+      }),
+    }),
   })
 })
 
@@ -197,5 +206,7 @@ export const {
   useAddReviewMutation,
   useGetReviewsByHotelIdQuery,
   useGetReviewsQuery,
-  useCancelBookingMutation
+  useCancelBookingMutation,
+  useFetchUnreadNotificationsQuery,
+  useMarkNotificationAsReadMutation,
 } = usersApiSlice
