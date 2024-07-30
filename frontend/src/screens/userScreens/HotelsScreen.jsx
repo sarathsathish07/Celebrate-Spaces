@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, Row, Col, Button } from "react-bootstrap";
-import {
-  useGetHotelsDataMutation,
-  useGetRoomsDataMutation,
-} from "../../slices/usersApiSlice";
+import { Container, Card, Row, Col, Button, Form, Accordion } from "react-bootstrap";
+import { useGetHotelsDataMutation, useGetRoomsDataMutation } from "../../slices/usersApiSlice";
 import { useNavigate } from "react-router-dom";
 import HotelsSidebar from "../../components/userComponents/HotelsSidebar";
 import bgImage from "../../assets/images/bg-1.png";
@@ -93,19 +90,70 @@ const HotelsScreen = () => {
           <h1>Find Your Dream Luxury Hotel</h1>
         </div>
       </div>
-      <Container style={{height:'90vh'}}>
+      <Container style={{ height: '100vh' }}>
         <Row>
           <Col md={3}>
-            <HotelsSidebar
-              onSortChange={handleSortChange}
-              onCityChange={handleCityChange}
-              onAmenityChange={handleAmenityChange}
-            />
-            <Button variant="primary" className="my-3" onClick={applyFilters}>
-              Apply Filters
-            </Button>
+            <Card className="p-3 my-5">
+              <h5>Filters</h5>
+              <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header>Sort by</Accordion.Header>
+                  <Accordion.Body>
+                    <Form.Group>
+                      <Form.Check
+                        type="radio"
+                        label="Price: Low to High"
+                        value="price_low_high"
+                        checked={sort === "price_low_high"}
+                        onChange={handleSortChange}
+                      />
+                      <Form.Check
+                        type="radio"
+                        label="Price: High to Low"
+                        value="price_high_low"
+                        checked={sort === "price_high_low"}
+                        onChange={handleSortChange}
+                      />
+                    </Form.Group>
+                  </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                  <Accordion.Header>City</Accordion.Header>
+                  <Accordion.Body>
+                    <Form.Group>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter city"
+                        value={city}
+                        onChange={handleCityChange}
+                      />
+                    </Form.Group>
+                  </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="2">
+                  <Accordion.Header>Amenities</Accordion.Header>
+                  <Accordion.Body>
+                    <Form.Group>
+                      {["Free Wifi", "Pool", "Parking", "Gym"].map((amenity) => (
+                        <Form.Check
+                          key={amenity}
+                          type="checkbox"
+                          label={amenity}
+                          value={amenity}
+                          onChange={handleAmenityChange}
+                        />
+                      ))}
+                    </Form.Group>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+              <Button variant="primary" className="mt-3" onClick={applyFilters}>
+                Apply Filters
+              </Button>
+            </Card>
           </Col>
-          <Col md={9} className="mt-5">
+          
+          <Col md={9} className="mt-5 hotels-section">
             <Row>
               {hotels.map((hotel) => (
                 <Col key={hotel._id} md={4} className="mb-4">

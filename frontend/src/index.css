@@ -700,5 +700,18 @@ html {
   background-color: gray !important;
   color: white;
 }
+.hotels-section {
+  max-height: 90vh; 
+  overflow-y: auto;
+  padding-right: 15px;
+}
 
+.hotel-card {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.hotel-card:hover {
+  transform: scale(1.02);
+}
 
