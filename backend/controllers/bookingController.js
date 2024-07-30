@@ -44,7 +44,6 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
 
 const getBookingsByUserId = asyncHandler(async (req, res) => {
   const bookings = await getBookingsByUserIdService(req.user._id);
-  console.log("boo",bookings);
   if (bookings) {
     res.json(bookings);
   } else {

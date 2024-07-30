@@ -7,6 +7,7 @@ import dest2 from '../../assets/images/mumbai.jpg';
 import dest3 from '../../assets/images/thrissur.jpg';
 import dest4 from '../../assets/images/hyd.jpg';
 import { useGetReviewsQuery } from '../../slices/usersApiSlice';
+import Footer from './Footer';
 
 const Hero = () => {
   const { data: reviews, isLoading, isError } = useGetReviewsQuery();
@@ -118,6 +119,7 @@ const Hero = () => {
           )}
         </Container>
       </section>
+      <Footer/>
     </>
   );
 };

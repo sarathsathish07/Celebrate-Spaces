@@ -22,11 +22,6 @@ const HotelierSidebar = ({ hotelierName }) => {
           <FaHotel /> Registered Hotels
         </Nav.Link>
       </LinkContainer>
-      {/* <LinkContainer to="/hotelier/verification">
-        <Nav.Link>
-          <FaCheckCircle /> Verification
-        </Nav.Link>
-      </LinkContainer> */}
       <LinkContainer to="/hotelier/bookings">
         <Nav.Link>
           <FaCalendarCheck /> Bookings

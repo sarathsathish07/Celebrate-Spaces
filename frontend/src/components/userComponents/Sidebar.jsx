@@ -35,7 +35,7 @@ const Sidebar = ({ profileImage, name }) => {
         <LinkContainer to="/wallet">
           <Nav.Link>Wallet</Nav.Link>
         </LinkContainer>
-        <LinkContainer to="/messages">
+        <LinkContainer to="/chat/:hotelId">
           <Nav.Link>Messages</Nav.Link>
         </LinkContainer>
       </Nav>

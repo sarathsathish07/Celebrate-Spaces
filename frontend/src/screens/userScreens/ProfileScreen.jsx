@@ -148,6 +148,7 @@ const ProfileScreen = () => {
   if (profileLoading) return <Loader />;
 
   return (
+    
     <div>
       <div className="position-relative">
         <img src={bgImage} alt="background" className="background-image" />
@@ -180,7 +181,7 @@ const ProfileScreen = () => {
                 <LinkContainer to="/wallet">
                   <Nav.Link>Wallet</Nav.Link>
                 </LinkContainer>
-                <LinkContainer to="/messages">
+                <LinkContainer to="/chat/:hotelId">
                   <Nav.Link>Messages</Nav.Link>
                 </LinkContainer>
               </Nav>

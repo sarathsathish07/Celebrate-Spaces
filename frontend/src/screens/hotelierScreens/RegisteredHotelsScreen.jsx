@@ -61,6 +61,7 @@ const RegisteredHotelsScreen = () => {
 
   return (
     <HotelierLayout>
+      <div style={{ maxHeight: '700px', overflowY: 'auto' }}>
       <Container className="px-4 w-75">
         <Row>
           <Col md={10}>
@@ -74,6 +75,7 @@ const RegisteredHotelsScreen = () => {
         </Row>
         <Row>{renderHotels()}</Row>
       </Container>
+      </div>
     </HotelierLayout>
   );
 };

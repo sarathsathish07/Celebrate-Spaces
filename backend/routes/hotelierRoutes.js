@@ -18,6 +18,7 @@ import { authHotelierHandler,
  import { addRoom,getRoomById,updateRoomHandler } from '../controllers/roomController.js';
  import { getHotelierBookings } from '../controllers/bookingController.js';
 import { protect } from '../middleware/hotelierAuthMiddleware.js';
+import { getHotelMessages,sendHotelMessages,getHotelChatRooms } from '../controllers/chatController.js';
 
 
 const router = express.Router();
@@ -43,6 +44,10 @@ router.post('/add-room/:hotelId', protect, multerUploadRoomImages.array("images"
 router.put('/rooms/:roomId', protect, multerUploadRoomImages.array("images", 5), updateRoomHandler);
 router.get('/rooms/:roomId',protect, getRoomById);
 router.post('/salesReport',protect, getHotelierSalesReport );
+
+router.get('/chatrooms/:hotelId',protect, getHotelChatRooms);
+router.get('/chatrooms/:chatroomId/messages', protect, getHotelMessages);
+router.post('/chatrooms/:chatroomId/messages', protect, sendHotelMessages);
 
 
 export default router;

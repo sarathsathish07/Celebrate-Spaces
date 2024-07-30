@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Table, Container, Row, Col, Card, Button, Collapse, Form, Modal } from "react-bootstrap";
 import Rating from 'react-rating';
-import { useGetBookingsQuery, useAddReviewMutation, useGetReviewsQuery, useCancelBookingMutation } from "../../slices/usersApiSlice.js";
+import { useGetBookingsQuery, useAddReviewMutation, useGetReviewsQuery, useCancelBookingMutation, useCreateChatRoomMutation } from "../../slices/usersApiSlice.js";
 import Loader from "../../components/userComponents/Loader";
 import Sidebar from "../../components/userComponents/Sidebar.jsx";
 import bgImage from "../../assets/images/bgimage.jpg";
@@ -13,11 +14,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const BookingsScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const { data: bookings, isLoading: bookingsLoading, refetch: refetchBookings } = useGetBookingsQuery();
   const { data: reviews, isLoading: reviewsLoading, refetch: refetchReviews } = useGetReviewsQuery();
 
   const [addReview, { isLoading: isAddingReview }] = useAddReviewMutation();
   const [cancelBooking] = useCancelBookingMutation();
+  const [createChatRoom] = useCreateChatRoomMutation();
   const [expandedRow, setExpandedRow] = useState(null);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
@@ -70,9 +73,18 @@ const BookingsScreen = () => {
     return new Date(checkOutDate) < today;
   };
 
+  const handleChat = async (hotelId) => {
+    try {
+      const result = await createChatRoom({ hotelId }).unwrap();
+      navigate(`/chat/${result._id}`);
+    } catch (error) {
+      console.error('Failed to create chat room:', error);
+      toast.error('Failed to create chat room. Please try again.');
+    }
+  };
+
   if (bookingsLoading || reviewsLoading) return <Loader />;
   const sortedBookings = [...bookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
-
 
   return (
     <div>
@@ -148,6 +160,12 @@ const BookingsScreen = () => {
                                             Cancel Booking
                                           </Button>
                                         )}
+                                                                                  <Button
+                                            variant="link"
+                                            onClick={() => handleChat(booking.hotelId._id)}
+                                          >
+                                            Chat
+                                          </Button>
                                       
                                       </Col>
                                     </Row>
@@ -202,47 +220,37 @@ const BookingsScreen = () => {
                       </React.Fragment>
                     ))}
                   </tbody>
-                  <Button variant="link" onClick={() => setShowRefundPolicyModal(true)}>
-                     View Refund Policy
-                  </Button>
                 </Table>
+                <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Confirm Cancellation</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <p>Are you sure you want to cancel this booking?</p>
+                    <p>Please review the refund policy before proceeding.</p>
+                    <Button variant="link" onClick={() => setShowRefundPolicyModal(true)}>View Refund Policy</Button>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowCancelModal(false)}>Close</Button>
+                    <Button variant="danger" onClick={handleCancelBooking}>Cancel Booking</Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal show={showRefundPolicyModal} onHide={() => setShowRefundPolicyModal(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Refund Policy</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <p>If you cancel your booking at least 2 days before the check-in date, you will receive a full refund. Cancellations made within 2 days of the check-in date are non-refundable.</p>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowRefundPolicyModal(false)}>Close</Button>
+                  </Modal.Footer>
+                </Modal>
               </Card.Body>
             </Card>
           </Col>
         </Row>
       </Container>
-      <Modal show={showCancelModal} onHide={() => setShowCancelModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Cancellation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to cancel this booking?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCancelModal(false)}>
-            Close
-          </Button>
-          <Button variant="danger" onClick={handleCancelBooking}>
-            Confirm Cancellation
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal show={showRefundPolicyModal} onHide={() => setShowRefundPolicyModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Refund Policy</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Our refund policy is as follows:</p>
-          <ul>
-            <li>100% refund if canceled at least 2 days prior to the check-in date.</li>
-            <li>50% refund if canceled at least 1 day prior to the check-in date.</li>
-            <li>No refund if canceled less than 1 day prior to the check-in date.</li>
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowRefundPolicyModal(false)}>Close</Button>
-        </Modal.Footer>
-      </Modal>
       <Footer />
     </div>
   );

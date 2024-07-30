@@ -177,6 +177,35 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
       }),
     }),
+    getChatRooms: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/chatrooms`,
+        method: 'GET',
+      }),
+    }),
+    createChatRoom: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/chatrooms`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    getMessages: builder.query({
+      query: (chatRoomId) => ({
+        url: `${USERS_URL}/chatrooms/${chatRoomId}/messages`,
+        method: 'GET',
+      }),
+    }),
+    sendMessage: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/chatrooms/${data.chatRoomId}/messages`,
+        method: 'POST',
+        body: {
+          content: data.content,
+          senderType: data.senderType, 
+        },
+      }),
+    }),
   })
 })
 
@@ -209,4 +238,8 @@ export const {
   useCancelBookingMutation,
   useFetchUnreadNotificationsQuery,
   useMarkNotificationAsReadMutation,
+  useGetChatRoomsQuery, 
+  useCreateChatRoomMutation, 
+  useGetMessagesQuery, 
+  useSendMessageMutation
 } = usersApiSlice

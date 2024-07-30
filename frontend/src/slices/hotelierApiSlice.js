@@ -118,6 +118,19 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         body: { from, to },
       }),
     }),
+    getHotelChatRooms: builder.query({
+      query: (hotelId) => `${HOTELS_URL}/chatrooms/${hotelId}`,
+    }),
+    getHotelMessages: builder.query({
+      query: (chatRoomId) => `${HOTELS_URL}/chatrooms/${chatRoomId}/messages`,
+    }),
+    sendHotelMessage: builder.mutation({
+      query: ({ chatRoomId, content, senderType,hotelId }) => ({
+        url: `${HOTELS_URL}/chatrooms/${chatRoomId}/messages`,
+        method: 'POST',
+        body: { content, senderType,hotelId },
+      }),
+    }),
   }),
   
 });
@@ -140,5 +153,8 @@ export const {
   useGetHotelierBookingsQuery,
   useUpdateRoomMutation ,
   useGetHotelierDashboardStatsQuery,
-  useGetHotelierSalesReportMutation 
+  useGetHotelierSalesReportMutation ,
+  useGetHotelChatRoomsQuery,
+  useGetHotelMessagesQuery,
+  useSendHotelMessageMutation,
 } = hotelierApiSlice;

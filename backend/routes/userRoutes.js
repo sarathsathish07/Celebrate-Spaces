@@ -21,6 +21,7 @@ import { authUser,
   markNotificationAsRead
 } from '../controllers/userController.js';
 import { saveBooking,updateBookingStatus,getBookingsByUserId,checkRoomAvailability } from '../controllers/bookingController.js';
+import { getChatRooms,createChatRoom,getMessages,sendMessage } from '../controllers/chatController.js';
 import { getRoomsByHotelIds } from '../controllers/roomController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { multerUploadUserProfile } from "../config/multerConfig.js";
@@ -54,5 +55,8 @@ router.post('/add-review', protect, addReview);
 router.put('/cancel-booking/:bookingId', protect, cancelBooking);
 router.get('/notifications/unread',protect, getUnreadNotifications);
 router.put('/notifications/:id/read',protect, markNotificationAsRead);
+
+router.route('/chatrooms').get(protect, getChatRooms).post(protect, createChatRoom);
+router.route('/chatrooms/:chatRoomId/messages').get(protect, getMessages).post(protect, sendMessage);
 
 export default router

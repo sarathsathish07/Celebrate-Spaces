@@ -200,26 +200,34 @@ const HotelDetailsScreen = () => {
                 </Tab.Pane>
                 <Tab.Pane eventKey="reviews">
                   <h4>Reviews</h4>
+
                   {isLoadingReviews ? (
                     <Loader />
-                  ) : reviews?.length > 0 ? (
-                    reviews.map((review, index) => (
-                      <div key={index} className="review">
-                        <Rating
-                          emptySymbol="fa fa-star-o fa-2x"
-                          fullSymbol="fa fa-star fa-2x"
-                          fractions={2}
-                          initialRating={review.rating}
-                          readonly
-                        />
-                        <p>{review.comment}</p>
-                        <p>
-                          <strong>By:</strong> {review.user?.name}
-                        </p>
-                      </div>
-                    ))
+                  ) : reviews && reviews.length > 0 ? (
+                    <Row>
+                      {reviews.map((review) => (
+                        <Col md={4} key={review._id} className="mb-3">
+                          <Card>
+                            <Card.Body>
+                              <Card.Title>{review.userId.name}</Card.Title>
+                              <Card.Text>
+                              <Rating
+                                initialRating={review.rating}
+                                readonly
+                                emptySymbol={<i className="fa fa-star-o" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
+                                fullSymbol={<i className="fa fa-star" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
+                              />
+
+
+                              </Card.Text>
+                              <Card.Text>{review.review}</Card.Text>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      ))}
+                    </Row>
                   ) : (
-                    <p>No reviews available</p>
+                    <p>No reviews yet.</p>
                   )}
                 </Tab.Pane>
               </Tab.Content>
