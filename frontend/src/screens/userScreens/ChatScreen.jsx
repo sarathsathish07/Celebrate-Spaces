@@ -124,7 +124,7 @@ const ChatScreen = () => {
       <div className="chat-messages">
         {selectedChatRoom ? (
           <>
-            <h3>Chat with {selectedChatRoom.hotelId.name}</h3>
+            <h3>{selectedChatRoom.hotelId.name}</h3>
             <div className="messages">
               {messagesLoading ? (
                 <p>Loading messages...</p>

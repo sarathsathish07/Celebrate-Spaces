@@ -233,10 +233,12 @@ const getAdminStats = async (req, res) => {
   };
   const sendNotification = expressAsyncHandler(async (req, res) => {
     const { message } = req.body;
-  
+    
     const notification = new Notification({ message });
     await notification.save();
-  
+    const io = req.app.get('io');
+    io.emit('newNotification', notification);
+    
     res.status(201).json({ message: 'Notification sent' });
   });
 

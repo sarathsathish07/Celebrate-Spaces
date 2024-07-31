@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Container, Card, Row, Col, Button, Form, Accordion } from "react-bootstrap";
 import { useGetHotelsDataMutation, useGetRoomsDataMutation } from "../../slices/usersApiSlice";
-import { useNavigate } from "react-router-dom";
-import HotelsSidebar from "../../components/userComponents/HotelsSidebar";
+import { useNavigate,useLocation  } from "react-router-dom";
 import bgImage from "../../assets/images/bg-1.png";
 import Loader from "../../components/userComponents/Loader";
 import Footer from "../../components/userComponents/Footer";
 import { toast } from "react-toastify";
 
 const HotelsScreen = () => {
+  const location = useLocation();
+  const initialCity = location.state?.city || "";
   const [hotels, setHotels] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [sort, setSort] = useState("price_low_high");
   const [city, setCity] = useState("");
   const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const [filterCity, setFilterCity] = useState("");
+  const [filterCity, setFilterCity] = useState(initialCity);
   const [filterAmenities, setFilterAmenities] = useState([]);
   const [getHotels, { isLoading: isLoadingHotels }] = useGetHotelsDataMutation();
   const [getRooms, { isLoading: isLoadingRooms }] = useGetRoomsDataMutation();

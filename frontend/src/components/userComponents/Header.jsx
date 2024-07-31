@@ -6,6 +6,9 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useLogoutMutation, useFetchUnreadNotificationsQuery, useMarkNotificationAsReadMutation } from '../../slices/usersApiSlice';
 import { logout } from '../../slices/authSlice';
 import { useLocation } from 'react-router-dom';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000'); 
 
 const Header = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -68,6 +71,16 @@ const Header = () => {
 
   const isHomepage = location.pathname === '/';
   const notificationIconColor = isHomepage ? 'black' : 'white';
+
+  useEffect(() => {
+    socket.on('newNotification', (notification) => {
+      refetch(); 
+    });
+
+    return () => {
+      socket.off('newNotification');
+    };
+  }, [refetch]);
 
   return (
     <header>

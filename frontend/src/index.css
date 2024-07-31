@@ -579,18 +579,19 @@ html {
 }
 
 
-
 .chat-screen {
   display: flex;
-  height: 85vh; 
+  height: 560px; 
+  border: 1px solid rgb(121, 113, 113);
 }
 
 .chat-sidebar {
   width: 250px; 
-  background-color: #f4f4f4;
+  background-color: #878585;
   padding: 20px;
   overflow-y: auto;
   border-right: 1px solid #ddd;
+  height: 560px;
 }
 
 .chat-sidebar h3 {
@@ -605,7 +606,7 @@ html {
 
 .chat-sidebar li {
   padding: 10px;
-  border-bottom: 1px solid #958d8d;
+  border-bottom: 1px solid #d4caca;
   cursor: pointer;
   transition: background-color 0.3s;
 }

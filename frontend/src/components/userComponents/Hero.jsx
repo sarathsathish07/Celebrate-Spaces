@@ -7,15 +7,21 @@ import dest2 from '../../assets/images/mumbai.jpg';
 import dest3 from '../../assets/images/thrissur.jpg';
 import dest4 from '../../assets/images/hyd.jpg';
 import { useGetReviewsQuery } from '../../slices/usersApiSlice';
+import { useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 
 const Hero = () => {
   const { data: reviews, isLoading, isError } = useGetReviewsQuery();
+  const navigate = useNavigate();
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (v, i) => (
       <FaStar key={i} color={i < rating ? 'gold' : 'lightgray'} />
     ));
+  };
+
+  const handleCardClick = (city) => {
+    navigate('/hotels', { state: { city } });
   };
 
   return (
@@ -45,7 +51,7 @@ const Hero = () => {
           <h1 className="mb-4">Popular Destinations</h1>
           <Row>
             <Col md={3}>
-              <Card className="mb-4 destination-card">
+              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Kochi')}>
                 <Card.Img variant="top" src={dest1} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -56,7 +62,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card">
+              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Mumbai')}>
                 <Card.Img variant="top" src={dest2} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -67,7 +73,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card">
+              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Thrissur')}>
                 <Card.Img variant="top" src={dest3} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -78,7 +84,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card">
+              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Hyderabad')}>
                 <Card.Img variant="top" src={dest4} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -119,7 +125,7 @@ const Hero = () => {
           )}
         </Container>
       </section>
-      <Footer/>
+      <Footer />
     </>
   );
 };
