@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGetRoomByIdQuery, useUpdateRoomMutation } from "../../slices/hotelierApiSlice";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import { toast } from "react-toastify";
+import Loader from "../../components/userComponents/Loader";
 
 const EditRoomScreen = () => {
   const { roomId } = useParams();
@@ -130,7 +131,7 @@ const EditRoomScreen = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader/>;
   if (isError) {
     toast.error("Error fetching room details");
     return <div>Error</div>;

@@ -280,12 +280,13 @@ const cancelBooking = async (req, res) => {
 
     const today = new Date();
     const checkInDate = new Date(booking.checkInDate);
+    const diffHours = Math.ceil((checkInDate - today) / (1000 * 60 * 60));
+    
     let refundPercentage = 0;
 
-    const diffDays = Math.ceil((checkInDate - today) / (1000 * 60 * 60 * 24));
-    if (diffDays > 2) {
+    if (diffHours > 48) {
       refundPercentage = 100;
-    } else if (diffDays >= 1) {
+    } else if (diffHours >= 24) {
       refundPercentage = 50;
     }
 
@@ -307,6 +308,7 @@ const cancelBooking = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
  const getUnreadNotifications = async (req, res) => {
   try {
     const userId = req.user._id; 

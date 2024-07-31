@@ -22,7 +22,6 @@ const authAdmin = expressAsyncHandler(async (req, res) => {
   }
 });
 
-
 const logoutAdmin = expressAsyncHandler(async (req, res) => {
   const message =  adminService.logoutAdmin(res);
   res.status(200).json(message);

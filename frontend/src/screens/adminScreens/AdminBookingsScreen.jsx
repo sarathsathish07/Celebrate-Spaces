@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { Table, Container, Row, Col, Card, Button, Collapse, Form as BootstrapForm } from 'react-bootstrap';
 import { useGetAllBookingsQuery } from '../../slices/adminApiSlice';
 import Loader from '../../components/userComponents/Loader';
-import AdminSidebar from '../../components/adminComponents/AdminSidebar';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
 import { FaChevronDown } from 'react-icons/fa';
 

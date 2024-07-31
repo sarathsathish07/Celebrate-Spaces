@@ -160,12 +160,13 @@ const BookingsScreen = () => {
                                             Cancel Booking
                                           </Button>
                                         )}
-                                                                                  <Button
+                                          <Button
                                             variant="link"
                                             onClick={() => handleChat(booking.hotelId._id)}
                                           >
-                                            Chat
+                                            <i className="fa fa-comments fa-3x"></i> 
                                           </Button>
+
                                       
                                       </Col>
                                     </Row>
@@ -236,16 +237,19 @@ const BookingsScreen = () => {
                   </Modal.Footer>
                 </Modal>
                 <Modal show={showRefundPolicyModal} onHide={() => setShowRefundPolicyModal(false)}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Refund Policy</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <p>If you cancel your booking at least 2 days before the check-in date, you will receive a full refund. Cancellations made within 2 days of the check-in date are non-refundable.</p>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowRefundPolicyModal(false)}>Close</Button>
-                  </Modal.Footer>
-                </Modal>
+                <Modal.Header closeButton>
+                  <Modal.Title>Refund Policy</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>If you cancel your booking more than 48 hours before the check-in date, you will receive a full refund.</p>
+                  <p> Cancellations made between 24 and 48 hours before the check-in date will receive a 50% refund.</p>
+                  <p> Cancellations made within 24 hours of the check-in date are non-refundable.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={() => setShowRefundPolicyModal(false)}>Close</Button>
+                </Modal.Footer>
+              </Modal>
+
               </Card.Body>
             </Card>
           </Col>

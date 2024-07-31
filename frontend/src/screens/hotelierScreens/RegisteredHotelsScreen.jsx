@@ -5,6 +5,7 @@ import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loader from "../../components/userComponents/Loader.jsx";
 
 const RegisteredHotelsScreen = () => {
   const { data: hotels, isLoading, isError, refetch } = useGetHotelsQuery();
@@ -53,7 +54,7 @@ const RegisteredHotelsScreen = () => {
     ));
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader/>;
   if (isError) {
     toast.error("Error fetching hotels");
     return <div>Error</div>;

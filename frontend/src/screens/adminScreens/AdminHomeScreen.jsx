@@ -9,6 +9,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../../components/userComponents/Loader.jsx';
 
 ChartJS.register(...registerables);
 
@@ -79,7 +80,7 @@ const AdminDashboard = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
 
   const monthlyBookingsData = {
     labels: stats.monthlyBookings.map((data) => data.month),

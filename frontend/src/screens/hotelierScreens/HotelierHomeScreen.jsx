@@ -9,6 +9,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loader from '../../components/userComponents/Loader.jsx';
 
 ChartJS.register(...registerables);
 
@@ -27,6 +28,8 @@ const HotelierDashboard = () => {
   useEffect(() => {
     refetch();
   }, [refetch]);
+  
+  if (isLoading) return <Loader />;
 
   useEffect(() => {
     return () => {
@@ -76,7 +79,7 @@ const HotelierDashboard = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader/>;
 
   const formatMonthlyLabel = (month) => {
     const [year, monthIndex] = month.split('-');
