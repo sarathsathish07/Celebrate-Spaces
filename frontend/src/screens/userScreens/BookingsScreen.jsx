@@ -204,6 +204,7 @@ const BookingsScreen = () => {
                                                 variant="primary"
                                                 onClick={() => handleReviewSubmit(booking._id, booking.hotelId._id)}
                                                 disabled={isAddingReview}
+                                                className="mt-3"
                                               >
                                                 {isAddingReview ? 'Submitting...' : 'Submit Review'}
                                               </Button>

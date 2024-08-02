@@ -65,6 +65,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         params: { sort, amenities, city },
       }),
     }),
+    getRoomByRoomId: builder.query({
+      query: (roomId) => `${USERS_URL}/rooms/${roomId}`,
+    }),
     
     
     getHotelById: builder.query({
@@ -197,14 +200,20 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     sendMessage: builder.mutation({
-      query: (data) => ({
-        url: `${USERS_URL}/chatrooms/${data.chatRoomId}/messages`,
-        method: 'POST',
-        body: {
-          content: data.content,
-          senderType: data.senderType, 
-        },
-      }),
+      query: (data) => {
+        const formData = new FormData();
+        formData.append('content', data.content);
+        formData.append('senderType', data.senderType);
+        if (data.file) {
+          formData.append('file', data.file);
+        }
+
+        return {
+          url: `${USERS_URL}/chatrooms/${data.chatRoomId}/messages`,
+          method: 'POST',
+          body: formData,
+        };
+      },
     }),
   })
 })
@@ -241,5 +250,6 @@ export const {
   useGetChatRoomsQuery, 
   useCreateChatRoomMutation, 
   useGetMessagesQuery, 
-  useSendMessageMutation
+  useSendMessageMutation,
+  useGetRoomByRoomIdQuery
 } = usersApiSlice

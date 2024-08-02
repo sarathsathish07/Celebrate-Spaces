@@ -9,7 +9,7 @@ import Footer from '../../components/userComponents/Footer';
 import { toast } from 'react-toastify';
 import Rating from 'react-rating';
 import 'font-awesome/css/font-awesome.min.css';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 
 const HotelDetailsScreen = () => {
   const navigate = useNavigate();
@@ -28,6 +28,10 @@ const HotelDetailsScreen = () => {
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [roomCount, setRoomCount] = useState(1);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM', // Replace with your API key
+  });
 
   const baseURL = 'http://localhost:5000/';
   useEffect(() => {
@@ -107,6 +111,11 @@ const HotelDetailsScreen = () => {
     return <div>Error fetching hotel details</div>;
   }
 
+  if (loadError) {
+    toast.error('Error loading Google Maps');
+    return <div>Error loading Google Maps</div>;
+  }
+
   return (
     <div>
       <Container className="hotel-details-content mb-5">
@@ -161,7 +170,7 @@ const HotelDetailsScreen = () => {
                     ))}
                   </ul>
                   <h4>Location</h4>
-                  <LoadScript googleMapsApiKey="AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM">
+                  {isLoaded && (
                     <GoogleMap
                       mapContainerStyle={mapContainerStyle}
                       center={mapCenter}
@@ -169,7 +178,7 @@ const HotelDetailsScreen = () => {
                     >
                       <Marker position={mapCenter} />
                     </GoogleMap>
-                  </LoadScript>
+                  )}
                 </Tab.Pane>
                 <Tab.Pane eventKey="rooms">
                   <Row>
@@ -247,8 +256,7 @@ const HotelDetailsScreen = () => {
               <DatePicker
                 selected={checkInDate}
                 onChange={(date) => setCheckInDate(date)}
-                minDate={new Date()}
-                dateFormat="yyyy-MM-dd"
+                dateFormat="dd/MM/yyyy"
                 className="form-control"
               />
             </Form.Group>
@@ -257,30 +265,24 @@ const HotelDetailsScreen = () => {
               <DatePicker
                 selected={checkOutDate}
                 onChange={(date) => setCheckOutDate(date)}
-                minDate={checkInDate}
-                dateFormat="yyyy-MM-dd"
+                dateFormat="dd/MM/yyyy"
                 className="form-control"
               />
             </Form.Group>
             <Form.Group controlId="roomCount">
-              <Form.Label>Number of Rooms</Form.Label>
+              <Form.Label>Room Count</Form.Label>
               <Form.Control
                 type="number"
+                min="1"
                 value={roomCount}
-                onChange={(e) => setRoomCount(e.target.value)}
-                min={1}
+                onChange={(e) => setRoomCount(Number(e.target.value))}
               />
             </Form.Group>
+            <Button variant="primary" onClick={handleBooking}>
+              Book Now
+            </Button>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleBooking}>
-            Book Now
-          </Button>
-        </Modal.Footer>
       </Modal>
     </div>
   );

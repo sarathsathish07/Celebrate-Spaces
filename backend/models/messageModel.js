@@ -18,8 +18,11 @@ const messageSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
   },
+  fileUrl: {
+    type: String, 
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,

@@ -26,12 +26,19 @@ const getMessages = expressAsyncHandler(async (req, res) => {
 const sendMessage = expressAsyncHandler(async (req, res) => {
   const chatRoomId = req.params.chatRoomId;
   const { content, senderType } = req.body;
+  const file = req.file;
+
 
   const newMessageData = {
     chatRoomId,
-    content,
     createdAt: Date.now(),
   };
+  if (file) {
+    newMessageData.fileUrl = `/MessageFiles/${file.filename}`; 
+  }
+  if (content) {
+    newMessageData.content = content; 
+  }
 
   if (senderType === 'User') {
     newMessageData.sender = req.user._id;
@@ -53,32 +60,48 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 
 const getHotelChatRooms = expressAsyncHandler(async (req, res) => {
   const chatRooms = await ChatRoom.find({ hotelId: req.params.hotelId }).populate('userId', 'name');
+  console.log(chatRooms);
   res.json(chatRooms);
 });
 
 const getHotelMessages = expressAsyncHandler(async (req, res) => {
-  console.log(req.params.chatroomId);
-  const messages = await Message.find({ chatRoomId: req.params.chatroomId }).populate('sender', 'name');
+  console.log("88");
+  const messages = await Message.find({ chatRoomId: req.params.chatRoomId }).sort('timestamp');
+  console.log(messages);
   res.json(messages);
 });
 
 const sendHotelMessages = expressAsyncHandler(async (req, res) => {
-  const { content, senderType, hotelId } = req.body;
-  const chatRoomId = req.params.chatroomId;
+  const chatRoomId = req.params.chatRoomId;
+  const { content, senderType } = req.body;
+  const file = req.file;
 
-  const message = new Message({
+  const newMessageData = {
     chatRoomId,
-    sender: hotelId,
-    senderType,
-    content,
-  });
+    createdAt: Date.now(),
+  };
+  if (file) {
+    newMessageData.fileUrl = `/MessageFiles/${file.filename}`;
+  }
+  if (content) {
+    newMessageData.content = content;
+  }
 
-  await message.save();
+  if (senderType === 'User') {
+    newMessageData.sender = req.user._id;
+    newMessageData.senderType = 'User';
+  } else if (senderType === 'Hotel') {
+    newMessageData.sender = req.hotel._id;
+    newMessageData.senderType = 'Hotel';
+  }
+
+  const newMessage = await Message.create(newMessageData);
+  await ChatRoom.findByIdAndUpdate(chatRoomId, { lastMessage: content, lastMessageTime: Date.now() });
 
   const io = req.app.get('io');
-  io.to(chatRoomId).emit('message', message);
+  io.to(chatRoomId).emit('message', newMessage);
 
-  res.status(201).json(message);
+  res.status(201).json(newMessage);
 });
 
 export { getChatRooms, createChatRoom, getMessages, sendMessage,getHotelMessages,sendHotelMessages,getHotelChatRooms };

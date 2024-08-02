@@ -40,6 +40,18 @@ const getRoomById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const getRoomByRoomId = async (req, res) => {
+  const { roomId } = req.params;
+  try {
+    const room = await RoomService.getRoomByIdHandler(roomId);
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+    res.status(200).json(room);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const getRoomsByHotelIds = async (req, res) => {
   const { hotelIds } = req.body;
   try {
@@ -67,5 +79,6 @@ const updateRoomHandler = async (req, res) => {
 export { addRoom,
   getRoomById,
   getRoomsByHotelIds,
-  updateRoomHandler
+  updateRoomHandler,
+  getRoomByRoomId
  };

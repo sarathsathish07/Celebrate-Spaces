@@ -1,5 +1,5 @@
 import express from 'express';
-import { multerUploadCertificate, multerUploadUserProfile, multerUploadHotelImages, multerUploadRoomImages } from "../config/multerConfig.js";
+import { multerUploadCertificate, multerUploadUserProfile, multerUploadHotelImages, multerUploadRoomImages,multerUploadMessageFile } from "../config/multerConfig.js";
 import { authHotelierHandler, 
   registerHotelierHandler, 
   logoutHotelierHandler, 
@@ -46,8 +46,7 @@ router.get('/rooms/:roomId',protect, getRoomById);
 router.post('/salesReport',protect, getHotelierSalesReport );
 
 router.get('/chatrooms/:hotelId',protect, getHotelChatRooms);
-router.get('/chatrooms/:chatroomId/messages', protect, getHotelMessages);
-router.post('/chatrooms/:chatroomId/messages', protect, sendHotelMessages);
+router.route('/chatrooms/:chatRoomId/messages').get(protect, getHotelMessages).post(multerUploadMessageFile.single('file'),protect, sendHotelMessages);
 
 
 export default router;

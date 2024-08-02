@@ -323,6 +323,14 @@ html {
 .nav-link {
   font-size: 18px;
   margin: 10px 0;
+  color: black;
+}
+.sidebar-link:hover {
+  font-size: 18px;
+  margin: 10px 0;
+  background-color: #cfcfcf;
+  border-radius: 5px;
+  color: black;
 }
 
 .profile-card {
@@ -582,12 +590,12 @@ html {
 .chat-screen {
   display: flex;
   height: 560px; 
-  border: 1px solid rgb(121, 113, 113);
+  border: 1px solid #ddd;
 }
 
 .chat-sidebar {
   width: 250px; 
-  background-color: #878585;
+  background-color: #f8f9fa;
   padding: 20px;
   overflow-y: auto;
   border-right: 1px solid #ddd;
@@ -611,19 +619,20 @@ html {
   transition: background-color 0.3s;
 }
 
-.chat-sidebar li.active {
-  background-color: #f0f0f0;
-  color: #333;
+.chat-sidebar li:active {
+  background-color: #9a9a9a !important;
+  color: #333 !important;
 }
 .chat-sidebar li:hover {
-  background-color: #e0e0e0; 
+  background-color: #cfcfcf; 
+  border-radius: 5px;
 }
 
 .chat-messages {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  /* padding: 20px; */
   
 }
 
@@ -633,13 +642,13 @@ html {
 
 
 .sent {
-  background-color: #d1e7dd;
+  background-color: #aae69e;
   align-self: flex-end;
   text-align: right;
 }
 
 .received {
-  background-color: #f8d7da;
+  background-color: white;
   align-self: flex-start;
   text-align: left;
  
@@ -675,8 +684,11 @@ html {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  height: 450px; 
+  /* height: 450px;  */
   border: 1px solid #ddd;
+  background-image: url("..//../frontend/src/assets/images/doodle5.png");
+  background-size: contain;
+  
 }
 
 .message {
@@ -747,4 +759,11 @@ html {
   40% {
     transform: scale(1);
   }
+}
+.new-message button{
+  background-color: white;
+  padding: 0px 0px;
+}
+.new-message input{
+  padding: 10px 30px;
 }

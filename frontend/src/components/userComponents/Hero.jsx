@@ -51,7 +51,7 @@ const Hero = () => {
           <h1 className="mb-4">Popular Destinations</h1>
           <Row>
             <Col md={3}>
-              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Kochi')}>
+              <Card className="mb-4 destination-card" style={{cursor:"pointer"}} onClick={() => handleCardClick('Kochi')}>
                 <Card.Img variant="top" src={dest1} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -62,7 +62,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Mumbai')}>
+              <Card className="mb-4 destination-card" style={{cursor:"pointer"}} onClick={() => handleCardClick('Mumbai')}>
                 <Card.Img variant="top" src={dest2} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -73,7 +73,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Thrissur')}>
+              <Card className="mb-4 destination-card" style={{cursor:"pointer"}} onClick={() => handleCardClick('Thrissur')}>
                 <Card.Img variant="top" src={dest3} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">
@@ -84,7 +84,7 @@ const Hero = () => {
               </Card>
             </Col>
             <Col md={3}>
-              <Card className="mb-4 destination-card" onClick={() => handleCardClick('Hyderabad')}>
+              <Card className="mb-4 destination-card" style={{cursor:"pointer"}} onClick={() => handleCardClick('Hyderabad')}>
                 <Card.Img variant="top" src={dest4} className="destination-image" />
                 <Card.Body className="destination-card-body">
                   <div className="destination-info">

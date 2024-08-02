@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button, Card, Container } from 'react-bootstrap';
 import { useSendNotificationMutation } from '../../slices/adminApiSlice';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminCommunicationScreen = () => {
   const [message, setMessage] = useState('');
@@ -48,6 +49,7 @@ const AdminCommunicationScreen = () => {
           </Card.Body>
         </Card>
       </Container>
+      <ToastContainer />
     </AdminLayout>
   );
 };

@@ -98,7 +98,7 @@ const HotelierBookingsScreen = () => {
                               {booking.bookingStatus === 'cancelled' && (
                                 <div className="d-flex align-items-center text-danger">
                                   <FaTimes className="me-2" />
-                                  Booking Cancelled
+                                   Cancelled
                                 </div>
                               )}
                                 </Col>

@@ -125,11 +125,20 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
       query: (chatRoomId) => `${HOTELS_URL}/chatrooms/${chatRoomId}/messages`,
     }),
     sendHotelMessage: builder.mutation({
-      query: ({ chatRoomId, content, senderType,hotelId }) => ({
-        url: `${HOTELS_URL}/chatrooms/${chatRoomId}/messages`,
-        method: 'POST',
-        body: { content, senderType,hotelId },
-      }),
+      query: (data) => {
+        const formData = new FormData();
+        formData.append('content', data.content);
+        formData.append('senderType', data.senderType);
+        if (data.file) {
+          formData.append('file', data.file);
+        }
+
+        return {
+          url: `${HOTELS_URL}/chatrooms/${data.chatRoomId}/messages`,
+          method: 'POST',
+          body: formData,
+        };
+      },
     }),
   }),
   

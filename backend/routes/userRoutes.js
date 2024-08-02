@@ -22,9 +22,9 @@ import { authUser,
 } from '../controllers/userController.js';
 import { saveBooking,updateBookingStatus,getBookingsByUserId,checkRoomAvailability } from '../controllers/bookingController.js';
 import { getChatRooms,createChatRoom,getMessages,sendMessage } from '../controllers/chatController.js';
-import { getRoomsByHotelIds } from '../controllers/roomController.js';
+import { getRoomsByHotelIds,getRoomByRoomId } from '../controllers/roomController.js';
 import { protect } from '../middleware/authMiddleware.js';
-import { multerUploadUserProfile } from "../config/multerConfig.js";
+import { multerUploadUserProfile,multerUploadMessageFile } from "../config/multerConfig.js";
 
 const router = express.Router()
 
@@ -40,6 +40,7 @@ router.post('/logout',logoutUser)
 router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfile.single('profileImage'),protect,updateUserProfile);
 router.get('/hotels',getHotels )
 router.post('/rooms', getRoomsByHotelIds);
+router.get('/rooms/:roomId',protect, getRoomByRoomId);
 router.get('/hotels/:id', getHotelById);
 router.get('/reviews/:hotelId',getReviews );
 router.get('/reviews',getBookingReviews );
@@ -57,6 +58,7 @@ router.get('/notifications/unread',protect, getUnreadNotifications);
 router.put('/notifications/:id/read',protect, markNotificationAsRead);
 
 router.route('/chatrooms').get(protect, getChatRooms).post(protect, createChatRoom);
-router.route('/chatrooms/:chatRoomId/messages').get(protect, getMessages).post(protect, sendMessage);
+router.route('/chatrooms/:chatRoomId/messages').get(protect, getMessages).post(multerUploadMessageFile.single('file'),protect, sendMessage);
+
 
 export default router

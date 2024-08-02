@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useGetRoomByIdQuery } from '../../slices/hotelierApiSlice.js';
+import { useGetRoomByRoomIdQuery } from '../../slices/usersApiSlice.js';
 import { useNavigate } from 'react-router-dom';
 import { useSaveBookingMutation, useUpdateBookingStatusMutation } from '../../slices/usersApiSlice.js';
 import Loader from '../../components/userComponents/Loader.jsx';
@@ -22,7 +22,7 @@ const CheckoutScreen = () => {
   const checkOutDate = new Date(queryParams.get('checkOutDate'));
   const roomCount = parseInt(queryParams.get('roomCount'), 10);
 
-  const { data: room, error, isLoading } = useGetRoomByIdQuery(roomId);
+  const { data: room, error, isLoading } = useGetRoomByRoomIdQuery(roomId);
   const { userInfo } = useSelector((state) => state.auth);
   const [saveBooking, { isLoading: isSaving }] = useSaveBookingMutation();
   const [updateBookingStatus] = useUpdateBookingStatusMutation();

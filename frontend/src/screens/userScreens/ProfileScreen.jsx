@@ -173,16 +173,16 @@ const ProfileScreen = () => {
               />
               <Nav className="flex-column">
                 <LinkContainer to="/profile">
-                  <Nav.Link>My Profile</Nav.Link>
+                  <Nav.Link className='sidebar-link'>My Profile</Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/bookings">
-                  <Nav.Link>Bookings</Nav.Link>
+                  <Nav.Link className='sidebar-link'>Bookings</Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/wallet">
-                  <Nav.Link>Wallet</Nav.Link>
+                  <Nav.Link className='sidebar-link'>Wallet</Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/chat/:hotelId">
-                  <Nav.Link>Messages</Nav.Link>
+                  <Nav.Link className='sidebar-link'>Messages</Nav.Link>
                 </LinkContainer>
               </Nav>
             </div>

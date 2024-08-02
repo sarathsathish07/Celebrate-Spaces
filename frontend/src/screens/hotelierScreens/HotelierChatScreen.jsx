@@ -1,21 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, ListGroup, Card, Form, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useGetHotelChatRoomsQuery, useGetHotelMessagesQuery, useSendHotelMessageMutation } from "../../slices/hotelierApiSlice.js";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
-import Loader from "../../components/userComponents/Loader";
 import io from "socket.io-client";
+import { format } from 'date-fns';
+import EmojiPicker from "emoji-picker-react";
+import { FaPaperclip } from "react-icons/fa";
 
 const socket = io('http://localhost:5000');
 
 const HotelierChatScreen = () => {
   const { hotelId } = useParams();
-  const { data: chatRooms, isLoading: isLoadingChatRooms, isError: isErrorChatRooms } = useGetHotelChatRoomsQuery(hotelId);
+  const { data: chatRooms = [], isLoading: isLoadingChatRooms, isError: isErrorChatRooms } = useGetHotelChatRoomsQuery(hotelId);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [newMessage, setNewMessage] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const { data: messages, isLoading: isLoadingMessages, isError: isErrorMessages, refetch: refetchMessages } = useGetHotelMessagesQuery(selectedChatRoom?._id, { skip: !selectedChatRoom });
+  const { data: messages = [], isLoading: isLoadingMessages, isError: isErrorMessages, refetch: refetchMessages } = useGetHotelMessagesQuery(selectedChatRoom?._id, { skip: !selectedChatRoom });
   const [sendMessage] = useSendHotelMessageMutation();
 
   useEffect(() => {
@@ -24,22 +29,26 @@ const HotelierChatScreen = () => {
         refetchMessages();
       }
     });
+
     return () => {
       socket.off('message');
     };
   }, [selectedChatRoom, refetchMessages]);
 
-  const handleSendMessage = async () => {
-    if (newMessage.trim() && selectedChatRoom) {
-      await sendMessage({
-        chatRoomId: selectedChatRoom._id,
-        content: newMessage,
-        senderType: 'Hotel',
-        hotelId,
-      });
-      setNewMessage('');
+  useEffect(() => {
+    socket.on("typingUser", () => {
+      setIsTyping(true);
+    });
+
+    socket.on("stopTypingUser", () => {
+      setIsTyping(false);
+    });
+
+    return () => {
+      socket.off("typingUser");
+      socket.off("stopTypingUser");
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (selectedChatRoom) {
@@ -54,79 +63,186 @@ const HotelierChatScreen = () => {
     }
   }, [messages]);
 
-  if (isLoadingChatRooms) return <Loader />;
+  const handleSendMessage = async () => {
+    if (newMessage.trim() || selectedFile) {
+      const messageData = {
+        chatRoomId: selectedChatRoom._id,
+        content: newMessage,
+        senderType: "Hotel",
+        hotelId,
+      };
+
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        messageData.content = selectedFile.name;
+        messageData.file = selectedFile;
+      }
+
+      await sendMessage(messageData);
+      setNewMessage("");
+      setSelectedFile(null);
+      refetchMessages();
+      socket.emit("message", messageData);
+      socket.emit("stopTypingHotel", { roomId: selectedChatRoom._id });
+    }
+  };
+
+  const handleChatRoomSelect = async (room) => {
+    setSelectedChatRoom(room);
+  };
+
+  const handleEmojiClick = (emojiObject) => {
+    setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleTyping = (e) => {
+    setNewMessage(e.target.value);
+    if (!isTyping) {
+      socket.emit('typingHotel', { roomId: selectedChatRoom._id });
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        socket.emit('stopTypingHotel', { roomId: selectedChatRoom._id });
+      }, 3000);
+    }
+  };
+
+  let timeout;
+
+  if (isLoadingChatRooms) return <p>Loading...</p>;
   if (isErrorChatRooms) return <div>Error loading chat rooms</div>;
 
   return (
-    <HotelierLayout>
-      <Container fluid className="px-4">
-        <Row className="my-5">
-          <Col md={4}>
-            <h3>Chats</h3>
-            <ListGroup>
-              {chatRooms && chatRooms.map(chatRoom => (
-                <ListGroup.Item
-                  key={chatRoom._id}
-                  active={selectedChatRoom && selectedChatRoom._id === chatRoom._id}
-                  onClick={() => setSelectedChatRoom(chatRoom)}
-                  className={selectedChatRoom && selectedChatRoom._id === chatRoom._id ? 'active-chat-room' : ''}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {chatRoom.userId.name}
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
+   <HotelierLayout>
+    <Container className="profile-container mx-2" style={{ height: "50vh" }}>
+        <Row className="chat-screen">
+          <Col md={3} className="chat-sidebar">
+            <div className="">
+              <h3 className="mb-4">Chats</h3>
+              {isLoadingChatRooms ? (
+                <p>Loading...</p>
+              ) : (
+                <ul>
+                  {chatRooms.map((room) => (
+                    <li
+                      key={room._id}
+                      className={selectedChatRoom && selectedChatRoom._id === room._id ? "active" : ""}
+                      onClick={() => handleChatRoomSelect(room)}
+                    >
+                      {room.userId.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </Col>
-          
-          <Col md={8} >
-            <Card >
-              <Card.Header>Chat</Card.Header>
-              <Card.Body>
-                {selectedChatRoom ? (
-                  <>
+          <Col md={9} className="">
+            <div className="chat-messages">
+              {selectedChatRoom ? (
+                <>
+                  <h5 className="my-3 mx-2">{selectedChatRoom.userId.name}</h5>
+                  {isTyping && (
+                    <p className="typing-indicator" style={{ color: "black" }}>Typing...</p>
+                  )}
+                  <div className="messages" style={{overflowY:"scroll",height:"450px"}}>
                     {isLoadingMessages ? (
-                      <Loader />
-                    ) : isErrorMessages ? (
-                      <div>Error loading messages</div>
+                      <p>Loading messages...</p>
                     ) : (
-                      <div className="messages">
-                        {messages
-                          .slice() 
-                          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                          .map(message => (
-                            <div
-                              key={message._id}
-                              className={`message ${message.senderType === 'Hotel' ? 'hotel-message' : 'user-message'}`}
-                            >
-                              {message.content}
-                            </div>
-                        ))}
-                        <div ref={messagesEndRef} />
-                      </div>
+                      messages
+                        .slice()
+                        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                        .map((msg) => (
+                          <div
+                            key={msg._id}
+                            className={`message ${msg.senderType === "Hotel" ? "sent" : "received"}`}
+                          >
+                            {msg.fileUrl ? (
+                              <div style={{display:"flex",flexDirection:"column"}}>
+                                <img
+                                  src={`http://localhost:5000${msg.fileUrl}`}
+                                  alt="message-file"
+                                  style={{ maxWidth: "200px" }}
+                                />
+                                <small style={{marginTop:"10px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
+                              </div>
+                            ) : (
+                              <div style={{display:"flex"}}>
+                                <p className="mx-2">{msg.content}</p>
+                                <small style={{marginTop:"22px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
+                              </div>
+                            )}
+                          </div>
+                        ))
                     )}
-                    <Form>
-                      <Form.Group controlId="messageInput">
-                        <Form.Control
-                          type="text"
-                          placeholder="Type your message..."
-                          value={newMessage}
-                          onChange={(e) => setNewMessage(e.target.value)}
-                        />
-                      </Form.Group>
-                      <Button variant="primary" onClick={handleSendMessage} className="mt-2">
+                    <div ref={messagesEndRef} />
+                  </div>
+                  <div
+                    className="new-message my-2"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      position: "relative",
+                    }}
+                  >
+                    <div className="input-group mx-2">
+                      <input
+                        type="text"
+                        value={newMessage}
+                        onChange={handleTyping}
+                        onKeyPress={handleTyping}
+                        placeholder="Type a message..."
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        style={{ backgroundColor: "#555555", padding: "10px", borderRadius: "10px", width: "70px" }}
+                      >
                         Send
-                      </Button>
-                    </Form>
-                  </>
-                ) : (
-                  <div>Select a user to start chatting</div>
-                )}
-              </Card.Body>
-            </Card>
+                      </button>
+                      <div>
+                        {showEmojiPicker && (
+                          <div style={{ position: "absolute", bottom: "50px",right:"20px" }}>
+                            <EmojiPicker onEmojiClick={handleEmojiClick} />
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                          style={{ marginLeft: "10px", border: "1px solid black", padding: "10px", borderRadius: "10px" }}
+                        >
+                          😊
+                        </button>
+                      </div>
+                      <label htmlFor="file-upload" style={{ marginLeft: "10px", border: "1px solid black", padding: "5px", borderRadius: "10px", width: "50px", textAlign: "center", cursor: "pointer" }}>
+                        <FaPaperclip />
+                      </label>
+                      <input
+                        id="file-upload"
+                        type="file"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                      />
+
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p>Select a chat room to start messaging</p>
+              )}
+            </div>
           </Col>
         </Row>
       </Container>
-    </HotelierLayout>
+   </HotelierLayout>
+      
+    
   );
 };
 

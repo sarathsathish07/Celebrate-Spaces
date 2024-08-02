@@ -28,8 +28,6 @@ const HotelierDashboard = () => {
   useEffect(() => {
     refetch();
   }, [refetch]);
-  
-  if (isLoading) return <Loader />;
 
   useEffect(() => {
     return () => {
@@ -79,34 +77,34 @@ const HotelierDashboard = () => {
     }
   };
 
-  if (isLoading) return <Loader/>;
-
   const formatMonthlyLabel = (month) => {
     const [year, monthIndex] = month.split('-');
     return `${year}-${String(monthIndex).padStart(2, '0')}`;
   };
 
   const monthlyBookingsData = {
-    labels: stats.monthlyBookings.map((data) => formatMonthlyLabel(data.month)),
+    labels: stats?.monthlyBookings.map((data) => formatMonthlyLabel(data.month)) || [],
     datasets: [
       {
         label: 'Monthly Bookings',
-        data: stats.monthlyBookings.map((data) => data.count),
+        data: stats?.monthlyBookings.map((data) => data.count) || [],
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
       },
     ],
   };
 
   const yearlyBookingsData = {
-    labels: stats.yearlyBookings.map((data) => data.year.toString()),
+    labels: stats?.yearlyBookings.map((data) => data.year.toString()) || [],
     datasets: [
       {
         label: 'Yearly Bookings',
-        data: stats.yearlyBookings.map((data) => data.count),
+        data: stats?.yearlyBookings.map((data) => data.count) || [],
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
       },
     ],
   };
+
+  if (isLoading) return <Loader />;
 
   return (
     <HotelierLayout>
@@ -118,7 +116,7 @@ const HotelierDashboard = () => {
                 <Card.Body>
                   <FaHotel size={40} />
                   <h4>Total Hotels</h4>
-                  <h2>{stats.totalHotels}</h2>
+                  <h2>{stats?.totalHotels}</h2>
                 </Card.Body>
               </Card>
             </Col>
@@ -127,7 +125,7 @@ const HotelierDashboard = () => {
                 <Card.Body>
                   <FaMoneyBill size={40} />
                   <h4>Total Revenue</h4>
-                  <h2>Rs {stats.totalRevenue}</h2>
+                  <h2>Rs {stats?.totalRevenue}</h2>
                 </Card.Body>
               </Card>
             </Col>
@@ -136,7 +134,7 @@ const HotelierDashboard = () => {
                 <Card.Body>
                   <FaHotel size={40} />
                   <h4>Total Bookings</h4>
-                  <h2>{stats.totalBookings}</h2>
+                  <h2>{stats?.totalBookings}</h2>
                 </Card.Body>
               </Card>
             </Col>

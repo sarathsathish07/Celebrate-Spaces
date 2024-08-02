@@ -8,7 +8,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import hotelierRoutes from './routes/hotelierRoutes.js';
 import cookieParser from 'cookie-parser';
 import http from 'http';
-import { Server } from 'socket.io';
+import configureSocket from './config/socket.js';
 
 const port = process.env.PORT || 5000;
 
@@ -32,25 +32,9 @@ app.use(errorHandler);
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-  },
-});
+const io = configureSocket(server);  // Call the configureSocket function
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('joinRoom', ({ roomId }) => {
-    socket.join(roomId);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-});
-
-app.set('io', io); 
+app.set('io', io);
 
 server.listen(port, () => {
   console.log(`Server started on port ${port}`);
