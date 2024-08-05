@@ -5,7 +5,6 @@ import Hotelier from '../models/hotelierModel.js';
 
 
 const protect = expressAsyncHandler(async (req,res,next)=>{
-  console.log("1");
   let token
   token = req.cookies.jwtHotelier
   if(token){

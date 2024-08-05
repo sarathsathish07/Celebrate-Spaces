@@ -108,15 +108,15 @@ const Hero = () => {
           ) : (
             <Row>
               {reviews?.map((review) => (
-                <Col md={4} key={review._id}>
+                <Col md={4} key={review?._id}>
                   <Card className="mb-4">
                     <Card.Body>
-                      <Card.Title className="mb-3">{review.hotelId.name || 'Unknown Hotel'}</Card.Title>
+                      <Card.Title className="mb-3">{review?.hotelId?.name || 'Unknown Hotel'}</Card.Title>
                       <div className="mb-2">
-                        {renderStars(review.rating)}
+                        {renderStars(review?.rating)}
                       </div>
-                      <Card.Text>"{review.review}"</Card.Text>
-                      <Card.Footer className="text-muted">- {review.userId.name || 'Anonymous'}</Card.Footer>
+                      <Card.Text>"{review?.review}"</Card.Text>
+                      <Card.Footer className="text-muted">- {review?.userId?.name || 'Anonymous'}</Card.Footer>
                     </Card.Body>
                   </Card>
                 </Col>

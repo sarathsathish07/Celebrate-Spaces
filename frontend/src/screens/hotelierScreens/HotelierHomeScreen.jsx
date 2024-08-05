@@ -5,12 +5,13 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { useGetHotelierDashboardStatsQuery, useGetHotelierSalesReportMutation } from '../../slices/hotelierApiSlice.js';
 import HotelierLayout from '../../components/hotelierComponents/HotelierLayout.jsx';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { toast } from 'react-toastify';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 ChartJS.register(...registerables);
 
 const HotelierDashboard = () => {
@@ -64,26 +65,72 @@ const HotelierDashboard = () => {
     }
   };
 
-  const handleDownloadReport = async () => {
+  const handleDownloadReport = () => {
     if (reportPreview) {
-      const doc = new jsPDF();
-      const table = document.querySelector('#reportTable');
-
-      const canvas = await html2canvas(table);
-      const imgData = canvas.toDataURL('image/png');
-
-      doc.addImage(imgData, 'PNG', 10, 10, 190, 0);
-      doc.save('sales-report.pdf');
+      const docDefinition = {
+        content: [
+          { text: 'Sales Report', style: 'header' },
+          { text: `From: ${new Date(dateRange.from).toLocaleDateString()} To: ${new Date(dateRange.to).toLocaleDateString()}`, style: 'subheader' },
+          {
+            table: {
+              headerRows: 1,
+              widths: [50, 50, '*', '*', '*', 50, 50, 50, 50],
+              body: [
+                [
+                  { text: 'Date', style: 'tableHeader' },
+                  { text: 'Amount', style: 'tableHeader' },
+                  { text: 'Guest', style: 'tableHeader' },
+                  { text: 'Hotel', style: 'tableHeader' },
+                  { text: 'Room', style: 'tableHeader' },
+                  { text: 'Check-In', style: 'tableHeader' },
+                  { text: 'Check-Out', style: 'tableHeader' },
+                  { text: 'Pay Method', style: 'tableHeader' },
+                  { text: 'Booking Status', style: 'tableHeader' }
+                ],
+                ...reportPreview.map(item => [
+                  item._id,
+                  `Rs ${item.totalSales}`,
+                  item.userName,
+                  item.hotelName,
+                  item.roomName,
+                  new Date(item.checkInDate).toLocaleDateString(),
+                  new Date(item.checkOutDate).toLocaleDateString(),
+                  item.paymentMethod,
+                  item.bookingStatus,
+                ])
+              ]
+            }
+          }
+        ],
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          subheader: {
+            fontSize: 15,
+            bold: true,
+            margin: [0, 10, 0, 10]
+          },
+          tableHeader: {
+            bold: true,
+            fontSize: 13,
+            color: 'black'
+          },
+          defaultStyle: {
+            fontSize: 9
+          }
+        }
+      };
+      pdfMake.createPdf(docDefinition).download('sales-report.pdf');
     }
   };
 
-  const formatMonthlyLabel = (month) => {
-    const [year, monthIndex] = month.split('-');
-    return `${year}-${String(monthIndex).padStart(2, '0')}`;
-  };
+  if (isLoading) return <Loader />;
 
   const monthlyBookingsData = {
-    labels: stats?.monthlyBookings.map((data) => formatMonthlyLabel(data.month)) || [],
+    labels: stats?.monthlyBookings.map((data) => data.month) || [],
     datasets: [
       {
         label: 'Monthly Bookings',
@@ -94,7 +141,7 @@ const HotelierDashboard = () => {
   };
 
   const yearlyBookingsData = {
-    labels: stats?.yearlyBookings.map((data) => data.year.toString()) || [],
+    labels: stats?.yearlyBookings.map((data) => data.year) || [],
     datasets: [
       {
         label: 'Yearly Bookings',
@@ -103,8 +150,6 @@ const HotelierDashboard = () => {
       },
     ],
   };
-
-  if (isLoading) return <Loader />;
 
   return (
     <HotelierLayout>
@@ -142,14 +187,14 @@ const HotelierDashboard = () => {
 
           <Row className="my-4 mx-3">
             <Col md={6}>
-              <Card style={{ backgroundColor: 'white' }}>
+              <Card>
                 <Card.Body>
                   <Bar ref={monthlyChartRef} data={monthlyBookingsData} />
                 </Card.Body>
               </Card>
             </Col>
             <Col md={6}>
-              <Card style={{ backgroundColor: 'white' }}>
+              <Card>
                 <Card.Body>
                   <Line ref={yearlyChartRef} data={yearlyBookingsData} />
                 </Card.Body>
@@ -157,7 +202,7 @@ const HotelierDashboard = () => {
             </Col>
           </Row>
 
-          <Row className="my-5 mx-3">
+          <Row className="my-4 mx-3">
             <Col md={12}>
               <Card>
                 <Card.Body>
@@ -181,7 +226,7 @@ const HotelierDashboard = () => {
                           <Form.Control
                             type="date"
                             name="to"
-                            value={dateRange.to}
+                            value={dateRange?.to}
                             onChange={handleDateRangeChange}
                           />
                         </Form.Group>
@@ -212,23 +257,23 @@ const HotelierDashboard = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {reportPreview.map((item, index) => (
+                          {reportPreview?.map((item, index) => (
                             <tr key={index}>
-                              <td>{item._id}</td>
-                              <td>Rs {item.totalSales}</td>
-                              <td>{item.userName}</td>
-                              <td>{item.hotelName}</td>
-                              <td>{item.roomName}</td>
-                              <td>{new Date(item.checkInDate).toLocaleDateString()}</td>
-                              <td>{new Date(item.checkOutDate).toLocaleDateString()}</td>
-                              <td>{item.paymentMethod}</td>
-                              <td>{item.bookingStatus}</td>
+                              <td>{item?._id}</td>
+                              <td>Rs {item?.totalSales}</td>
+                              <td>{item?.userName}</td>
+                              <td>{item?.hotelName}</td>
+                              <td>{item?.roomName}</td>
+                              <td>{new Date(item?.checkInDate).toLocaleDateString()}</td>
+                              <td>{new Date(item?.checkOutDate).toLocaleDateString()}</td>
+                              <td>{item?.paymentMethod}</td>
+                              <td>{item?.bookingStatus}</td>
                             </tr>
                           ))}
                         </tbody>
                       </Table>
                       <Button onClick={handleDownloadReport} className="mt-3">
-                        Download Report as PDF
+                        Download Report
                       </Button>
                     </div>
                   )}
@@ -238,6 +283,7 @@ const HotelierDashboard = () => {
           </Row>
         </Container>
       </div>
+      <ToastContainer />
     </HotelierLayout>
   );
 };

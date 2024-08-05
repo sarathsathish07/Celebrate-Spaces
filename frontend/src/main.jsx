@@ -45,6 +45,7 @@ import EditRoomScreen from "./screens/hotelierScreens/EditRoomScreen.jsx";
 import WalletScreen from "./screens/userScreens/WalletScreen.jsx";
 import ChatScreen from "./screens/userScreens/ChatScreen.jsx";
 import HotelierChatScreen from "./screens/hotelierScreens/HotelierChatScreen.jsx";
+import ErrorBoundaryWrapper from "./components/userComponents/ErrorBoundary.jsx";
 import store from "./store.js";
 import { Provider } from "react-redux";
 
@@ -106,7 +107,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <React.StrictMode>
-      <RouterProvider router={router} />
+    <ErrorBoundaryWrapper>
+        <RouterProvider router={router} />
+      </ErrorBoundaryWrapper>
     </React.StrictMode>
   </Provider>
 );

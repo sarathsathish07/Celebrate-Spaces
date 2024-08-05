@@ -151,7 +151,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="name"
-              value={formData.name}
+              value={formData?.name}
               onChange={handleChange}
               required
             />
@@ -161,7 +161,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="city"
-              value={formData.city}
+              value={formData?.city}
               onChange={handleChange}
               required
             />
@@ -171,7 +171,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="address"
-              value={formData.address}
+              value={formData?.address}
               onChange={handleChange}
               required
             />
@@ -182,7 +182,7 @@ const EditHotelScreen = () => {
               as="textarea"
               rows={3}
               name="description"
-              value={formData.description}
+              value={formData?.description}
               onChange={handleChange}
               required
             />
@@ -192,7 +192,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="amenities"
-              value={formData.amenities}
+              value={formData?.amenities}
               onChange={handleChange}
               required
             />
@@ -202,7 +202,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="latitude"
-              value={formData.latitude}
+              value={formData?.latitude}
               onChange={handleChange}
               required
             />
@@ -212,7 +212,7 @@ const EditHotelScreen = () => {
             <Form.Control
               type="text"
               name="longitude"
-              value={formData.longitude}
+              value={formData?.longitude}
               onChange={handleChange}
               required
             />
@@ -220,7 +220,7 @@ const EditHotelScreen = () => {
           <Form.Group controlId="images" className="mb-3">
             <Form.Label>Images</Form.Label>
             <Row>
-              {formData.images.map((image, index) => (
+              {formData?.images?.map((image, index) => (
                 <Col key={index} md={3} className="mb-3 position-relative">
                   <Card style={{ width: "100%", height: "100%" }}>
                     {typeof image === "string" && (
