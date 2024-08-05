@@ -43,7 +43,7 @@ router.post('/rooms', getRoomsByHotelIds);
 router.get('/rooms/:roomId',protect, getRoomByRoomId);
 router.get('/hotels/:id', getHotelById);
 router.get('/reviews/:hotelId',getReviews );
-router.get('/reviews',getBookingReviews );
+router.get('/reviews',protect,getBookingReviews );
 router.post('/booking',protect, saveBooking);
 router.post('/check-availability',protect, checkRoomAvailability);
 router.put('/booking/update-status',protect, updateBookingStatus);

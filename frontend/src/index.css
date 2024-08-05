@@ -684,7 +684,6 @@ html {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  /* height: 450px;  */
   border: 1px solid #ddd;
   background-image: url("..//../frontend/src/assets/images/doodle5.png");
   background-size: contain;
@@ -760,10 +759,21 @@ html {
     transform: scale(1);
   }
 }
-.new-message button{
-  background-color: white;
-  padding: 0px 0px;
+.notification-dropdown {
+  position: relative;
 }
-.new-message input{
-  padding: 10px 30px;
+
+.notification-menu {
+  width: 250px;
+  white-space: normal; 
+  left: -300px;
+  right: 0;
 }
+
+.notification-menu .dropdown-item {
+  white-space: normal; 
+  word-wrap: break-word; 
+}
+
+
+

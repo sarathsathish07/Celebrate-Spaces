@@ -303,18 +303,26 @@ const cancelBooking = async (req, res) => {
     });
     await wallet.save();
 
+    const notification = new Notification({
+      userId: booking.userId,
+      message: `Your booking has been cancelled and ${refundPercentage}% amount has been refunded to your wallet.`,
+      createdAt: new Date(),
+      isRead: false,
+    });
+    await notification.save();
+    const io = req.app.get('io');
+    io.emit('newNotification', notification);
+
     res.status(200).json({ message: `Booking successfully cancelled and ${refundPercentage}% amount refunded to wallet` });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
 
+
  const getUnreadNotifications = async (req, res) => {
   try {
-    const userId = req.user._id; 
-    const notifications = await Notification.find({
-      readBy: { $ne: userId },
-    }).sort({ createdAt: -1 }); 
+    const notifications = await Notification.find({ userId: req.user._id, isRead: false }).sort({ createdAt: -1 }); 
     
     res.json(notifications);
   } catch (error) {
@@ -325,7 +333,6 @@ const cancelBooking = async (req, res) => {
 const markNotificationAsRead = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user._id; 
     
     const notification = await Notification.findById(id);
     
@@ -333,11 +340,11 @@ const markNotificationAsRead = async (req, res) => {
       return res.status(404).json({ message: 'Notification not found' });
     }
 
-    if (notification.readBy.includes(userId)) {
-      return res.status(400).json({ message: 'Notification already marked as read' });
+    if (notification.userId.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
-    notification.readBy.push(userId);
+    notification.isRead = true;
     await notification.save();
     
     res.json({ message: 'Notification marked as read' });

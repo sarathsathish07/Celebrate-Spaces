@@ -8,7 +8,7 @@ import { logout } from '../../slices/authSlice';
 import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); 
+const socket = io('http://localhost:5000');
 
 const Header = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -107,7 +107,7 @@ const Header = () => {
             </Nav>
             {userInfo ? (
               <Nav className="ms-auto align-items-center">
-                <div className="position-relative mx-3" ref={dropdownRef} onClick={handleIconClick}>
+                <div className="position-relative mx-3 notification-dropdown" ref={dropdownRef} onClick={handleIconClick}>
                   <FaBell style={{ color: notificationIconColor, cursor: 'pointer' }} />
                   {notifications.length > 0 && (
                     <Badge pill bg="danger" className="notification-badge position-absolute start-60 translate-middle">
@@ -115,7 +115,7 @@ const Header = () => {
                     </Badge>
                   )}
                   {showNotifications && (
-                    <Dropdown.Menu show className="position-absolute">
+                    <Dropdown.Menu show className="notification-menu">
                       {notifications.length === 0 ? (
                         <Dropdown.Item>No unread notifications</Dropdown.Item>
                       ) : (

@@ -26,11 +26,6 @@ const AdminSidebar = ({ hotelierName }) => {
           <FaCheckCircle /> Verification
         </Nav.Link>
       </LinkContainer>
-      <LinkContainer to="/admin/communication">
-        <Nav.Link>
-          <FaComments /> Communication
-        </Nav.Link>
-      </LinkContainer>
       <LinkContainer to="/admin/bookings">
         <Nav.Link>
           <FaCalendarCheck /> Bookings

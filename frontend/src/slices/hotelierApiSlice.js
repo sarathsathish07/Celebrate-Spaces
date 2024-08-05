@@ -129,6 +129,7 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         const formData = new FormData();
         formData.append('content', data.content);
         formData.append('senderType', data.senderType);
+        formData.append('hotelId', data.hotelId)
         if (data.file) {
           formData.append('file', data.file);
         }

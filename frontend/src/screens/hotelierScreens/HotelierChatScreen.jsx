@@ -12,6 +12,8 @@ const socket = io('http://localhost:5000');
 
 const HotelierChatScreen = () => {
   const { hotelId } = useParams();
+  console.log("Hotel ID:", hotelId);
+
   const { data: chatRooms = [], isLoading: isLoadingChatRooms, isError: isErrorChatRooms } = useGetHotelChatRoomsQuery(hotelId);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [newMessage, setNewMessage] = useState('');
@@ -69,7 +71,7 @@ const HotelierChatScreen = () => {
         chatRoomId: selectedChatRoom._id,
         content: newMessage,
         senderType: "Hotel",
-        hotelId,
+        hotelId:hotelId,
       };
 
       if (selectedFile) {

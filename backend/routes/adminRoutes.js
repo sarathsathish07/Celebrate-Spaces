@@ -14,7 +14,7 @@ import { authAdmin,
   unlistHotel,
   getAdminStats,
   getSalesReport,
-  sendNotification } from '../controllers/adminController.js'
+   } from '../controllers/adminController.js'
   import { getAllBookings } from '../controllers/bookingController.js'
 import {protect} from '../middleware/adminAuthMiddleware.js'
 
@@ -22,18 +22,18 @@ import {protect} from '../middleware/adminAuthMiddleware.js'
   router.post('/logout',logoutAdmin)
   router.post('/get-user',protect,getAllUsers)
   router.put('/update-user',updateUser)
-  router.get('/verification',getVerificationDetails)
-  router.put('/verification/:hotelId/accept',acceptVerification)
-  router.put('/verification/:adminId/reject', rejectVerification);
-  router.patch('/block-user',blockUser)
-  router.patch('/unblock-user',unblockUser)
+  router.get('/verification',protect,getVerificationDetails)
+  router.put('/verification/:hotelId/accept',protect,acceptVerification)
+  router.put('/verification/:adminId/reject', protect,rejectVerification);
+  router.patch('/block-user',protect,blockUser)
+  router.patch('/unblock-user',protect,unblockUser)
   router.get('/get-hotels', protect, getAllHotels);
   router.patch('/list-hotel/:hotelId', protect, listHotel);
   router.patch('/unlist-hotel/:hotelId', protect, unlistHotel);
   router.get('/bookings', protect, getAllBookings);
   router.get('/stats',protect, getAdminStats);
   router.post('/sales-report',protect,getSalesReport)
-  router.post('/send-notification', protect, sendNotification);
+
   
   
   

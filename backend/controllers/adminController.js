@@ -230,16 +230,16 @@ const getAdminStats = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-  const sendNotification = expressAsyncHandler(async (req, res) => {
-    const { message } = req.body;
+  // const sendNotification = expressAsyncHandler(async (req, res) => {
+  //   const { message } = req.body;
     
-    const notification = new Notification({ message });
-    await notification.save();
-    const io = req.app.get('io');
-    io.emit('newNotification', notification);
+  //   const notification = new Notification({ message });
+  //   await notification.save();
+  //   const io = req.app.get('io');
+  //   io.emit('newNotification', notification);
     
-    res.status(201).json({ message: 'Notification sent' });
-  });
+  //   res.status(201).json({ message: 'Notification sent' });
+  // });
 
 
 
@@ -260,5 +260,5 @@ export {
   unlistHotel,
   getAdminStats,
   getSalesReport,
-  sendNotification
+
 };

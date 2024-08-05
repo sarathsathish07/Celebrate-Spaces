@@ -43,7 +43,6 @@ import AdminBookingsScreen from "./screens/adminScreens/AdminBookingsScreen.jsx"
 import HotelDetailScreen from "./screens/hotelierScreens/HotelDetailsScreen.jsx";
 import EditRoomScreen from "./screens/hotelierScreens/EditRoomScreen.jsx";
 import WalletScreen from "./screens/userScreens/WalletScreen.jsx";
-import AdminCommunicationScreen from "./screens/adminScreens/AdminCommunicationScreen.jsx";
 import ChatScreen from "./screens/userScreens/ChatScreen.jsx";
 import HotelierChatScreen from "./screens/hotelierScreens/HotelierChatScreen.jsx";
 import store from "./store.js";
@@ -77,7 +76,6 @@ const router = createBrowserRouter(
         <Route path="verification" element={<AdminVerificationScreen />} />
         <Route path="get-hotels" element={<HotelsManagementScreen />} />
         <Route path="bookings" element={<AdminBookingsScreen/>} />
-        <Route path="communication" element={<AdminCommunicationScreen/>} />
       </Route>
       <Route path="/admin/login" element={<AdminLoginScreen />} />
 

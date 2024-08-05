@@ -60,26 +60,32 @@ const sendMessage = expressAsyncHandler(async (req, res) => {
 
 const getHotelChatRooms = expressAsyncHandler(async (req, res) => {
   const chatRooms = await ChatRoom.find({ hotelId: req.params.hotelId }).populate('userId', 'name');
-  console.log(chatRooms);
   res.json(chatRooms);
 });
 
 const getHotelMessages = expressAsyncHandler(async (req, res) => {
-  console.log("88");
   const messages = await Message.find({ chatRoomId: req.params.chatRoomId }).sort('timestamp');
-  console.log(messages);
   res.json(messages);
 });
 
 const sendHotelMessages = expressAsyncHandler(async (req, res) => {
+  console.log("22");
+  
   const chatRoomId = req.params.chatRoomId;
-  const { content, senderType } = req.body;
+  console.log("cr",chatRoomId);
+  
+  const { content, senderType, hotelId } = req.body; 
+  console.log("co",content);
+  
+  console.log(hotelId);
+  
   const file = req.file;
 
   const newMessageData = {
     chatRoomId,
     createdAt: Date.now(),
   };
+
   if (file) {
     newMessageData.fileUrl = `/MessageFiles/${file.filename}`;
   }
@@ -91,7 +97,7 @@ const sendHotelMessages = expressAsyncHandler(async (req, res) => {
     newMessageData.sender = req.user._id;
     newMessageData.senderType = 'User';
   } else if (senderType === 'Hotel') {
-    newMessageData.sender = req.hotel._id;
+    newMessageData.sender = hotelId; 
     newMessageData.senderType = 'Hotel';
   }
 
@@ -103,5 +109,6 @@ const sendHotelMessages = expressAsyncHandler(async (req, res) => {
 
   res.status(201).json(newMessage);
 });
+
 
 export { getChatRooms, createChatRoom, getMessages, sendMessage,getHotelMessages,sendHotelMessages,getHotelChatRooms };
