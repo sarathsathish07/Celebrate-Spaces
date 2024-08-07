@@ -53,6 +53,14 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const fileFilterMessage = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {
+    cb(null, true);
+  } else {
+    cb(new Error("Only images and PDFs are allowed!"), false); 
+  }
+};
+
 export const multerUploadUserProfile = multer({
   storage: profileStorage,
   fileFilter: fileFilter,
@@ -74,5 +82,5 @@ export const multerUploadRoomImages = multer({
 });
 export const multerUploadMessageFile = multer({
   storage: messageStorage,
-  fileFilter: fileFilter,
+  fileFilter: fileFilterMessage,
 });

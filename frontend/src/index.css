@@ -661,15 +661,14 @@ html {
 
 .new-message input {
   flex: 1;
-  padding: 10px;
+  padding: 10px 30px;
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-right: 10px;
 }
 
 .new-message button {
-  padding: 10px 20px;
-  background-color: #007bff;
+  padding: 0px 0px;
   color: white;
   border: none;
   border-radius: 5px;
@@ -776,4 +775,29 @@ html {
 }
 
 
+.dot-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.sidebar-container ul li {
+  position: relative;
+  padding-left: 10px;
+}
+
+.sidebar-container ul li .dot-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
 

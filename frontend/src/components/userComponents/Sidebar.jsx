@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import io from "socket.io-client";
 import defaultProfileImage from '../../assets/images/5856.jpg';
+import { useFetchUnreadMessagesQuery } from '../../slices/usersApiSlice';
+
+const socket = io("http://localhost:5000");
 
 const Sidebar = ({ profileImage, name }) => {
   const getImageUrl = (imageName) => {
@@ -11,6 +15,23 @@ const Sidebar = ({ profileImage, name }) => {
       ''
     )}`;
   };
+
+  const { data: unreadMessages, isLoading, isError,refetch} = useFetchUnreadMessagesQuery();
+  useEffect(()=>{
+    refetch()
+  })
+
+  useEffect(() => {
+    socket.on("messageRead", () => {
+     refetch();
+  });
+  
+    return () => {
+      socket.off("messageRead");
+    };
+  }, [refetch]);
+
+  const hasUnreadMessages = !isLoading && !isError && unreadMessages?.length > 0;
 
   return (
     <div className="sidebarprofile">
@@ -36,7 +57,10 @@ const Sidebar = ({ profileImage, name }) => {
           <Nav.Link className='sidebar-link'>Wallet</Nav.Link>
         </LinkContainer>
         <LinkContainer to="/chat/:hotelId">
-          <Nav.Link className='sidebar-link'>Messages</Nav.Link>
+          <Nav.Link className='sidebar-link'>
+            Messages
+            {hasUnreadMessages && <span className="dot-indicator"></span>}
+          </Nav.Link>
         </LinkContainer>
       </Nav>
     </div>

@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { Container, Card, Row, Col, Button } from "react-bootstrap";
 import { useParams, Link } from "react-router-dom";
-import { useGetHotelByIdQuery } from "../../slices/hotelierApiSlice.js";
-import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
+import { useGetHotelByHotelIdQuery } from "../../slices/hotelierApiSlice.js";
+import HotelierLayout from "../../components/hotelierComponents/HotelierLayout.jsx";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
 
 const HotelDetailScreen = () => {
   const { id } = useParams();
-  const { data: hotel, isLoading, isError, refetch } = useGetHotelByIdQuery(id);
+  const { data: hotel, isLoading, isError, refetch } = useGetHotelByHotelIdQuery(id);
 
-  useEffect(() => {
+  useEffect(() => {    
     refetch();
   }, [id, refetch]);
 
@@ -61,7 +61,10 @@ const HotelDetailScreen = () => {
                   <Button variant="success" className="ms-2">Add Room</Button>
                 </Link>
                 <Link to={`/hotelier/hotel/${hotel._id}/chat`}>
-                  <Button variant="info" className="ms-2">Chat</Button>
+                  <Button variant="info" className="ms-2">Chat
+                    {hotel.unreadMessagesCount > 0 && (
+                        <span className="dot-indicator ms-2"></span>
+                      )}</Button>
                 </Link>
               </div>
             </Card>

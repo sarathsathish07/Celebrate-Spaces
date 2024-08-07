@@ -215,6 +215,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    fetchUnreadMessages: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/unread-messages`,
+        method: 'GET'
+      })
+    }),
+    markMessagesAsRead: builder.mutation({
+      query: (chatRoomId) => ({
+        url: `${USERS_URL}/mark-messages-read`,
+        method: 'POST',
+        body: { chatRoomId }
+      })
+    })
   })
 })
 
@@ -251,5 +264,7 @@ export const {
   useCreateChatRoomMutation, 
   useGetMessagesQuery, 
   useSendMessageMutation,
-  useGetRoomByRoomIdQuery
+  useGetRoomByRoomIdQuery,
+  useFetchUnreadMessagesQuery,
+  useMarkMessagesAsReadMutation 
 } = usersApiSlice

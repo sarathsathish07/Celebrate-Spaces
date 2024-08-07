@@ -72,15 +72,15 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
-    getHotelById: builder.query({
+    getHotelByHotelId: builder.query({
       query: (id) => ({
-        url: `${HOTELS_URL}/${id}`,
+        url: `${HOTELS_URL}/hotels/${id}`,
         method: 'GET',
       }),
     }),
     updateHotel: builder.mutation({
       query: ({ id, formData }) => ({
-        url: `${HOTELS_URL}/${id}`,
+        url: `${HOTELS_URL}/hotels/${id}`,
         method: 'PUT',
         body: formData,
       }),
@@ -141,6 +141,19 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    markHotelMessagesAsRead: builder.mutation({
+      query: (chatRoomId) => ({
+        url: `${HOTELS_URL}/mark-messages-read`,
+        method: 'POST',
+        body: { chatRoomId }
+      }),
+    }),
+    fetchHotelUnreadMessages: builder.query({
+      query: () => ({
+        url: `${HOTELS_URL}/unreadHotelmessages`,
+        method: 'GET',
+      }),
+    }),
   }),
   
 });
@@ -154,7 +167,7 @@ export const {
   useUploadHotelCertificateMutation,
   useAddHotelMutation,
   useGetHotelsQuery,
-  useGetHotelByIdQuery,
+  useGetHotelByHotelIdQuery,
   useUpdateHotelMutation,
   useGetHotelierProfileQuery,
   useResendHotelierOtpMutation,
@@ -167,4 +180,6 @@ export const {
   useGetHotelChatRoomsQuery,
   useGetHotelMessagesQuery,
   useSendHotelMessageMutation,
+  useMarkHotelMessagesAsReadMutation,
+  useFetchHotelUnreadMessagesQuery 
 } = hotelierApiSlice;

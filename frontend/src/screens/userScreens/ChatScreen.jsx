@@ -5,6 +5,7 @@ import {
   useGetMessagesQuery,
   useSendMessageMutation,
   useCreateChatRoomMutation,
+  useMarkMessagesAsReadMutation,
 } from "../../slices/usersApiSlice.js";
 import io from "socket.io-client";
 import { Container, Row, Col } from "react-bootstrap";
@@ -21,6 +22,7 @@ const ChatScreen = () => {
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const location = useLocation();
   const currentHotelId = location.pathname.split("/")[2];
@@ -41,20 +43,24 @@ const ChatScreen = () => {
 
   const [sendMessage] = useSendMessageMutation();
   const [createChatRoom] = useCreateChatRoomMutation();
+  const [markMessagesAsRead] = useMarkMessagesAsReadMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (selectedChatRoom) {
       refetchMessages();
       socket.emit("joinRoom", { roomId: selectedChatRoom._id });
+      markMessagesAsRead(selectedChatRoom._id); 
+      socket.emit("messageRead", { roomId: selectedChatRoom._id });
     }
-  }, [selectedChatRoom, refetchMessages]);
+  }, [selectedChatRoom, refetchMessages, markMessagesAsRead]);
 
   useEffect(() => {
     socket.on("message", (message) => {
+      
       if (message.chatRoomId === selectedChatRoom?._id) {
         refetchMessages();
-      }
+      } 
     });
 
     return () => {
@@ -63,8 +69,35 @@ const ChatScreen = () => {
   }, [selectedChatRoom, refetchMessages]);
 
   useEffect(() => {
+    socket.on("messageRead", (data) => {
+      if (data.roomId === selectedChatRoom?._id) {
+        
+        refetchChatRooms();
+      }
+    });
+  
+    return () => {
+      socket.off("messageRead");
+    };
+  }, [selectedChatRoom, refetchChatRooms]);
+
+  useEffect(() => {
+    socket.on("messageUnReadHotel", () => {
+        refetchChatRooms();
+      
+    });
+  
+    return () => {
+      socket.off("messageUnReadHotel");
+    };
+  }, [refetchChatRooms]);
+  
+  useEffect(()=>{
+    refetchChatRooms()
+  })
+
+  useEffect(() => {
     socket.on("typingHotel", () => {
-      console.log("Hotel typing");
       setIsTyping(true);
     });
 
@@ -100,19 +133,21 @@ const ChatScreen = () => {
         content: newMessage,
         senderType: "User",
       };
-
+  
       if (selectedFile) {
         const formData = new FormData();
         formData.append("file", selectedFile);
         messageData.content = selectedFile.name;
         messageData.file = selectedFile;
       }
-
+  
       await sendMessage(messageData);
       setNewMessage("");
       setSelectedFile(null);
+      setSelectedFileName(""); 
       refetchMessages();
       socket.emit("message", messageData);
+      socket.emit("messageUnRead", { roomId: selectedChatRoom._id });
       socket.emit("stopTypingUser", { roomId: selectedChatRoom._id });
     }
   };
@@ -135,6 +170,7 @@ const ChatScreen = () => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
+      setSelectedFileName(file.name);
     }
   };
 
@@ -172,6 +208,7 @@ const ChatScreen = () => {
                       onClick={() => handleChatRoomSelect(room.hotelId._id)}
                     >
                       {room.hotelId.name}
+                      {room.unreadMessagesCount > 0 && <span style={{ marginLeft: "10px", color: "red",fontSize:"30px",borderRadius:"50%" }}>•</span>}
                     </li>
                   ))}
                 </ul>
@@ -182,7 +219,7 @@ const ChatScreen = () => {
                 <>
                   <h5 className="my-3 mx-2">{selectedChatRoom.hotelId.name}</h5>
                   {isTyping && (
-                    <p className="typing-indicator" style={{ color: "black" }}>Typing...</p>
+                    <p className="typing-indicator mx-2" style={{ color: "black" }}>Typing...</p>
                   )}
                   <div className="messages">
                     {messagesLoading ? (
@@ -197,22 +234,28 @@ const ChatScreen = () => {
                             className={`message ${msg.senderType === "User" ? "sent" : "received"}`}
                           >
                             {msg.fileUrl ? (
-                              <div style={{display:"flex",flexDirection:"column"}}>
-                              <img
-                                src={`http://localhost:5000${msg.fileUrl}`}
-                                alt="message-file"
-                                style={{ maxWidth: "200px" }}
-                              />
-                               <small style={{marginTop:"10px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
+                              <div style={{ display: "flex", flexDirection: "column" }}>
+                                {msg.fileUrl.endsWith('.pdf') ? (
+                                  <iframe
+                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    width="100%"
+                                    height="300px"  
+                                    style={{ border: "none" }}
+                                  />
+                                ) : (
+                                  <img
+                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    alt="file"
+                                    style={{ maxWidth: "200px" }}
+                                  />
+                                )}
                               </div>
-
-                              
                             ) : (
-                              <div style={{display:"flex"}}>
-                                <p className="mx-2">{msg.content}</p>
-                                <small style={{marginTop:"22px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
-                              </div>
+                              msg.content
                             )}
+                            <div className="message-time" style={{ fontSize: '9px', marginTop: '5px' }}>
+                              {format(new Date(msg.createdAt), ' hh:mm')}
+                            </div>
                           </div>
                         ))
                     )}
@@ -229,11 +272,12 @@ const ChatScreen = () => {
                     <div className="input-group mx-2">
                       <input
                         type="text"
-                        value={newMessage}
+                        value={selectedFileName || newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleTyping}
                         placeholder="Type a message..."
                         style={{ flex: 1 }}
+                        readOnly={selectedFile}
                       />
                       <button
                         onClick={handleSendMessage}
@@ -255,7 +299,7 @@ const ChatScreen = () => {
                         </button>
                       </div>
                       <label htmlFor="file-upload" style={{ marginLeft: "10px", border: "1px solid black", padding: "5px", borderRadius: "10px", width: "50px", textAlign: "center", cursor: "pointer" }}>
-                        <FaPaperclip />
+                        <FaPaperclip style={{ color: "#555555", cursor: "pointer" }} />
                       </label>
                       <input
                         id="file-upload"
@@ -268,7 +312,10 @@ const ChatScreen = () => {
                   </div>
                 </>
               ) : (
-                <p>Select a chat room to start messaging</p>
+                
+                  <p style={{marginTop:"30%",marginLeft:"30%"}} >Please select a chat room to start messaging.</p>
+           
+                
               )}
             </div>
           </div>

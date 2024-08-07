@@ -8,33 +8,36 @@ const configureSocket = (server) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('a user connected');
 
     socket.on('joinRoom', ({ roomId }) => {
       socket.join(roomId);
     });
 
     socket.on('disconnect', () => {
-      console.log('user disconnected');
+    });
+    socket.on('messageRead', ({ roomId }) => {
+      io.to(roomId).emit('messageRead', { roomId });
+    });
+    socket.on('messageUnRead', ({ roomId }) => {
+      io.to(roomId).emit('messageUnRead', { roomId });
+    });
+    socket.on('messageUnReadHotel', ({ roomId }) => {
+      io.to(roomId).emit('messageUnReadHotel', { roomId });
     });
 
     socket.on('typingUser', ({ roomId }) => {
-      console.log('User typing');
       socket.to(roomId).emit('typingUser');
     });
 
     socket.on('stopTypingUser', ({ roomId }) => {
-      console.log('User stopped typing');
       socket.to(roomId).emit('stopTypingUser');
     });
 
     socket.on('typingHotel', ({ roomId }) => {
-      console.log('Hotel typing');
       socket.to(roomId).emit('typingHotel');
     });
 
     socket.on('stopTypingHotel', ({ roomId }) => {
-      console.log('Hotel stopped typing');
       socket.to(roomId).emit('stopTypingHotel');
     });
   });

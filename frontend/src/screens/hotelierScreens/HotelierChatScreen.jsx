@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import { useGetHotelChatRoomsQuery, useGetHotelMessagesQuery, useSendHotelMessageMutation } from "../../slices/hotelierApiSlice.js";
+import {
+  useGetHotelChatRoomsQuery,
+  useGetHotelMessagesQuery,
+  useSendHotelMessageMutation,
+  useMarkHotelMessagesAsReadMutation
+} from "../../slices/hotelierApiSlice.js";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import io from "socket.io-client";
 import { format } from 'date-fns';
@@ -12,18 +17,18 @@ const socket = io('http://localhost:5000');
 
 const HotelierChatScreen = () => {
   const { hotelId } = useParams();
-  console.log("Hotel ID:", hotelId);
-
-  const { data: chatRooms = [], isLoading: isLoadingChatRooms, isError: isErrorChatRooms } = useGetHotelChatRoomsQuery(hotelId);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const { data: chatRooms = [], isLoading: isLoadingChatRooms, isError: isErrorChatRooms,refetch: refetchHotelChatRooms, } = useGetHotelChatRoomsQuery(hotelId);
   const { data: messages = [], isLoading: isLoadingMessages, isError: isErrorMessages, refetch: refetchMessages } = useGetHotelMessagesQuery(selectedChatRoom?._id, { skip: !selectedChatRoom });
   const [sendMessage] = useSendHotelMessageMutation();
+  const [markMessagesAsRead] = useMarkHotelMessagesAsReadMutation();
 
   useEffect(() => {
     socket.on('message', (message) => {
@@ -36,6 +41,10 @@ const HotelierChatScreen = () => {
       socket.off('message');
     };
   }, [selectedChatRoom, refetchMessages]);
+
+  useEffect(()=>{
+    refetchHotelChatRooms()
+  })
 
   useEffect(() => {
     socket.on("typingUser", () => {
@@ -56,8 +65,36 @@ const HotelierChatScreen = () => {
     if (selectedChatRoom) {
       refetchMessages();
       socket.emit('joinRoom', { roomId: selectedChatRoom._id });
+
+      markMessagesAsRead(selectedChatRoom._id);
+      socket.emit("messageRead", { roomId: selectedChatRoom._id });
     }
-  }, [selectedChatRoom, refetchMessages]);
+  }, [selectedChatRoom, refetchMessages, markMessagesAsRead]);
+
+  useEffect(() => {
+    socket.on("messageRead", (data) => {
+      if (data.roomId === selectedChatRoom?._id) {
+        refetchHotelChatRooms();
+      }
+    });
+  
+    return () => {
+      socket.off("messageRead");
+    };
+  }, [selectedChatRoom, refetchHotelChatRooms]);
+
+  useEffect(() => {
+    socket.on("messageUnRead", () => {
+        refetchHotelChatRooms();
+      
+    });
+  
+    return () => {
+      socket.off("messageUnRead");
+    };
+  }, [refetchHotelChatRooms]);
+  
+  
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -71,7 +108,7 @@ const HotelierChatScreen = () => {
         chatRoomId: selectedChatRoom._id,
         content: newMessage,
         senderType: "Hotel",
-        hotelId:hotelId,
+        hotelId: hotelId,
       };
 
       if (selectedFile) {
@@ -84,8 +121,10 @@ const HotelierChatScreen = () => {
       await sendMessage(messageData);
       setNewMessage("");
       setSelectedFile(null);
+      setSelectedFileName(""); 
       refetchMessages();
       socket.emit("message", messageData);
+      socket.emit("messageUnReadHotel", { roomId: selectedChatRoom._id });
       socket.emit("stopTypingHotel", { roomId: selectedChatRoom._id });
     }
   };
@@ -103,6 +142,7 @@ const HotelierChatScreen = () => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
+      setSelectedFileName(file.name);
     }
   };
 
@@ -123,8 +163,8 @@ const HotelierChatScreen = () => {
   if (isErrorChatRooms) return <div>Error loading chat rooms</div>;
 
   return (
-   <HotelierLayout>
-    <Container className="profile-container mx-2" style={{ height: "50vh" }}>
+    <HotelierLayout>
+      <Container className="profile-container mx-2" style={{ height: "50vh" }}>
         <Row className="chat-screen">
           <Col md={3} className="chat-sidebar">
             <div className="">
@@ -140,6 +180,9 @@ const HotelierChatScreen = () => {
                       onClick={() => handleChatRoomSelect(room)}
                     >
                       {room.userId.name}
+                      {room.unreadMessagesCount > 0 && (
+                        <span className="" style={{ marginLeft: "10px", color: "red",fontSize:"30px",borderRadius:"50%" }}>•</span>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -152,9 +195,9 @@ const HotelierChatScreen = () => {
                 <>
                   <h5 className="my-3 mx-2">{selectedChatRoom.userId.name}</h5>
                   {isTyping && (
-                    <p className="typing-indicator" style={{ color: "black" }}>Typing...</p>
+                    <p className="typing-indicator mx-2" style={{ color: "black" }}>Typing...</p>
                   )}
-                  <div className="messages" style={{overflowY:"scroll",height:"450px"}}>
+                  <div className="messages" style={{ overflowY: "scroll", height: "450px" }}>
                     {isLoadingMessages ? (
                       <p>Loading messages...</p>
                     ) : (
@@ -167,18 +210,31 @@ const HotelierChatScreen = () => {
                             className={`message ${msg.senderType === "Hotel" ? "sent" : "received"}`}
                           >
                             {msg.fileUrl ? (
-                              <div style={{display:"flex",flexDirection:"column"}}>
-                                <img
-                                  src={`http://localhost:5000${msg.fileUrl}`}
-                                  alt="message-file"
-                                  style={{ maxWidth: "200px" }}
-                                />
-                                <small style={{marginTop:"10px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
+                              <div style={{ display: "flex", flexDirection: "column" }}>
+                                {msg.fileUrl.endsWith('.pdf') ? (
+                                  <iframe
+                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    width="100%"
+                                    height="300px"
+                                    style={{ border: "none" }}
+                                  />
+                                ) : (
+                                  <img
+                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    alt="message-file"
+                                    style={{ maxWidth: "200px" }}
+                                  />
+                                )}
+                                <small style={{ marginTop: "10px", fontSize: "9px" }}>
+                                  {format(new Date(msg.createdAt), 'HH:mm')}
+                                </small>
                               </div>
                             ) : (
-                              <div style={{display:"flex"}}>
+                              <div style={{ display: "flex" }}>
                                 <p className="mx-2">{msg.content}</p>
-                                <small style={{marginTop:"22px",fontSize:"8px"}}>{format(new Date(msg.createdAt), 'HH:mm')}</small>
+                                <small style={{ marginTop: "22px", fontSize: "8px" }}>
+                                  {format(new Date(msg.createdAt), 'HH:mm')}
+                                </small>
                               </div>
                             )}
                           </div>
@@ -197,11 +253,12 @@ const HotelierChatScreen = () => {
                     <div className="input-group mx-2">
                       <input
                         type="text"
-                        value={newMessage}
+                        value={selectedFileName || newMessage}
                         onChange={handleTyping}
                         onKeyPress={handleTyping}
-                        placeholder="Type a message..."
+                        placeholder="Type a message or select a file..."
                         style={{ flex: 1 }}
+                        readOnly={!!selectedFile}
                       />
                       <button
                         onClick={handleSendMessage}
@@ -209,42 +266,41 @@ const HotelierChatScreen = () => {
                       >
                         Send
                       </button>
-                      <div>
-                        {showEmojiPicker && (
-                          <div style={{ position: "absolute", bottom: "50px",right:"20px" }}>
-                            <EmojiPicker onEmojiClick={handleEmojiClick} />
-                          </div>
-                        )}
-                        <button
-                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                          style={{ marginLeft: "10px", border: "1px solid black", padding: "10px", borderRadius: "10px" }}
-                        >
-                          😊
-                        </button>
+                    
+                    <div>
+                    {showEmojiPicker && (
+                        <div style={{ position: "absolute", bottom: "50px",right:"20px" }}>
+                          <EmojiPicker onEmojiClick={handleEmojiClick} />
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        className="emoji-button"
+                        style={{ marginLeft: "10px", border: "1px solid black", padding: "10px", borderRadius: "10px" }}
+                      >
+                        😊
+                      </button>
                       </div>
                       <label htmlFor="file-upload" style={{ marginLeft: "10px", border: "1px solid black", padding: "5px", borderRadius: "10px", width: "50px", textAlign: "center", cursor: "pointer" }}>
-                        <FaPaperclip />
+                        <FaPaperclip style={{ color: "#555555", cursor: "pointer" }} />
                       </label>
                       <input
                         id="file-upload"
                         type="file"
-                        style={{ display: "none" }}
                         onChange={handleFileChange}
+                        style={{ display: "none" }}
                       />
-
                     </div>
                   </div>
                 </>
               ) : (
-                <p>Select a chat room to start messaging</p>
+                <p style={{marginTop:"30%",marginLeft:"30%"}}>Select a chat to start messaging</p>
               )}
             </div>
           </Col>
         </Row>
       </Container>
-   </HotelierLayout>
-      
-    
+    </HotelierLayout>
   );
 };
 

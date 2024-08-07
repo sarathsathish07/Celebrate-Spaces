@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import { useGetHotelByIdQuery, useUpdateHotelMutation } from "../../slices/hotelierApiSlice";
+import { useGetHotelByHotelIdQuery, useUpdateHotelMutation } from "../../slices/hotelierApiSlice";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import { toast } from "react-toastify";
 import Loader from "../../components/userComponents/Loader";
@@ -9,7 +9,7 @@ import Loader from "../../components/userComponents/Loader";
 const EditHotelScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: hotel, isLoading, isError, refetch } = useGetHotelByIdQuery(id);
+  const { data: hotel, isLoading, isError, refetch } = useGetHotelByHotelIdQuery(id);
   const [updateHotel] = useUpdateHotelMutation();
 
   const [formData, setFormData] = useState({

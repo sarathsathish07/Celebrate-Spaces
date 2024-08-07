@@ -16,6 +16,11 @@ import {
 import generateHotelierToken from "../utils/generateHotelierToken.js";
 import Hotel from "../models/hotelModel.js";
 import Booking from "../models/bookingModel.js";
+import Message from '../models/messageModel.js';
+import ChatRoom from '../models/chatRoomModel.js';
+import Room from "../models/roomModel.js";
+
+
 
 const authHotelierHandler = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -138,14 +143,79 @@ const addHotelHandler = expressAsyncHandler(async (req, res) => {
   res.status(response.status).json(response.data);
 });
 
-const getHotelsHandler = expressAsyncHandler(async (req, res) => {
-  const response = await getHotels(req.hotelier._id);
-  res.status(response.status).json(response.data);
-});
+const getHotelsHandler = async (req, res) => {
+  console.log("9");
+  
+  try {
+    const hotels = await Hotel.find({ hotelierId: req.hotelier._id });
+
+    const hotelData = await Promise.all(
+      hotels.map(async (hotel) => {
+        const chatRooms = await ChatRoom.find({ hotelId: hotel._id });
+
+        const chatRoomIds = chatRooms.map(chatRoom => chatRoom._id);
+
+        const unreadMessagesCount = await Message.countDocuments({
+          chatRoomId: { $in: chatRoomIds },
+          senderType: 'User',
+          read: false,
+        });
+
+        return {
+          ...hotel._doc,
+          unreadMessagesCount,
+        };
+      })
+    );
+
+    res.json(hotelData);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 
 const getHotelByIdHandler = expressAsyncHandler(async (req, res) => {
-  const response = await getHotelById(req.params.id);
-  res.status(response.status).json(response.data);
+  console.log("5: Handler called");
+  
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    console.log("Hotel fetched:", hotel);
+    
+    if (!hotel) {
+      console.log("Hotel not found");
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+
+    const rooms = await Room.find({ hotelId: hotel._id });
+    console.log("Rooms fetched:", rooms);
+
+    const chatRooms = await ChatRoom.find({ hotelId: hotel._id });
+    console.log("Chat rooms fetched:", chatRooms);
+
+    const chatRoomIds = chatRooms.map(chatRoom => chatRoom._id);
+    console.log("Chat room IDs:", chatRoomIds);
+
+    const unreadMessagesCount = await Message.countDocuments({
+      chatRoomId: { $in: chatRoomIds },
+      senderType: 'User',
+      read: false,
+    });
+
+    console.log("Unread messages count:", unreadMessagesCount);
+
+    const hotelDetails = {
+      ...hotel.toObject(),
+      rooms,
+      unreadMessagesCount,
+    };
+
+    res.json(hotelDetails);
+  } catch (error) {
+    console.error("Error in handler:", error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 const updateHotelHandler = async (req, res) => {

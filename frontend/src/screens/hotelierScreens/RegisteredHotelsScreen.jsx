@@ -12,10 +12,9 @@ const RegisteredHotelsScreen = () => {
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
 
   useEffect(() => {
-    if (hotelierInfo) {
-      refetch();
-    }
-  }, [hotelierInfo, refetch]);
+   refetch();
+    })
+
 
   const renderHotels = () => {
     return hotels?.map((hotel) => (
@@ -46,7 +45,10 @@ const RegisteredHotelsScreen = () => {
               </Link>
             )}
             <Link to={`/hotelier/hotel-details/${hotel._id}`}>
-              <Button className="mt-2">View Details</Button>
+              <Button className="mt-2">
+                View Details
+                {hotel.unreadMessagesCount > 0 && <span className="dot-indicator"></span>}
+              </Button>
             </Link>
           </Card.Body>
         </Card>
@@ -54,7 +56,7 @@ const RegisteredHotelsScreen = () => {
     ));
   };
 
-  if (isLoading) return <Loader/>;
+  if (isLoading) return <Loader />;
   if (isError) {
     toast.error("Error fetching hotels");
     return <div>Error</div>;
@@ -63,19 +65,19 @@ const RegisteredHotelsScreen = () => {
   return (
     <HotelierLayout>
       <div style={{ maxHeight: '700px', overflowY: 'auto' }}>
-      <Container className="px-4 w-75">
-        <Row>
-          <Col md={10}>
-            <h1 className="my-3">Registered Hotels</h1>
-          </Col>
-          <Col>
-            <Link to="/hotelier/add-hotel">
-              <Button className="addhotelbutton my-4">Add Hotel</Button>
-            </Link>
-          </Col>
-        </Row>
-        <Row>{renderHotels()}</Row>
-      </Container>
+        <Container className="px-4 w-75">
+          <Row>
+            <Col md={10}>
+              <h1 className="my-3">Registered Hotels</h1>
+            </Col>
+            <Col>
+              <Link to="/hotelier/add-hotel">
+                <Button className="addhotelbutton my-4">Add Hotel</Button>
+              </Link>
+            </Col>
+          </Row>
+          <Row>{renderHotels()}</Row>
+        </Container>
       </div>
     </HotelierLayout>
   );

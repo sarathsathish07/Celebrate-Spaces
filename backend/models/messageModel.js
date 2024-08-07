@@ -22,6 +22,13 @@ const messageSchema = new mongoose.Schema({
   fileUrl: {
     type: String, 
   },
+  fileName: {
+    type: String, 
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
 
   createdAt: {
     type: Date,

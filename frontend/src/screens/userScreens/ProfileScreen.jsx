@@ -21,6 +21,7 @@ import {
 import bgImage from "../../assets/images/bgimage.jpg";
 import defaultProfileImage from "../../assets/images/5856.jpg";
 import Footer from '../../components/userComponents/Footer';
+import Sidebar from "../../components/userComponents/Sidebar";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -157,35 +158,9 @@ const ProfileScreen = () => {
         </div>
       </div>
       <Container className="profile-container">
-        <Row>
+        <Row className="my-4">
           <Col md={3} className="sidebar-container">
-            <div className="sidebarprofile">
-              <Image
-                src={
-                  profileImage
-                    ? typeof profileImage === "string"
-                      ? getImageUrl(profileImage)
-                      : URL.createObjectURL(profileImage)
-                    : defaultProfileImage
-                }
-                className="sidebar-image"
-                alt={name}
-              />
-              <Nav className="flex-column">
-                <LinkContainer to="/profile">
-                  <Nav.Link className='sidebar-link'>My Profile</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/bookings">
-                  <Nav.Link className='sidebar-link'>Bookings</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/wallet">
-                  <Nav.Link className='sidebar-link'>Wallet</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to="/chat/:hotelId">
-                  <Nav.Link className='sidebar-link'>Messages</Nav.Link>
-                </LinkContainer>
-              </Nav>
-            </div>
+            <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
           </Col>
           <Col md={8}>
             <Card className="profile-card">
