@@ -207,36 +207,43 @@ const HotelierChatScreen = () => {
                         .map((msg) => (
                           <div
                             key={msg._id}
-                            className={`message ${msg.senderType === "Hotel" ? "sent" : "received"}`}
+                            className={`message ${msg.senderType === "User" ? "sent" : "received"}`}
                           >
                             {msg.fileUrl ? (
                               <div style={{ display: "flex", flexDirection: "column" }}>
-                                {msg.fileUrl.endsWith('.pdf') ? (
-                                  <iframe
-                                    src={`http://localhost:5000${msg.fileUrl}`}
-                                    width="100%"
-                                    height="300px"
-                                    style={{ border: "none" }}
-                                  />
+                                {msg.fileUrl.endsWith('.pdf') ||  
+                                    msg.fileUrl.endsWith('.doc') ||
+                                    msg.fileUrl.endsWith('.docx') ||
+                                    msg.fileUrl.endsWith('.xls') ||
+                                    msg.fileUrl.endsWith('.xlsx') ||
+                                    msg.fileUrl.endsWith('.txt') ? (
+                                      <div style={{ display: "flex", flexDirection: "column" }}>
+                                      <div>{msg.content}</div> 
+                                      <a
+                                        href={`http://localhost:5000${msg.fileUrl}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        style={{ marginTop: "5px" }}
+                                      >
+                                        Download
+                                      </a>
+                                    </div>
                                 ) : (
                                   <img
                                     src={`http://localhost:5000${msg.fileUrl}`}
-                                    alt="message-file"
+                                    alt="file"
                                     style={{ maxWidth: "200px" }}
                                   />
                                 )}
-                                <small style={{ marginTop: "10px", fontSize: "9px" }}>
-                                  {format(new Date(msg.createdAt), 'HH:mm')}
-                                </small>
                               </div>
                             ) : (
-                              <div style={{ display: "flex" }}>
-                                <p className="mx-2">{msg.content}</p>
-                                <small style={{ marginTop: "22px", fontSize: "8px" }}>
-                                  {format(new Date(msg.createdAt), 'HH:mm')}
-                                </small>
-                              </div>
+                              msg.content
                             )}
+
+                            <div className="message-time" style={{ fontSize: '9px', marginTop: '5px' }}>
+                              {format(new Date(msg.createdAt), ' hh:mm')}
+                            </div>
                           </div>
                         ))
                     )}

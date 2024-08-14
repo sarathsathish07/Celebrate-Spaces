@@ -54,12 +54,21 @@ const fileFilter = (req, file, cb) => {
 };
 
 const fileFilterMessage = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf" ||
+    file.mimetype === "application/msword" || 
+    file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || 
+    file.mimetype === "application/vnd.ms-excel" || 
+    file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || 
+    file.mimetype === "text/plain" 
+  ) {
     cb(null, true);
   } else {
-    cb(new Error("Only images and PDFs are allowed!"), false); 
+    cb(new Error("Only images, PDFs, and certain document files are allowed!"), false);
   }
 };
+
 
 export const multerUploadUserProfile = multer({
   storage: profileStorage,

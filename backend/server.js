@@ -32,7 +32,7 @@ app.use(errorHandler);
 
 const server = http.createServer(app);
 
-const io = configureSocket(server);  // Call the configureSocket function
+const io = configureSocket(server); 
 
 app.set('io', io);
 

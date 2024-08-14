@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../../slices/adminAuthSlice.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "../../components/userComponents/Loader.jsx";
 
 function AdminLoginScreen() {
   const [email, setEmail] = useState("");
@@ -31,6 +32,7 @@ function AdminLoginScreen() {
       toast.error("An error occurred, try again");
     }
   };
+  if (isLoading) return <Loader />;
 
   return (
     <Container className="admin-login-container">

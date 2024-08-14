@@ -235,7 +235,6 @@ const ProfileScreen = () => {
                   >
                     Update
                   </Button>
-                  {isLoading && <Loader />}
                 </Form>
               </Card.Body>
             </Card>

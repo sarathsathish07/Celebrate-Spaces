@@ -4,12 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAddRoomMutation } from "../../slices/hotelierApiSlice";
 import { toast } from "react-toastify";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
+import Loader from "../../components/userComponents/Loader";
 
 const AddRoomScreen = () => {
   const { hotelId } = useParams();
   const navigate = useNavigate();
   const [addRoom] = useAddRoomMutation();
   const [selectedImages, setSelectedImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "",
     price: "",
@@ -75,6 +77,7 @@ const AddRoomScreen = () => {
       toast.error("All fields are required and cannot be empty");
       return;
     }
+    setIsLoading(true);
 
     try {
       const formDataObj = new FormData();
@@ -94,9 +97,12 @@ const AddRoomScreen = () => {
       navigate(`/hotelier/registered-hotels`);
     } catch (error) {
       toast.error(error?.data?.message || error?.error || "Error adding room");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (isLoading) return <Loader />;
   return (
     <HotelierLayout>
       <Container className="px-4 w-75" style={{ maxHeight: "100vh", overflowY: "auto" }}>

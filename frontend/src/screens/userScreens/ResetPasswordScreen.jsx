@@ -38,6 +38,8 @@ const ResetPasswordScreen = () => {
     }
   };
 
+  if (isLoading) return <Loader />;
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginbody">
       <Card style={{ width: '30rem', padding: '2rem' }}>
@@ -64,7 +66,7 @@ const ResetPasswordScreen = () => {
               />
             </Form.Group>
 
-            {isLoading && <Loader />}
+           
 
             <Button type="submit" variant="primary" className="mt-3" block>
               Reset Password

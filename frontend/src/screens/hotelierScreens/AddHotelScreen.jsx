@@ -4,7 +4,7 @@ import { useAddHotelMutation } from "../../slices/hotelierApiSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
-import Footer from '../../components/userComponents/Footer';
+import Loader from "../../components/userComponents/Loader";
 
 const AddHotelScreen = () => {
   const [name, setName] = useState("");
@@ -14,6 +14,7 @@ const AddHotelScreen = () => {
   const [description, setDescription] = useState("");
   const [amenities, setAmenities] = useState("");
   const [latitude, setLatitude] = useState("");
+  const [loading, setLoading] = useState(false);
   const [longitude, setLongitude] = useState("");
   const [addHotel] = useAddHotelMutation();
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ const AddHotelScreen = () => {
     }
 
     try {
+      setLoading(true); 
       const formData = new FormData();
       formData.append("name", trimmedName);
       formData.append("city", trimmedCity);
@@ -99,8 +101,12 @@ const AddHotelScreen = () => {
       navigate("/hotelier/registered-hotels");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
+    } finally {
+      setLoading(false); 
     }
   };
+
+  if (loading) return <Loader />;
 
   return (
     <HotelierLayout>

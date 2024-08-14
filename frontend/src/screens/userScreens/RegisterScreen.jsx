@@ -115,6 +115,8 @@ const RegisterScreen = () => {
     navigate("/");
   };
 
+  if (isLoading) return <Loader />;
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginbody">
       <div className="position-absolute top-0 start-0 p-3">
@@ -178,7 +180,7 @@ const RegisterScreen = () => {
                   />
                 </Form.Group>
 
-                {isLoading && <Loader />}
+               
 
                 <Button type="submit" variant="primary" className="mt-3" block>
                   Sign Up

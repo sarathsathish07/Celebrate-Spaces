@@ -69,6 +69,7 @@ const LoginScreen = () => {
       }
     }
   };
+  if (isLoading) return <Loader />;
   
   
 
@@ -111,7 +112,7 @@ const LoginScreen = () => {
                   ></Form.Control>
                 </Form.Group>
 
-                {isLoading && <Loader />}
+               
 
                 <Button
                   type="submit"

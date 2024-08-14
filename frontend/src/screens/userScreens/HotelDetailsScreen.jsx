@@ -196,6 +196,7 @@ const HotelDetailsScreen = () => {
                             <Card.Text>
                               {room.description}
                               <br />
+                              <br />
                               <strong>Price:</strong> ${room.price}/night
                             </Card.Text>
                             <Button onClick={() => handleBookNow(room._id)}>
@@ -211,7 +212,7 @@ const HotelDetailsScreen = () => {
                   <h4>Reviews</h4>
 
                   {isLoadingReviews ? (
-                    <Loader />
+                    <div>Loading...</div>
                   ) : reviews && reviews.length > 0 ? (
                     <Row>
                       {reviews.map((review) => (
@@ -251,8 +252,8 @@ const HotelDetailsScreen = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="checkInDate">
-              <Form.Label>Check-in Date</Form.Label>
+            <Form.Group controlId="checkInDate" className='my-2'>
+              <Form.Label className='mx-2'>Check-in Date</Form.Label>
               <DatePicker
                 selected={checkInDate}
                 onChange={(date) => setCheckInDate(date)}
@@ -261,7 +262,7 @@ const HotelDetailsScreen = () => {
               />
             </Form.Group>
             <Form.Group controlId="checkOutDate">
-              <Form.Label>Check-out Date</Form.Label>
+              <Form.Label className='mx-2'>Check-out Date</Form.Label>
               <DatePicker
                 selected={checkOutDate}
                 onChange={(date) => setCheckOutDate(date)}
@@ -269,12 +270,13 @@ const HotelDetailsScreen = () => {
                 className="form-control"
               />
             </Form.Group>
-            <Form.Group controlId="roomCount">
-              <Form.Label>Room Count</Form.Label>
+            <Form.Group controlId="roomCount" className='my-2' style={{display:"flex",flexDirection:"row"}}>
+              <Form.Label className='mx-2'>Room Count</Form.Label>
               <Form.Control
                 type="number"
                 min="1"
                 value={roomCount}
+                style={{width:"48%"}}
                 onChange={(e) => setRoomCount(Number(e.target.value))}
               />
             </Form.Group>

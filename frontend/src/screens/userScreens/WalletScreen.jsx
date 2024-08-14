@@ -58,6 +58,7 @@ const WalletScreen = () => {
   };
 
   const sortedTransactions = [...transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
 
   return (
     <div>
@@ -77,7 +78,7 @@ const WalletScreen = () => {
               <Card.Header>Transaction History</Card.Header>
               <Card.Body>
                 {isLoadingTransactions ? (
-                  <Loader />
+                 <div>Loading... </div> 
                 ) : transactionsError ? (
                   <div>Error fetching transactions</div>
                 ) : (
@@ -97,7 +98,7 @@ const WalletScreen = () => {
               <Card.Header>Wallet Balance</Card.Header>
               <Card.Body>
                 {isLoadingBalance ? (
-                  <Loader />
+                  <div>Loading... </div> 
                 ) : balanceError ? (
                   <div>Error fetching balance</div>
                 ) : (
