@@ -295,13 +295,17 @@ const cancelBooking = async (req, res) => {
 
     const wallet = await Wallet.findOne({ user: booking.userId });
     const refundAmount = (booking.totalAmount * refundPercentage) / 100;
-    wallet.balance += refundAmount;
-    wallet.transactions.push({
-      user: booking.userId,
-      amount: refundAmount,
-      transactionType: 'credit',
-    });
-    await wallet.save();
+
+    if(refundAmount>0){
+      wallet.balance += refundAmount;
+      wallet.transactions.push({
+        user: booking.userId,
+        amount: refundAmount,
+        transactionType: 'credit',
+      });
+      await wallet.save();
+    }
+  
 
     const notification = new Notification({
       userId: booking.userId,

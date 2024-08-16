@@ -6,8 +6,6 @@ import {
   Container,
   Row,
   Col,
-  Image,
-  Nav,
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,6 +39,7 @@ const ProfileScreen = () => {
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
   useEffect(() => {
+    document.title = "Profile - Celebrate Spaces";
     if (userProfile) {
       setName(userProfile.name);
       setEmail(userProfile.email);
@@ -160,7 +159,7 @@ const ProfileScreen = () => {
       <Container className="profile-container">
         <Row className="my-4">
           <Col md={3} className="sidebar-container">
-            <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
+            <Sidebar profileImage={userInfo?.profileImage} name={userInfo?.name} />
           </Col>
           <Col md={8}>
             <Card className="profile-card">

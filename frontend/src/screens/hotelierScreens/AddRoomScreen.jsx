@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, Container } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAddRoomMutation } from "../../slices/hotelierApiSlice";
@@ -21,6 +21,10 @@ const AddRoomScreen = () => {
     description: "",
     amenities: "",
   });
+
+  useEffect(()=>{
+    document.title = "Add Rooms";
+  })
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,31 +114,31 @@ const AddRoomScreen = () => {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="type" className="mb-3">
             <Form.Label>Type</Form.Label>
-            <Form.Control type="text" name="type" value={formData.type} onChange={handleChange} required />
+            <Form.Control type="text" name="type" value={formData?.type} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="price" className="mb-3">
             <Form.Label>Price</Form.Label>
-            <Form.Control type="number" name="price" value={formData.price} onChange={handleChange} required />
+            <Form.Control type="number" name="price" value={formData?.price} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="area" className="mb-3">
             <Form.Label>Area</Form.Label>
-            <Form.Control type="number" name="area" value={formData.area} onChange={handleChange} required />
+            <Form.Control type="number" name="area" value={formData?.area} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="occupancy" className="mb-3">
             <Form.Label>Occupancy</Form.Label>
-            <Form.Control type="number" name="occupancy" value={formData.occupancy} onChange={handleChange} required />
+            <Form.Control type="number" name="occupancy" value={formData?.occupancy} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="noOfRooms" className="mb-3">
             <Form.Label>Number of Rooms</Form.Label>
-            <Form.Control type="number" name="noOfRooms" value={formData.noOfRooms} onChange={handleChange} required />
+            <Form.Control type="number" name="noOfRooms" value={formData?.noOfRooms} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="description" className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={3} name="description" value={formData.description} onChange={handleChange} required />
+            <Form.Control as="textarea" rows={3} name="description" value={formData?.description} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="amenities" className="mb-3">
             <Form.Label>Amenities</Form.Label>
-            <Form.Control type="text" name="amenities" value={formData.amenities} onChange={handleChange} required />
+            <Form.Control type="text" name="amenities" value={formData?.amenities} onChange={handleChange} required />
           </Form.Group>
           <Form.Group controlId="images" className="mb-3">
             <Form.Label>Images</Form.Label>

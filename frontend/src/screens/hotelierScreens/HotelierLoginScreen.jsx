@@ -21,6 +21,7 @@ const HotelierLoginScreen = () => {
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
 
   useEffect(() => {
+    document.title = "Login";
     if (hotelierInfo) {
       navigate("/hotelier");
     }

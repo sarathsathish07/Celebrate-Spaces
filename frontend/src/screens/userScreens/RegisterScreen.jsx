@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -20,6 +20,10 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
 
   const [register, { isLoading }] = useRegisterMutation();
+
+  useEffect(()=>{
+    document.title = "Register - Celebrate Spaces";
+  },[])
 
   const validateName = (name) => {
     if (name.length === 0) {
@@ -179,8 +183,6 @@ const RegisterScreen = () => {
                     className="form-control"
                   />
                 </Form.Group>
-
-               
 
                 <Button type="submit" variant="primary" className="mt-3" block>
                   Sign Up

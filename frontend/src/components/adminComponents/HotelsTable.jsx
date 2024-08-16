@@ -77,18 +77,18 @@ export const HotelsTable = ({ hotels, refetchData }) => {
                 </thead>
                 <tbody>
                   {filteredHotels.map((hotel) => (
-                    <tr key={hotel._id}>
-                      <td>{hotel.name}</td>
-                      <td>{hotel.city}</td>
-                      <td>{hotel.address}</td>
-                      <td>{hotel.isListed ? 'Listed' : 'Unlisted'}</td>
+                    <tr key={hotel?._id}>
+                      <td>{hotel?.name}</td>
+                      <td>{hotel?.city}</td>
+                      <td>{hotel?.address}</td>
+                      <td>{hotel?.isListed ? 'Listed' : 'Unlisted'}</td>
                       <td>
                         <Button
                           variant="transparent"
                           size="sm"
-                          onClick={() => (hotel.isListed ? handleUnlist(hotel) : handleList(hotel))}
+                          onClick={() => (hotel?.isListed ? handleUnlist(hotel) : handleList(hotel))}
                         >
-                          {hotel.isListed ? <AiFillCloseCircle /> : <AiFillCheckCircle />}
+                          {hotel?.isListed ? <AiFillCloseCircle /> : <AiFillCheckCircle />}
                         </Button>
                       </td>
                     </tr>

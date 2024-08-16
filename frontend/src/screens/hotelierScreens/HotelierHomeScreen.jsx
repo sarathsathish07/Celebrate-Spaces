@@ -27,6 +27,7 @@ const HotelierDashboard = () => {
   const yearlyChartRef = useRef(null);
 
   useEffect(() => {
+    document.title = "Hotelier Dashboard";
     refetch();
   }, [refetch]);
 
@@ -88,15 +89,15 @@ const HotelierDashboard = () => {
                   { text: 'Booking Status', style: 'tableHeader' }
                 ],
                 ...reportPreview.map(item => [
-                  item._id,
-                  `Rs ${item.totalSales}`,
-                  item.userName,
-                  item.hotelName,
-                  item.roomName,
-                  new Date(item.checkInDate).toLocaleDateString(),
-                  new Date(item.checkOutDate).toLocaleDateString(),
-                  item.paymentMethod,
-                  item.bookingStatus,
+                  item?._id,
+                  `Rs ${item?.totalSales}`,
+                  item?.userName,
+                  item?.hotelName,
+                  item?.roomName,
+                  new Date(item?.checkInDate).toLocaleDateString(),
+                  new Date(item?.checkOutDate).toLocaleDateString(),
+                  item?.paymentMethod,
+                  item?.bookingStatus,
                 ])
               ]
             }

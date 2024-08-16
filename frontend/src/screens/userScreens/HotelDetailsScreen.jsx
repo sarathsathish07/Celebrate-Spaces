@@ -30,11 +30,12 @@ const HotelDetailsScreen = () => {
   const [roomCount, setRoomCount] = useState(1);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM', // Replace with your API key
+    googleMapsApiKey: 'AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM', 
   });
 
   const baseURL = 'http://localhost:5000/';
   useEffect(() => {
+    document.title = "Hotel details - Celebrate Spaces";
     refetch();
     if (activeKey === 'reviews') {
       refetchReviews();
@@ -183,23 +184,23 @@ const HotelDetailsScreen = () => {
                 <Tab.Pane eventKey="rooms">
                   <Row>
                     {hotel?.rooms?.map((room) => (
-                      <Col md={4} key={room._id} className="mb-3">
+                      <Col md={4} key={room?._id} className="mb-3">
                         <Card>
                           <Card.Img
                             variant="top"
-                            src={`${baseURL}${room.images[0].replace("backend\\public\\", "")}`}
+                            src={`${baseURL}${room?.images[0].replace("backend\\public\\", "")}`}
                             alt="Room Image"
                             className="hotel-details-room-image"
                           />
                           <Card.Body>
-                            <Card.Title>{room.type}</Card.Title>
+                            <Card.Title>{room?.type}</Card.Title>
                             <Card.Text>
-                              {room.description}
+                              {room?.description}
                               <br />
                               <br />
-                              <strong>Price:</strong> ${room.price}/night
+                              <strong>Price:</strong> ${room?.price}/night
                             </Card.Text>
-                            <Button onClick={() => handleBookNow(room._id)}>
+                            <Button onClick={() => handleBookNow(room?._id)}>
                               Book Now
                             </Button>
                           </Card.Body>
@@ -216,13 +217,13 @@ const HotelDetailsScreen = () => {
                   ) : reviews && reviews.length > 0 ? (
                     <Row>
                       {reviews.map((review) => (
-                        <Col md={4} key={review._id} className="mb-3">
+                        <Col md={4} key={review?._id} className="mb-3">
                           <Card>
                             <Card.Body>
-                              <Card.Title>{review.userId.name}</Card.Title>
+                              <Card.Title>{review?.userId?.name}</Card.Title>
                               <Card.Text>
                               <Rating
-                                initialRating={review.rating}
+                                initialRating={review?.rating}
                                 readonly
                                 emptySymbol={<i className="fa fa-star-o" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
                                 fullSymbol={<i className="fa fa-star" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
@@ -230,7 +231,7 @@ const HotelDetailsScreen = () => {
 
 
                               </Card.Text>
-                              <Card.Text>{review.review}</Card.Text>
+                              <Card.Text>{review?.review}</Card.Text>
                             </Card.Body>
                           </Card>
                         </Col>

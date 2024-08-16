@@ -33,6 +33,7 @@ const BookingsScreen = () => {
   };
 
   useEffect(() => {
+    document.title = "Bookings - Celebrate Spaces";
     refetchBookings();
     refetchReviews();
   }, [refetchBookings, refetchReviews]);
@@ -97,7 +98,7 @@ const BookingsScreen = () => {
       <Container className="profile-container">
         <Row>
           <Col md={3} className="sidebar-container">
-            <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
+            <Sidebar profileImage={userInfo?.profileImage} name={userInfo?.name} />
           </Col>
           <Col md={9}>
             <Card>
@@ -117,42 +118,42 @@ const BookingsScreen = () => {
                   </thead>
                   <tbody>
                     {sortedBookings.map((booking) => (
-                      <React.Fragment key={booking._id}>
+                      <React.Fragment key={booking?._id}>
                         <tr>
-                          <td>{booking.hotelId.name}</td>
-                          <td>{booking.roomId.type}</td>
-                          <td>{booking.paymentMethod}</td>
-                          <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
-                          <td>Rs {booking.totalAmount}</td>
+                          <td>{booking?.hotelId?.name}</td>
+                          <td>{booking?.roomId?.type}</td>
+                          <td>{booking?.paymentMethod}</td>
+                          <td>{new Date(booking?.bookingDate).toLocaleDateString()}</td>
+                          <td>Rs {booking?.totalAmount}</td>
                           <td>
-                            <Button variant="link" onClick={() => toggleRow(booking._id)}>
-                              {expandedRow === booking._id ? "Hide" : "View"} Details
+                            <Button variant="link" onClick={() => toggleRow(booking?._id)}>
+                              {expandedRow === booking?._id ? "Hide" : "View"} Details
                             </Button>
                           </td>
                         </tr>
                         <tr>
                           <td colSpan="6">
-                            <Collapse in={expandedRow === booking._id}>
+                            <Collapse in={expandedRow === booking?._id}>
                               <div>
                                 <Card className="mt-2">
                                   <Card.Body>
                                     <Row>
                                       <Col md={9}>
-                                        <p><strong>Hotel:</strong> {booking.hotelId.name}</p>
-                                        <p><strong>Room:</strong> {booking.roomId.type}</p>
-                                        <p><strong>Check-in Date:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
-                                        <p><strong>Check-out Date:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
-                                        <p><strong>Booking Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</p>
-                                        <p><strong>Total Amount:</strong> Rs {booking.totalAmount}</p>
-                                        <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
-                                        <p><strong>Status:</strong> {booking.bookingStatus}</p>
+                                        <p><strong>Hotel:</strong> {booking?.hotelId?.name}</p>
+                                        <p><strong>Room:</strong> {booking?.roomId?.type}</p>
+                                        <p><strong>Check-in Date:</strong> {new Date(booking?.checkInDate).toLocaleDateString()}</p>
+                                        <p><strong>Check-out Date:</strong> {new Date(booking?.checkOutDate).toLocaleDateString()}</p>
+                                        <p><strong>Booking Date:</strong> {new Date(booking?.bookingDate).toLocaleDateString()}</p>
+                                        <p><strong>Total Amount:</strong> Rs {booking?.totalAmount}</p>
+                                        <p><strong>Payment Method:</strong> {booking?.paymentMethod}</p>
+                                        <p><strong>Status:</strong> {booking?.bookingStatus}</p>
                                       </Col>
                                       <Col>
-                                        {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (
+                                        {booking?.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking?.checkOutDate) && (
                                           <Button
                                             variant="danger"
                                             onClick={() => {
-                                              setSelectedBooking(booking._id);
+                                              setSelectedBooking(booking?._id);
                                               setShowCancelModal(true);
                                             }}
                                             className="me-2"
@@ -162,7 +163,7 @@ const BookingsScreen = () => {
                                         )}
                                           <Button
                                             variant="link"
-                                            onClick={() => handleChat(booking.hotelId._id)}
+                                            onClick={() => handleChat(booking?.hotelId?._id)}
                                           >
                                             <i className="fa fa-comments fa-3x"></i> 
                                           </Button>
@@ -170,15 +171,15 @@ const BookingsScreen = () => {
                                       
                                       </Col>
                                     </Row>
-                                    {getReviewForBooking(booking._id) ? (
+                                    {getReviewForBooking(booking?._id) ? (
                                       <>
                                         <h5 className="mt-4">Review</h5>
-                                        <p><strong>Rating:</strong> <Rating initialRating={getReviewForBooking(booking._id).rating} readonly emptySymbol="fa fa-star-o fa-2x" fullSymbol="fa fa-star fa-2x" /></p>
-                                        <p><strong>Review:</strong> {getReviewForBooking(booking._id).review}</p>
+                                        <p><strong>Rating:</strong> <Rating initialRating={getReviewForBooking(booking?._id).rating} readonly emptySymbol="fa fa-star-o fa-2x" fullSymbol="fa fa-star fa-2x" /></p>
+                                        <p><strong>Review:</strong> {getReviewForBooking(booking?._id).review}</p>
                                       </>
                                     ) : (
                                       <>
-                                        {booking.bookingStatus === 'confirmed' && isPastCheckoutDate(booking.checkOutDate) && (
+                                        {booking?.bookingStatus === 'confirmed' && isPastCheckoutDate(booking?.checkOutDate) && (
                                           <>
                                             <h5 className="mt-4">Add Review</h5>
                                             <Form>
@@ -202,7 +203,7 @@ const BookingsScreen = () => {
                                               </Form.Group>
                                               <Button
                                                 variant="primary"
-                                                onClick={() => handleReviewSubmit(booking._id, booking.hotelId._id)}
+                                                onClick={() => handleReviewSubmit(booking?._id, booking?.hotelId?._id)}
                                                 disabled={isAddingReview}
                                                 className="mt-3"
                                               >

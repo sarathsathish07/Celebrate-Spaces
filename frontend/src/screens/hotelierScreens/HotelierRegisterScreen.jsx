@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -14,6 +14,10 @@ const HotelierRegisterScreen = () => {
   const navigate = useNavigate();
 
   const [register, { isLoading }] = useHotelierRegisterMutation();
+
+  useEffect(()=>{
+    document.title = "Register";
+  },[])
 
   const validateName = (name) => {
     if (name.length === 0) {
@@ -95,6 +99,7 @@ const HotelierRegisterScreen = () => {
       toast.error(error?.data?.message || error.error);
     }
   };
+  if(isLoading) return <Loader/>
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginbody">
@@ -151,7 +156,7 @@ const HotelierRegisterScreen = () => {
                   />
                 </Form.Group>
 
-                {isLoading && <Loader />}
+               
 
                 <Button type="submit" variant="primary" className="mt-3" block>
                   Sign Up

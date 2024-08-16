@@ -22,6 +22,7 @@ const HotelierBookingsScreen = () => {
   };
 
   useEffect(() => {
+    document.title = "Bookings";
     refetch();
   }, [refetch]);
 
@@ -67,27 +68,27 @@ const HotelierBookingsScreen = () => {
                     </thead>
                     <tbody>
                       {sortedBookings.map((booking) => (
-                        <React.Fragment key={booking._id}>
+                        <React.Fragment key={booking?._id}>
                           <tr>
-                            <td>{booking.hotelId.name}</td>
-                            <td>{booking.roomId.type}</td>
-                            <td>{booking.userId.name}</td>
-                            <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
-                            <td>{booking.totalAmount}</td>
+                            <td>{booking?.hotelId?.name}</td>
+                            <td>{booking?.roomId?.type}</td>
+                            <td>{booking?.userId?.name}</td>
+                            <td>{new Date(booking?.bookingDate).toLocaleDateString()}</td>
+                            <td>{booking?.totalAmount}</td>
                             <td>
                               <Row>
                                 <Col>
-                                <Button variant="link" onClick={() => toggleRow(booking._id)}>
-                                {expandedRow === booking._id ? 'Hide Details' : 'View Details'}{' '}
+                                <Button variant="link" onClick={() => toggleRow(booking?._id)}>
+                                {expandedRow === booking?._id ? 'Hide Details' : 'View Details'}{' '}
                                 <FaChevronDown />
                               </Button>
                                 </Col>
                                 <Col>
-                                {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (
+                                {booking?.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking?.checkOutDate) && (
                                 <Button
                                   variant="danger"
                                   onClick={() => {
-                                    setSelectedBooking(booking._id);
+                                    setSelectedBooking(booking?._id);
                                     setShowCancelModal(true);
                                   }}
                                   className="ms-2"
@@ -95,7 +96,7 @@ const HotelierBookingsScreen = () => {
                                   Cancel Booking
                                 </Button>
                               )}
-                              {booking.bookingStatus === 'cancelled' && (
+                              {booking?.bookingStatus === 'cancelled' && (
                                 <div className="d-flex align-items-center text-danger">
                                   <FaTimes className="me-2" />
                                    Cancelled
@@ -109,17 +110,17 @@ const HotelierBookingsScreen = () => {
                           </tr>
                           <tr>
                             <td colSpan="6">
-                              <Collapse in={expandedRow === booking._id}>
+                              <Collapse in={expandedRow === booking?._id}>
                                 <div>
                                   <Card className="mt-2">
                                     <Card.Body>
                                       <Row>
                                         <Col md={9}>
-                                          <p><strong>Guest Name:</strong> {booking.userId.name}</p>
-                                          <p><strong>Email:</strong> {booking.userId.email}</p>
-                                          <p><strong>Payment Method:</strong> {booking.paymentMethod}</p>
-                                          <p><strong>Check-In:</strong> {new Date(booking.checkInDate).toLocaleDateString()}</p>
-                                          <p><strong>Check-Out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
+                                          <p><strong>Guest Name:</strong> {booking?.userId?.name}</p>
+                                          <p><strong>Email:</strong> {booking?.userId?.email}</p>
+                                          <p><strong>Payment Method:</strong> {booking?.paymentMethod}</p>
+                                          <p><strong>Check-In:</strong> {new Date(booking?.checkInDate).toLocaleDateString()}</p>
+                                          <p><strong>Check-Out:</strong> {new Date(booking?.checkOutDate).toLocaleDateString()}</p>
                                         </Col>
                                         {/* <Col>
                                           {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (

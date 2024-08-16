@@ -16,6 +16,7 @@ export const UserManagementScreen = () => {
   };
 
   useEffect(() => {
+    document.title = "Users List";
     const fetchData = async () => {
       try {
         const responseFromApiCall = await userDataFromApi().unwrap();

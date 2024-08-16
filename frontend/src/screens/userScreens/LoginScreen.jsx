@@ -24,6 +24,7 @@ const LoginScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    document.title = "Login - Celebrate Spaces";
     if (userInfo) {
       navigate("/");
     }

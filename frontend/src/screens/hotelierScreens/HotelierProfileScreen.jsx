@@ -20,9 +20,10 @@ const HotelierProfileScreen = () => {
   const [updateProfile, { isLoading }] = useHotelierUpdateUserMutation();
 
   useEffect(() => {
+    document.title = "Profile";
     if (userProfile) {
-      setName(userProfile.name);
-      setEmail(userProfile.email);
+      setName(userProfile?.name);
+      setEmail(userProfile?.email);
     }
   }, [userProfile]);
 
@@ -99,6 +100,7 @@ const HotelierProfileScreen = () => {
   };
 
   if (profileLoading) return <Loader />;
+  if(isLoading) return <Loader/>
 
   return (
     <HotelierLayout>
@@ -159,7 +161,7 @@ const HotelierProfileScreen = () => {
                   >
                     Update
                   </Button>
-                  {isLoading && <Loader />}
+                  
                 </Form>
               </Card.Body>
             </Card>

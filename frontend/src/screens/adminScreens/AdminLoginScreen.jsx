@@ -17,6 +17,7 @@ function AdminLoginScreen() {
   const { adminInfo } = useSelector((state) => state.adminAuth);
 
   useEffect(() => {
+    document.title = "Admin Login";
     if (adminInfo) {
       navigate("/admin");
     }

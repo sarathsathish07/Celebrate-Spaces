@@ -89,16 +89,16 @@ export const UsersTable = ({ users, refetchData }) => {
                 <tbody>
                   {filteredUsers.map((user, index) => (
                     <tr key={index}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.isBlocked ? "Blocked" : "Active"}</td>
+                      <td>{user?.name}</td>
+                      <td>{user?.email}</td>
+                      <td>{user?.isBlocked ? "Blocked" : "Active"}</td>
                       <td>
                         <Button
                           variant="transparent"
                           size="sm"
-                          onClick={() => (user.isBlocked ? handleUnblock(user) : handleBlock(user))}
+                          onClick={() => (user?.isBlocked ? handleUnblock(user) : handleBlock(user))}
                         >
-                          {user.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
+                          {user?.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
                         </Button>
                       </td>
                     </tr>

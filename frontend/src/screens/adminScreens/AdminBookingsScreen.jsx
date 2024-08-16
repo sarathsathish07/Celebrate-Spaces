@@ -17,6 +17,7 @@ const AdminBookingsScreen = () => {
   };
 
   useEffect(() => {
+    document.title = "Admin Bookings";
     refetch();
   }, [refetch]);
 

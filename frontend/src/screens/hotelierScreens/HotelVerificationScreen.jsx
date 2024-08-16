@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +16,10 @@ const HotelVerificationScreen = () => {
   const { hotelId } = useParams();
   const { data: profile, isLoading: profileLoading } = useGetHotelierProfileQuery();
   const [uploadHotelCertificate, { isLoading }] = useUploadHotelCertificateMutation();
+
+  useEffect(()=>{
+    document.title = "Hotel Verification";
+  },[])
 
   const handleCertificateChange = (e) => {
     const file = e.target.files[0];
@@ -59,6 +63,7 @@ const HotelVerificationScreen = () => {
     if (profileLoading) {
       return <Loader />;
     }
+    if(isLoading) return <Loader/>
 
     return (
       <Form onSubmit={submitHandler}>
@@ -68,7 +73,7 @@ const HotelVerificationScreen = () => {
           {validationError && <div className="text-danger mt-2">{validationError}</div>}
         </Form.Group>
 
-        {isLoading && <Loader />}
+        
 
         <Button type="submit" style={{ backgroundColor: "#082b43" }}>
           Submit

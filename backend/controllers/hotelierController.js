@@ -143,9 +143,7 @@ const addHotelHandler = expressAsyncHandler(async (req, res) => {
   res.status(response.status).json(response.data);
 });
 
-const getHotelsHandler = async (req, res) => {
-  console.log("9");
-  
+const getHotelsHandler = async (req, res) => {  
   try {
     const hotels = await Hotel.find({ hotelierId: req.hotelier._id });
 

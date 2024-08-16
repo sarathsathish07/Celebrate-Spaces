@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import { useSendPasswordResetEmailMutation } from '../../slices/usersApiSlice';
 import { toast } from 'react-toastify';
@@ -8,6 +8,9 @@ import Loader from "../../components/userComponents/Loader";
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');
   const [sendPasswordResetEmail, { isLoading }] = useSendPasswordResetEmailMutation();
+  useEffect(()=>{
+    document.title = "Forgot Password - Celebrate Spaces";
+  },[])
 
   const submitHandler = async (e) => {
     e.preventDefault();

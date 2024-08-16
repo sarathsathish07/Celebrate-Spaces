@@ -47,6 +47,7 @@ const ChatScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    document.title = "Messages - Celebrate Spaces";
     if (selectedChatRoom) {
       refetchMessages();
       socket.emit("joinRoom", { roomId: selectedChatRoom._id });
@@ -191,7 +192,7 @@ const ChatScreen = () => {
     <Container className="profile-container" style={{ height: "50vh" }}>
       <Row>
         <Col md={3} className="sidebar-container">
-          <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
+          <Sidebar profileImage={userInfo?.profileImage} name={userInfo?.name} />
         </Col>
         <Col md={9}>
           <div className="chat-screen">
@@ -203,12 +204,12 @@ const ChatScreen = () => {
                 <ul>
                   {chatRooms.map((room) => (
                     <li
-                      key={room.hotelId._id}
-                      className={currentHotelId === room.hotelId._id ? "active" : ""}
-                      onClick={() => handleChatRoomSelect(room.hotelId._id)}
+                      key={room?.hotelId?._id}
+                      className={currentHotelId === room?.hotelId?._id ? "active" : ""}
+                      onClick={() => handleChatRoomSelect(room?.hotelId?._id)}
                     >
-                      {room.hotelId.name}
-                      {room.unreadMessagesCount > 0 && <span style={{ marginLeft: "10px", color: "red",fontSize:"30px",borderRadius:"50%" }}>•</span>}
+                      {room?.hotelId?.name}
+                      {room?.unreadMessagesCount > 0 && <span style={{ marginLeft: "10px", color: "red",fontSize:"30px",borderRadius:"50%" }}>•</span>}
                     </li>
                   ))}
                 </ul>
@@ -217,7 +218,7 @@ const ChatScreen = () => {
             <div className="chat-messages">
               {selectedChatRoom ? (
                 <>
-                  <h5 className="my-3 mx-2">{selectedChatRoom.hotelId.name}</h5>
+                  <h5 className="my-3 mx-2">{selectedChatRoom?.hotelId?.name}</h5>
                   {isTyping && (
                     <p className="typing-indicator mx-2" style={{ color: "black" }}>Typing...</p>
                   )}
@@ -233,7 +234,7 @@ const ChatScreen = () => {
                             key={msg._id}
                             className={`message ${msg.senderType === "User" ? "sent" : "received"}`}
                           >
-                            {msg.fileUrl ? (
+                            {msg?.fileUrl ? (
                               <div style={{ display: "flex", flexDirection: "column" }}>
                                 {msg.fileUrl.endsWith('.pdf') ||  
                                     msg.fileUrl.endsWith('.doc') ||
@@ -244,7 +245,7 @@ const ChatScreen = () => {
                                       <div style={{ display: "flex", flexDirection: "column" }}>
                                       <div>{msg.content}</div> 
                                       <a
-                                        href={`http://localhost:5000${msg.fileUrl}`}
+                                        href={`http://localhost:5000${msg?.fileUrl}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         download
@@ -255,18 +256,18 @@ const ChatScreen = () => {
                                     </div>
                                 ) : (
                                   <img
-                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    src={`http://localhost:5000${msg?.fileUrl}`}
                                     alt="file"
                                     style={{ maxWidth: "200px" }}
                                   />
                                 )}
                               </div>
                             ) : (
-                              msg.content
+                              msg?.content
                             )}
 
                             <div className="message-time" style={{ fontSize: '9px', marginTop: '5px' }}>
-                              {format(new Date(msg.createdAt), ' hh:mm')}
+                              {format(new Date(msg?.createdAt), ' hh:mm')}
                             </div>
                           </div>
                         ))

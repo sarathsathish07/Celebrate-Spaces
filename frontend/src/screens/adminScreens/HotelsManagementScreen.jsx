@@ -16,6 +16,7 @@ const HotelsManagementScreen = () => {
   };
 
   useEffect(() => {
+    document.title = "Hotels List";
     const fetchHotels = async () => {
       try {
         const responseFromApiCall = await getHotelsData().unwrap();

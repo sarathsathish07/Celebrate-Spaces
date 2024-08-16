@@ -801,3 +801,6 @@ html {
   transform: translateY(-50%);
 }
 
+#username{
+  color: white;
+}

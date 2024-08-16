@@ -40,7 +40,7 @@ const HotelierHeader = () => {
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='ms-auto'>
               {hotelierInfo ? (
-                <NavDropdown title={hotelierInfo.name} id='username'>
+                <NavDropdown title={hotelierInfo?.name} id='username'>
                   <LinkContainer to='/hotelier/profile'>
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>

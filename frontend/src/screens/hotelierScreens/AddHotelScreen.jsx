@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, Container } from "react-bootstrap";
 import { useAddHotelMutation } from "../../slices/hotelierApiSlice";
 import { toast } from "react-toastify";
@@ -18,6 +18,10 @@ const AddHotelScreen = () => {
   const [longitude, setLongitude] = useState("");
   const [addHotel] = useAddHotelMutation();
   const navigate = useNavigate();
+
+useEffect(()=>{
+  document.title = "Add Hotel";
+},[])
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);

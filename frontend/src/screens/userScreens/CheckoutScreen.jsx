@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetRoomByRoomIdQuery } from '../../slices/usersApiSlice.js';
@@ -28,6 +28,9 @@ const CheckoutScreen = () => {
   const [updateBookingStatus] = useUpdateBookingStatusMutation();
   const { data: walletBalanceData } = useGetWalletBalanceQuery();
   const walletBalance = walletBalanceData?.balance || 0;
+  useEffect(()=>{
+    document.title = "Checkout - Celebrate Spaces";
+  },[])
 
   if (isLoading) return <Loader />;
   if (error) {
@@ -64,7 +67,7 @@ const CheckoutScreen = () => {
         const bookingResponse = await saveBooking(bookingDetails).unwrap();
         console.log('Booking Response:', bookingResponse);
 
-        if (!bookingResponse || !bookingResponse._id) {
+        if (!bookingResponse || !bookingResponse?._id) {
           throw new Error('Invalid booking response or missing booking ID');
         }
 
@@ -86,8 +89,8 @@ const CheckoutScreen = () => {
             navigate('/bookings');
           },
           prefill: {
-            name: userInfo.name,
-            email: userInfo.email,
+            name: userInfo?.name,
+            email: userInfo?.email,
           },
           theme: {
             color: '#F37254',
@@ -111,8 +114,8 @@ const CheckoutScreen = () => {
               <Card.Header>User Details</Card.Header>
               <Card.Body>
                 <ListGroup variant="flush">
-                  <ListGroup.Item><strong>Name:</strong> {userInfo.name}</ListGroup.Item>
-                  <ListGroup.Item><strong>Email:</strong> {userInfo.email}</ListGroup.Item>
+                  <ListGroup.Item><strong>Name:</strong> {userInfo?.name}</ListGroup.Item>
+                  <ListGroup.Item><strong>Email:</strong> {userInfo?.email}</ListGroup.Item>
                 </ListGroup>
               </Card.Body>
             </Card>
@@ -121,7 +124,7 @@ const CheckoutScreen = () => {
               <Card.Header>Booked Room Details</Card.Header>
               <Card.Body>
                 <ListGroup variant="flush">
-                  <ListGroup.Item><strong>Hotel Name:</strong> {room.hotelId.name}</ListGroup.Item>
+                  <ListGroup.Item><strong>Hotel Name:</strong> {room?.hotelId?.name}</ListGroup.Item>
                   <ListGroup.Item><strong>Room Type:</strong> {room?.type}</ListGroup.Item>
                   <ListGroup.Item><strong>Check-In Date:</strong> {checkInDate.toLocaleDateString()}</ListGroup.Item>
                   <ListGroup.Item><strong>Check-Out Date:</strong> {checkOutDate.toLocaleDateString()}</ListGroup.Item>

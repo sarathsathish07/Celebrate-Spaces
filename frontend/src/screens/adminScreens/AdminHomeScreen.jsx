@@ -31,6 +31,7 @@ const AdminDashboard = () => {
   const [reportPreview, setReportPreview] = useState(null);
 
   useEffect(() => {
+    document.title = "Admin Dashboard";
     refetch();
   }, [refetch]);
 
@@ -91,15 +92,15 @@ const AdminDashboard = () => {
                   { text: 'Booking Status', style: 'tableHeader' }
                 ],
                 ...reportPreview.map(item => [
-                  item._id,
-                  `Rs ${item.totalSales}`,
-                  item.userName,
-                  item.hotelName,
-                  item.roomName,
-                  new Date(item.checkInDate).toLocaleDateString(),
-                  new Date(item.checkOutDate).toLocaleDateString(),
-                  item.paymentMethod,
-                  item.bookingStatus,
+                  item?._id,
+                  `Rs ${item?.totalSales}`,
+                  item?.userName,
+                  item?.hotelName,
+                  item?.roomName,
+                  new Date(item?.checkInDate).toLocaleDateString(),
+                  new Date(item?.checkOutDate).toLocaleDateString(),
+                  item?.paymentMethod,
+                  item?.bookingStatus,
                 ])
               ]
             }
@@ -168,7 +169,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <FaUsers size={40} />
                   <h4>Total Users</h4>
-                  <h2>{stats.totalUsers}</h2>
+                  <h2>{stats?.totalUsers}</h2>
                 </Card.Body>
               </Card>
             </Col>
@@ -177,7 +178,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <FaHotel size={40} />
                   <h4>Total Hoteliers</h4>
-                  <h2>{stats.totalHoteliers}</h2>
+                  <h2>{stats?.totalHoteliers}</h2>
                 </Card.Body>
               </Card>
             </Col>
@@ -186,7 +187,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <FaHotel size={40} />
                   <h4>Total Hotels</h4>
-                  <h2>{stats.totalHotels}</h2>
+                  <h2>{stats?.totalHotels}</h2>
                 </Card.Body>
               </Card>
             </Col>
@@ -195,7 +196,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <FaMoneyBill size={40} />
                   <h4>Total Revenue</h4>
-                  <h2>Rs {stats.totalRevenue}</h2>
+                  <h2>Rs {stats?.totalRevenue}</h2>
                 </Card.Body>
               </Card>
             </Col>

@@ -12,18 +12,19 @@ const RegisteredHotelsScreen = () => {
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
 
   useEffect(() => {
+    document.title = "Registered Hotels";
    refetch();
     })
 
 
   const renderHotels = () => {
     return hotels?.map((hotel) => (
-      <Col key={hotel._id} md={4} className="mb-4">
+      <Col key={hotel?._id} md={4} className="mb-4">
         <Card className="h-100 shadow hotelscard">
-          {hotel.images.length > 0 && (
+          {hotel?.images.length > 0 && (
             <Card.Img
               variant="top"
-              src={`http://localhost:5000/${hotel.images[0].replace(
+              src={`http://localhost:5000/${hotel?.images[0].replace(
                 "backend\\public\\",
                 ""
               )}`}
@@ -32,22 +33,22 @@ const RegisteredHotelsScreen = () => {
             />
           )}
           <Card.Body>
-            <Card.Title>{hotel.name}</Card.Title>
+            <Card.Title>{hotel?.name}</Card.Title>
             <Card.Text>
-              <strong>City:</strong> {hotel.city}
+              <strong>City:</strong> {hotel?.city}
             </Card.Text>
             <Card.Text>
-              <strong>Address:</strong> {hotel.address}
+              <strong>Address:</strong> {hotel?.address}
             </Card.Text>
             {hotel.verificationStatus !== "accepted" && (
-              <Link to={`/hotelier/verify-hotel/${hotel._id}`}>
+              <Link to={`/hotelier/verify-hotel/${hotel?._id}`}>
                 <Button className="mt-2">Verify</Button><br/>
               </Link>
             )}
-            <Link to={`/hotelier/hotel-details/${hotel._id}`}>
+            <Link to={`/hotelier/hotel-details/${hotel?._id}`}>
               <Button className="mt-2">
                 View Details
-                {hotel.unreadMessagesCount > 0 && <span className="dot-indicator"></span>}
+                {hotel?.unreadMessagesCount > 0 && <span className="dot-indicator"></span>}
               </Button>
             </Link>
           </Card.Body>

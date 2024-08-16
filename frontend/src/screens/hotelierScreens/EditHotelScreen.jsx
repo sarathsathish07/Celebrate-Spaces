@@ -26,16 +26,17 @@ const EditHotelScreen = () => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
 
   useEffect(() => {
+    document.title = "Edit Hotel";
     if (hotel) {
       setFormData({
-        name: hotel.name,
-        city: hotel.city,
-        address: hotel.address,
-        description: hotel.description,
-        amenities: hotel.amenities.join(", "),
-        latitude: hotel.latitude || "",
-        longitude: hotel.longitude || "",
-        images: hotel.images || [],
+        name: hotel?.name,
+        city: hotel?.city,
+        address: hotel?.address,
+        description: hotel?.description,
+        amenities: hotel?.amenities.join(", "),
+        latitude: hotel?.latitude || "",
+        longitude: hotel?.longitude || "",
+        images: hotel?.images || [],
       });
     }
   }, [hotel]);

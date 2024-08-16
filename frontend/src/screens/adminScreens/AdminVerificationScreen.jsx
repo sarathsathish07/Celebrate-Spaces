@@ -25,6 +25,7 @@ const AdminVerificationScreen = () => {
   const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
+    document.title = "Admin Verification";
     refetch();
   }, [refetch]);
 
@@ -95,7 +96,7 @@ const AdminVerificationScreen = () => {
             <Card key={hotel?._id} className="my-3 p-3 rounded">
               <Card.Body>
                 <h3>{hotel?.name}</h3>
-                <p>Status: {hotel.verificationStatus}</p>
+                <p>Status: {hotel?.verificationStatus}</p>
                 <Button variant="primary" onClick={() => openCertificateModal(hotel?.certificate)}>
                   View Certificate
                 </Button>{" "}

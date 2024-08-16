@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Form, Button, Card } from 'react-bootstrap';
 import { useResetPasswordMutation } from '../../slices/usersApiSlice';
@@ -12,6 +12,10 @@ const ResetPasswordScreen = () => {
   const navigate = useNavigate();
 
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  useEffect(()=>{
+    document.title = "Reset Password - Celebrate Spaces";
+  },[])
 
   const submitHandler = async (e) => {
     e.preventDefault();

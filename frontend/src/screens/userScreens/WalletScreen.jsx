@@ -16,6 +16,7 @@ const WalletScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    document.title = "Wallet - Celebrate Spaces";
     refetchTransactions();
     refetchBalance();
   }, [transactions, balance]);
@@ -71,7 +72,7 @@ const WalletScreen = () => {
       <Container className="profile-container">
         <Row className="my-4">
           <Col md={3} className="sidebar-container">
-            <Sidebar profileImage={userInfo.profileImage} name={userInfo.name} />
+            <Sidebar profileImage={userInfo?.profileImage} name={userInfo?.name} />
           </Col>
           <Col md={6}>
             <Card>
@@ -102,7 +103,7 @@ const WalletScreen = () => {
                 ) : balanceError ? (
                   <div>Error fetching balance</div>
                 ) : (
-                  <h3>Rs {balance.balance}</h3>
+                  <h3>Rs {balance?.balance}</h3>
                 )}
               </Card.Body>
             </Card>

@@ -34,8 +34,8 @@ const Footer = () => {
             <h5>Contact Us</h5>
             <ul className="list-unstyled">
               <li>Email: support@celebratespaces.com</li>
-              <li>Phone: +1 234 567 8901</li>
-              <li>Address: 1234 Street Name, City, Country</li>
+              <li>Phone: +91 94966 50288</li>
+              <li>Address: 1234 Maradu, Kochi, India</li>
             </ul>
           </Col>
         </Row>

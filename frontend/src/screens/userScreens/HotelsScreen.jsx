@@ -22,6 +22,7 @@ const HotelsScreen = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "Hotels - Celebrate Spaces";
     const fetchHotelsAndRooms = async () => {
       try {
         const hotelResponse = await getHotels({
@@ -31,7 +32,7 @@ const HotelsScreen = () => {
         }).unwrap();
         setHotels(hotelResponse);
 
-        const hotelIds = hotelResponse.map((hotel) => hotel._id);
+        const hotelIds = hotelResponse.map((hotel) => hotel?._id);
         const roomResponse = await getRooms(hotelIds).unwrap();
         setRooms(roomResponse);
       } catch (error) {
@@ -70,7 +71,7 @@ const HotelsScreen = () => {
   };
 
   const calculateAveragePrice = (hotelId) => {
-    const hotelRooms = rooms.filter((room) => room.hotelId === hotelId);
+    const hotelRooms = rooms.filter((room) => room?.hotelId === hotelId);
     if (hotelRooms.length === 0) return 0;
     const total = hotelRooms.reduce((sum, room) => sum + room.price, 0);
     return (total / hotelRooms.length).toFixed(2);
@@ -157,24 +158,24 @@ const HotelsScreen = () => {
           <Col md={9} className="mt-5 hotels-section">
             <Row>
               {hotels.map((hotel) => (
-                <Col key={hotel._id} md={4} className="mb-4">
-                  <Card className="hotel-card" onClick={() => handleHotelClick(hotel._id)}>
+                <Col key={hotel?._id} md={4} className="mb-4">
+                  <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
                     <Card.Img
                       variant="top"
                       src={`http://localhost:5000/${hotel.images[0].replace("backend\\public\\", "")}`}
-                      alt={hotel.name}
+                      alt={hotel?.name}
                       className="hotel-image"
                     />
                     <Card.Body className="hotel-card-body">
-                      <Card.Title>{hotel.name}</Card.Title>
+                      <Card.Title>{hotel?.name}</Card.Title>
                       <Row>
                         <Col>
-                          <Card.Text className="mb-0">{hotel.city}</Card.Text>
-                          <Card.Text>{hotel.address}</Card.Text>
+                          <Card.Text className="mb-0">{hotel?.city}</Card.Text>
+                          <Card.Text>{hotel?.address}</Card.Text>
                         </Col>
                         <Col>
                           <Card.Text className="mb-0">Avg Price</Card.Text>
-                          <Card.Text>Rs {calculateAveragePrice(hotel._id)}</Card.Text>
+                          <Card.Text>Rs {calculateAveragePrice(hotel?._id)}</Card.Text>
                         </Col>
                       </Row>
                     </Card.Body>

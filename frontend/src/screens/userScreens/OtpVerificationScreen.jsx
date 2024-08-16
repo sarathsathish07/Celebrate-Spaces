@@ -21,6 +21,7 @@ const OtpVerificationScreen = () => {
   const [resendOtp] = useResendOtpMutation();
 
   useEffect(() => {
+    document.title = "OTP verification - Celebrate Spaces";
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer === 1) {

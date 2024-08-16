@@ -120,8 +120,8 @@ const Header = () => {
                         <Dropdown.Item>No unread notifications</Dropdown.Item>
                       ) : (
                         notifications.map((notification) => (
-                          <Dropdown.Item key={notification._id} onClick={() => handleNotificationClick(notification._id)}>
-                            {notification.message}
+                          <Dropdown.Item key={notification?._id} onClick={() => handleNotificationClick(notification?._id)}>
+                            {notification?.message}
                           </Dropdown.Item>
                         ))
                       )}
@@ -130,7 +130,7 @@ const Header = () => {
                 </div>
                 <NavDropdown
                   title={userInfo.name}
-                  id='username'
+                  
                   className={isHomepage ? 'nav-dropdown-title-homepage' : 'nav-dropdown-title'}
                 >
                   <LinkContainer to='/profile'>

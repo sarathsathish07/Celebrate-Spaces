@@ -23,6 +23,7 @@ const HotelierOtpVerificationScreen = () => {
   const [resendOtp] = useResendHotelierOtpMutation();
 
   useEffect(() => {
+    document.title = "OTP verification";
     const countdown = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer === 1) {

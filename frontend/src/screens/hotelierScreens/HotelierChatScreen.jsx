@@ -31,6 +31,7 @@ const HotelierChatScreen = () => {
   const [markMessagesAsRead] = useMarkHotelMessagesAsReadMutation();
 
   useEffect(() => {
+    document.title = "Messages";
     socket.on('message', (message) => {
       if (message.chatRoomId === selectedChatRoom?._id) {
         refetchMessages();
@@ -207,7 +208,7 @@ const HotelierChatScreen = () => {
                         .map((msg) => (
                           <div
                             key={msg._id}
-                            className={`message ${msg.senderType === "User" ? "sent" : "received"}`}
+                            className={`message ${msg.senderType === "User" ? "received" : "sent"}`}
                           >
                             {msg.fileUrl ? (
                               <div style={{ display: "flex", flexDirection: "column" }}>
