@@ -7,6 +7,8 @@ import Wallet from '../models/walletModel.js';
 import RatingReview from '../models/ratingReviewModel.js';
 import Booking from '../models/bookingModel.js';
 import Notification from '../models/notificationModel.js';
+import Hotel from '../models/hotelModel.js';
+import Room from '../models/roomModel.js';
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -140,15 +142,69 @@ const updateUserProfile = expressAsyncHandler(async (req, res) => {
 
 const getHotels = async (req, res) => {
   try {
-    const { sort = '', amenities = '', city = '' } = req.query;
+    const { sort = '', amenities = '', city = '', latitude, longitude } = req.query;
     const amenitiesArray = amenities ? amenities.split(',') : [];
-    const hotels = await fetchAcceptedHotels(sort, amenitiesArray, city);
-    res.json(hotels);
+    const radiusInKm = 50;
+
+    let hotels = [];
+
+    if (latitude && longitude) {
+      const userLatitude = parseFloat(latitude);
+      const userLongitude = parseFloat(longitude);
+
+      hotels = await Hotel.find({ isListed: true }); 
+
+      const filteredHotels = hotels.filter(hotel => {
+        const hotelLatitude = hotel.latitude;
+        const hotelLongitude = hotel.longitude;
+        
+        if (hotelLatitude !== undefined && hotelLongitude !== undefined) {
+          const distance = haversineDistance(userLatitude, userLongitude, hotelLatitude, hotelLongitude);
+          return distance <= radiusInKm;
+        }
+        return false; 
+      });
+
+      hotels = filteredHotels;
+    } else if (city) {
+      hotels = await Hotel.find({ city, isListed: true });
+    } else {
+      hotels = await Hotel.find({ isListed: true });
+    }
+
+    if (amenitiesArray.length > 0) {
+      hotels = hotels.filter(hotel => amenitiesArray.every(amenity => hotel.amenities.includes(amenity)));
+    }
+
+    const hotelsWithAvgPrice = await Promise.all(hotels.map(async hotel => {
+      const rooms = await Room.find({ hotelId: hotel._id });
+      const avgPrice = rooms.reduce((sum, room) => sum + room.price, 0) / rooms.length;
+      return { ...hotel.toObject(), avgPrice }; 
+    }));
+
+    if (sort === 'price_low_high') {
+      hotelsWithAvgPrice.sort((a, b) => a.avgPrice - b.avgPrice);
+    } else if (sort === 'price_high_low') {
+      hotelsWithAvgPrice.sort((a, b) => b.avgPrice - a.avgPrice);
+    }
+
+    res.json(hotelsWithAvgPrice);
   } catch (error) {
-    console.error('Error fetching hotels:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
 };
+
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 
 
 const getHotelById = expressAsyncHandler(async (req, res) => {

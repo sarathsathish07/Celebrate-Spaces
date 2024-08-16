@@ -59,12 +59,21 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       })
     }),
     getHotelsData: builder.mutation({
-      query: ({ sort = 'price_low_high', amenities = [], city = '' }) => ({
-        url: `${USERS_URL}/hotels`,
-        method: 'GET',
-        params: { sort, amenities, city },
-      }),
+      query: ({ sort = 'price_low_high', amenities = [], city = '', latitude = null, longitude = null }) => {
+        const params = { sort, amenities, city };
+            if (latitude && longitude) {
+          params.latitude = latitude;
+          params.longitude = longitude;
+        }
+    
+        return {
+          url: `${USERS_URL}/hotels`,
+          method: 'GET',
+          params,
+        };
+      },
     }),
+    
     getRoomByRoomId: builder.query({
       query: (roomId) => `${USERS_URL}/rooms/${roomId}`,
     }),

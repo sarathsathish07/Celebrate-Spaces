@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Card, Row, Col, Button, Form, Accordion } from "react-bootstrap";
 import { useGetHotelsDataMutation, useGetRoomsDataMutation } from "../../slices/usersApiSlice";
-import { useNavigate,useLocation  } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import bgImage from "../../assets/images/bg-1.png";
 import Loader from "../../components/userComponents/Loader";
 import Footer from "../../components/userComponents/Footer";
@@ -17,6 +17,7 @@ const HotelsScreen = () => {
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [filterCity, setFilterCity] = useState(initialCity);
   const [filterAmenities, setFilterAmenities] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
   const [getHotels, { isLoading: isLoadingHotels }] = useGetHotelsDataMutation();
   const [getRooms, { isLoading: isLoadingRooms }] = useGetRoomsDataMutation();
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ const HotelsScreen = () => {
     document.title = "Hotels - Celebrate Spaces";
     const fetchHotelsAndRooms = async () => {
       try {
+        console.log("Fetching hotels with location:", userLocation)
         const hotelResponse = await getHotels({
           sort,
           amenities: filterAmenities.length > 0 ? filterAmenities : [],
           city: filterCity,
+          latitude: userLocation?.latitude,  
+          longitude: userLocation?.longitude, 
         }).unwrap();
         setHotels(hotelResponse);
 
@@ -42,7 +46,7 @@ const HotelsScreen = () => {
     };
 
     fetchHotelsAndRooms();
-  }, [getHotels, getRooms, sort, filterAmenities, filterCity]);
+  }, [getHotels, getRooms, sort, filterAmenities, filterCity, userLocation]);
 
   const handleHotelClick = (id) => {
     navigate(`/hotels/${id}`);
@@ -70,6 +74,24 @@ const HotelsScreen = () => {
     setFilterAmenities(selectedAmenities);
   };
 
+  const handleLocationSearch = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ latitude, longitude });
+          setFilterCity(''); 
+        },
+        (error) => {
+          toast.error("Failed to get location.");
+          console.error("Geolocation error:", error);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by this browser.");
+    }
+  };
+
   const calculateAveragePrice = (hotelId) => {
     const hotelRooms = rooms.filter((room) => room?.hotelId === hotelId);
     if (hotelRooms.length === 0) return 0;
@@ -92,7 +114,7 @@ const HotelsScreen = () => {
           <h1>Find Your Dream Luxury Hotel</h1>
         </div>
       </div>
-      <Container style={{ height: '100vh' }}>
+      <Container style={{ height: "100vh" }}>
         <Row>
           <Col md={3}>
             <Card className="p-3 my-5">
@@ -152,9 +174,12 @@ const HotelsScreen = () => {
               <Button variant="primary" className="mt-3" onClick={applyFilters}>
                 Apply Filters
               </Button>
+              <Button variant="secondary" className="mt-3" onClick={handleLocationSearch}>
+                Search Near Me
+              </Button>
             </Card>
           </Col>
-          
+
           <Col md={9} className="mt-5 hotels-section">
             <Row>
               {hotels.map((hotel) => (
