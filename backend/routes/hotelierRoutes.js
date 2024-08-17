@@ -13,7 +13,9 @@ import { authHotelierHandler,
   resendHotelierOtpHandler,
   uploadVerificationDetailsHandler,
   getHotelierStats,
-  getHotelierSalesReport 
+  getHotelierSalesReport ,
+  getUnreadHotelierNotifications,
+  markHotelierNotificationAsRead
  } from '../controllers/hotelierController.js';
  import { addRoom,getRoomById,updateRoomHandler } from '../controllers/roomController.js';
  import { getHotelierBookings } from '../controllers/bookingController.js';
@@ -49,6 +51,8 @@ router.get('/chatrooms/:hotelId',protect, getHotelChatRooms);
 router.route('/chatrooms/:chatRoomId/messages').get(protect, getHotelMessages).post(multerUploadMessageFile.single('file'),protect, sendHotelMessages);
 router.route('/mark-messages-read').post(protect, markHotelMessagesAsRead);
 
+router.get('/notifications/unread',protect, getUnreadHotelierNotifications);
+router.put('/notifications/:id/read',protect, markHotelierNotificationAsRead);
 
 
 

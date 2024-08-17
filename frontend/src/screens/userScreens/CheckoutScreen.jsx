@@ -83,6 +83,7 @@ const CheckoutScreen = () => {
               bookingId: bookingResponse._id,
               paymentId,
               paymentStatus: 'completed',
+              hotelierId: bookingResponse.hotelierId
             };
             await updateBookingStatus(paymentResult).unwrap();
             toast.success('Payment Successful');

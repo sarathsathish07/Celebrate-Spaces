@@ -154,6 +154,15 @@ export const hotelierApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    fetchUnreadHotelierNotifications: builder.query({
+      query: () => `${HOTELS_URL}/notifications/unread`,
+    }),
+    markHotelierNotificationAsRead: builder.mutation({
+      query: (id) => ({
+        url: `${HOTELS_URL}/notifications/${id}/read`,
+        method: 'PUT',
+      }),
+    }),
   }),
   
 });
@@ -181,5 +190,6 @@ export const {
   useGetHotelMessagesQuery,
   useSendHotelMessageMutation,
   useMarkHotelMessagesAsReadMutation,
-  useFetchHotelUnreadMessagesQuery 
+  useFetchHotelUnreadMessagesQuery ,
+  useFetchUnreadHotelierNotificationsQuery, useMarkHotelierNotificationAsReadMutation
 } = hotelierApiSlice;

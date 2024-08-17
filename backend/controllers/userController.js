@@ -1,14 +1,14 @@
 import expressAsyncHandler from 'express-async-handler';
 import * as userService from '../services/userService.js';
-import { fetchAcceptedHotels } from '../services/hotelService.js';
 import { generateToken } from '../services/userService.js';
 import User from '../models/userModel.js';
 import Wallet from '../models/walletModel.js';
 import RatingReview from '../models/ratingReviewModel.js';
 import Booking from '../models/bookingModel.js';
-import Notification from '../models/notificationModel.js';
 import Hotel from '../models/hotelModel.js';
 import Room from '../models/roomModel.js';
+import Notification from '../models/notificationModel.js';
+import HotelierNotification from '../models/hotelierNotifications.js';
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -352,7 +352,7 @@ const cancelBooking = async (req, res) => {
     const wallet = await Wallet.findOne({ user: booking.userId });
     const refundAmount = (booking.totalAmount * refundPercentage) / 100;
 
-    if(refundAmount>0){
+    if (refundAmount > 0) {
       wallet.balance += refundAmount;
       wallet.transactions.push({
         user: booking.userId,
@@ -361,23 +361,39 @@ const cancelBooking = async (req, res) => {
       });
       await wallet.save();
     }
-  
 
-    const notification = new Notification({
+    const userNotification = new Notification({
       userId: booking.userId,
       message: `Your booking has been cancelled and ${refundPercentage}% amount has been refunded to your wallet.`,
       createdAt: new Date(),
       isRead: false,
     });
-    await notification.save();
+    await userNotification.save();
+
     const io = req.app.get('io');
-    io.emit('newNotification', notification);
+    io.emit('newNotification', userNotification);
+
+    const hotel = await Hotel.findById(booking.hotelId).populate('hotelierId');
+    console.log(hotel);
+    
+    if (hotel) {
+      const hotelierNotification = new HotelierNotification({
+        hotelierId: hotel.hotelierId._id,
+        message: `A booking for your hotel "${hotel.name}" has been cancelled.`,
+        createdAt: new Date(),
+        isRead: false,
+      });
+      await hotelierNotification.save();
+
+      io.emit('newNotification', hotelierNotification);
+    }
 
     res.status(200).json({ message: `Booking successfully cancelled and ${refundPercentage}% amount refunded to wallet` });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
  const getUnreadNotifications = async (req, res) => {

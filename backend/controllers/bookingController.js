@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import { checkAvailability,createBooking,updateBookingStatusService,getBookingsByUserIdService,getHotelierBookingsService,getAllBookingsService } from '../services/bookingService.js';
 import Wallet from '../models/walletModel.js';
 import Notification from '../models/notificationModel.js';
+import Hotel from '../models/hotelModel.js';
+import HotelierNotification from '../models/hotelierNotifications.js';
 
 const saveBooking = asyncHandler(async (req, res) => {
   const bookingData = {
@@ -12,8 +14,9 @@ const saveBooking = asyncHandler(async (req, res) => {
   };
 
   if (req.body.paymentMethod === 'wallet') {
-    bookingData.paymentStatus='completed'
-    bookingData.bookingStatus='confirmed'
+    bookingData.paymentStatus = 'completed';
+    bookingData.bookingStatus = 'confirmed';
+
     const wallet = await Wallet.findOne({ user: req.user._id });
     if (!wallet || wallet.balance < req.body.totalAmount) {
       res.status(400);
@@ -28,36 +31,72 @@ const saveBooking = asyncHandler(async (req, res) => {
     };
     wallet.transactions.push(newTransaction);
     await wallet.save();
-    const notification = new Notification({
+
+    const userNotification = new Notification({
       userId: req.user._id,
       message: `Your booking has been confirmed via wallet payment.`,
       createdAt: new Date(),
       isRead: false,
     });
-    await notification.save();
+    await userNotification.save();
     const io = req.app.get('io');
-    io.emit('newNotification', notification);
+    io.emit('newNotification', userNotification);
+
+    const hotel = await Hotel.findById(req.body.hotelId).populate('hotelierId');
+  if (!hotel) {
+    res.status(404);
+    throw new Error('Hotel not found');
+  }
+
+  const hotelierNotification = new HotelierNotification({
+    hotelierId: hotel.hotelierId._id, 
+    message: `You have a new booking for your hotel "${hotel.name}".`,
+    createdAt: new Date(),
+    isRead: false,
+  });
+  await hotelierNotification.save();
   }
 
   const createdBooking = await createBooking(bookingData);
+
   res.status(201).json(createdBooking);
 });
 
 const updateBookingStatus = asyncHandler(async (req, res) => {
-  const { paymentId,bookingId, paymentStatus } = req.body;
-  const notification = new Notification({
+  const { paymentId, bookingId, paymentStatus } = req.body;
+
+  const userNotification = new Notification({
     userId: req.user._id,
     message: `Your booking has been confirmed via Razorpay payment.`,
     createdAt: new Date(),
     isRead: false,
   });
-  await notification.save();
+  await userNotification.save();
+
   const io = req.app.get('io');
-  io.emit('newNotification', notification);
-  const updatedBooking = await updateBookingStatusService(paymentId,bookingId, paymentStatus);
+  io.emit('newNotification', userNotification);
+
+  const updatedBooking = await updateBookingStatusService(paymentId, bookingId, paymentStatus);
   if (!updatedBooking) {
     return res.status(404).json({ message: 'Booking not found' });
   }
+
+  const hotel = await Hotel.findById(updatedBooking.hotelId).populate('hotelierId');
+  if (!hotel) {
+    res.status(404).json({ message: 'Hotel not found' });
+    return;
+  }
+
+  const hotelierNotification = new HotelierNotification({
+    hotelierId: hotel.hotelierId._id,
+    message: `You have a new booking for your hotel "${hotel.name}".`,
+    createdAt: new Date(),
+    isRead: false,
+  });
+  await hotelierNotification.save();
+
+  io.emit('newNotification', hotelierNotification);
+
   res.status(200).json(updatedBooking);
 });
 
