@@ -5,12 +5,12 @@ import io from "socket.io-client";
 import defaultProfileImage from '../../assets/images/5856.jpg';
 import { useFetchUnreadMessagesQuery } from '../../slices/usersApiSlice';
 
-const socket = io("http://localhost:5000");
+const socket = io("https://celebratespaces.site/");
 
 const Sidebar = ({ profileImage, name }) => {
   const getImageUrl = (imageName) => {
     if (!imageName) return defaultProfileImage;
-    return `http://localhost:5000/UserProfileImages/${imageName.replace(
+    return `https://celebratespaces.site/UserProfileImages/${imageName.replace(
       'backend\\public\\',
       ''
     )}`;

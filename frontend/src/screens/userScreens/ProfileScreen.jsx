@@ -139,7 +139,7 @@ const ProfileScreen = () => {
 
   const getImageUrl = (imageName) => {
     if (!imageName) return defaultProfileImage;
-    return `http://localhost:5000/UserProfileImages/${imageName.replace(
+    return `https://celebratespaces.site/UserProfileImages/${imageName.replace(
       "backend\\public\\",
       ""
     )}`;

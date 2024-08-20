@@ -8,7 +8,7 @@ import { useHotelierLogoutMutation, useFetchUnreadHotelierNotificationsQuery, us
 import { logout } from '../../slices/hotelierAuthSlice';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://celebratespaces.site/');
 
 const HotelierHeader = () => {
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);

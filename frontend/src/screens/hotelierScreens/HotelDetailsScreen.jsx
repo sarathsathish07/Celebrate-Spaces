@@ -32,7 +32,7 @@ const HotelDetailScreen = () => {
               {hotel.images.length > 0 && (
                 <Card.Img
                   variant="top"
-                  src={`http://localhost:5000/${hotel.images[0].replace(
+                  src={`https://celebratespaces.site/${hotel.images[0].replace(
                     "backend\\public\\",
                     ""
                   )}`}

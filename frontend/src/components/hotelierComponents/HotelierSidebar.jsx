@@ -5,7 +5,7 @@ import { FaTachometerAlt, FaUser, FaHotel, FaCalendarCheck } from 'react-icons/f
 import { useFetchHotelUnreadMessagesQuery } from '../../slices/hotelierApiSlice.js';
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://celebratespaces.site/");
 
 const HotelierSidebar = ({ hotelierName }) => {
   const { data: unreadMessages, isLoading, isError, refetch } = useFetchHotelUnreadMessagesQuery();

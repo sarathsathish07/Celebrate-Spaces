@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import EmojiPicker from "emoji-picker-react";
 import { FaPaperclip } from "react-icons/fa";
 
-const socket = io('http://localhost:5000');
+const socket = io('https://celebratespaces.site/');
 
 const HotelierChatScreen = () => {
   const { hotelId } = useParams();
@@ -221,7 +221,7 @@ const HotelierChatScreen = () => {
                                       <div style={{ display: "flex", flexDirection: "column" }}>
                                       <div>{msg.content}</div> 
                                       <a
-                                        href={`http://localhost:5000${msg.fileUrl}`}
+                                        href={`https://celebratespaces.site/${msg.fileUrl}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         download
@@ -232,7 +232,7 @@ const HotelierChatScreen = () => {
                                     </div>
                                 ) : (
                                   <img
-                                    src={`http://localhost:5000${msg.fileUrl}`}
+                                    src={`https://celebratespaces.site/${msg.fileUrl}`}
                                     alt="file"
                                     style={{ maxWidth: "200px" }}
                                   />

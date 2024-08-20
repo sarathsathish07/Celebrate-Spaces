@@ -180,7 +180,7 @@ const EditRoomScreen = () => {
                     {typeof image === 'string' && (
                       <Card.Img
                         variant="top"
-                        src={`http://localhost:5000/${image.replace("backend\\public\\", "")}`}
+                        src={`https://celebratespaces.site/${image.replace("backend\\public\\", "")}`}
                         alt={`Room Image ${index}`}
                         style={{ height: "150px", objectFit: "cover" }}
                       />

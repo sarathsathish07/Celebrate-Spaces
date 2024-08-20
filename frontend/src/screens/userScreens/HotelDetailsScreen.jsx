@@ -33,7 +33,7 @@ const HotelDetailsScreen = () => {
     googleMapsApiKey: 'AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM', 
   });
 
-  const baseURL = 'http://localhost:5000/';
+  const baseURL = 'https://celebratespaces.site/';
   useEffect(() => {
     document.title = "Hotel details - Celebrate Spaces";
     refetch();

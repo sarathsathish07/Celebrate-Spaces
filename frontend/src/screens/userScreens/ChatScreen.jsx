@@ -15,7 +15,7 @@ import EmojiPicker from "emoji-picker-react";
 import { FaPaperclip } from "react-icons/fa";
 import { format } from 'date-fns';
 
-const socket = io("http://localhost:5000");
+const socket = io("https://celebratespaces.site/");
 
 const ChatScreen = () => {
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -245,7 +245,7 @@ const ChatScreen = () => {
                                       <div style={{ display: "flex", flexDirection: "column" }}>
                                       <div>{msg.content}</div> 
                                       <a
-                                        href={`http://localhost:5000${msg?.fileUrl}`}
+                                        href={`https://celebratespaces.site/${msg?.fileUrl}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         download
@@ -256,7 +256,7 @@ const ChatScreen = () => {
                                     </div>
                                 ) : (
                                   <img
-                                    src={`http://localhost:5000${msg?.fileUrl}`}
+                                    src={`https://celebratespaces.site/${msg?.fileUrl}`}
                                     alt="file"
                                     style={{ maxWidth: "200px" }}
                                   />

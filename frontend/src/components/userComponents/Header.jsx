@@ -8,7 +8,7 @@ import { logout } from '../../slices/authSlice';
 import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://celebratespaces.site/');
 
 const Header = () => {
   const { userInfo } = useSelector((state) => state.auth);
