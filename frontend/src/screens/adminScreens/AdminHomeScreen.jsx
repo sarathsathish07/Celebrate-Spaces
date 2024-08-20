@@ -5,14 +5,15 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { useGetAdminStatsQuery, useGetSalesReportQuery } from '../../slices/adminApiSlice.js';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 ChartJS.register(...registerables);
+
 
 const AdminDashboard = () => {
   const [dateRange, setDateRange] = useState({
