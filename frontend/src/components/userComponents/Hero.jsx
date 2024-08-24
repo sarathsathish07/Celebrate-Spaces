@@ -138,7 +138,7 @@ const Hero = () => {
               </Col>
               <Col xs={10}>
                 <Row>
-                  {reviews.slice(currentIndex, currentIndex + 3).map((review) => (
+                  {reviews?.slice(currentIndex, currentIndex + 3).map((review) => (
                     <Col md={4} key={review?._id}>
                       <Card className="mb-4">
                         <Card.Body>
