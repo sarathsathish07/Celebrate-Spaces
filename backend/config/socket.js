@@ -5,7 +5,7 @@ const configureSocket = (server) => {
     cors: {
       origin: ["http://localhost:3000", "https://celebrate-spaces-xzkr.vercel.app"],
       methods: ["GET", "POST"],
-      credentials: true
+      credentials: true 
     },
   });
   
