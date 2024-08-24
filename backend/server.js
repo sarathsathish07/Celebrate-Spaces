@@ -9,6 +9,8 @@ import hotelierRoutes from './routes/hotelierRoutes.js';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 import configureSocket from './config/socket.js';
+import cors from "cors"; 
+
 
 const port = process.env.PORT || 5000;
 
