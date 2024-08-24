@@ -30,7 +30,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "razorpay": "^2.9.4",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "vite": "^5.4.2"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
