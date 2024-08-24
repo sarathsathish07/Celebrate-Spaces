@@ -16,6 +16,11 @@ connectDB();
 
 const app = express();
 
+app.use(cors({
+  origin: "https://task-manager-app-7e1v-1qh2cbcx1-sarath-sathishs-projects.vercel.app", 
+  credentials: true,  
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
