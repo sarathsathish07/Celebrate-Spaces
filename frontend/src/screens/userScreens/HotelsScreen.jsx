@@ -185,12 +185,13 @@ const HotelsScreen = () => {
               {hotels.map((hotel) => (
                 <Col key={hotel?._id} md={4} className="mb-4">
                   <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
-                    <Card.Img
-                      variant="top"
-                      src={`https://celebratespaces.site/${hotel.images[0].replace("backend//public//", "")}`}
-                      alt={hotel?.name}
-                      className="hotel-image"
-                    />
+                  <Card.Img
+                  variant="top"
+                  src={`https://celebratespaces.site/${hotel.images[0].replace("backend//public//", "").replace(/\\/g, "/")}`}
+                  alt={hotel?.name}
+                  className="hotel-image"
+                />
+
                     <Card.Body className="hotel-card-body">
                       <Card.Title>{hotel?.name}</Card.Title>
                       <Row>
