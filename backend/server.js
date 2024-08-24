@@ -19,7 +19,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: "https://task-manager-app-7e1v-1qh2cbcx1-sarath-sathishs-projects.vercel.app", 
+  origin: ["http://localhost:3000","https://task-manager-app-7e1v-1qh2cbcx1-sarath-sathishs-projects.vercel.app"], 
   credentials: true,  
 }));
 
