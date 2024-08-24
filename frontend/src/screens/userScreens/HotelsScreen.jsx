@@ -186,11 +186,12 @@ const HotelsScreen = () => {
                 <Col key={hotel?._id} md={4} className="mb-4">
                   <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
                   <Card.Img
-                  variant="top"
-                  src={`https://celebratespaces.site/HotelImages/${hotel.images[0].replace("backend//public//", "")}`}
-                  alt={hotel?.name}
-                  className="hotel-image"
-                />
+                    variant="top"
+                    src={`https://celebratespaces.site/${hotel.images[0].split('backend/public/')[1]}`}
+                    alt={hotel?.name}
+                    className="hotel-image"
+                  />
+
 
 
                     <Card.Body className="hotel-card-body">
