@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 const configureSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000", 
+      origin: ["http://localhost:3000", "https://celebrate-spaces-xzkr.vercel.app", "https://task-manager-app-7e1v-1qh2cbcx1-sarath-sathishs-projects.vercel.app"],
       methods: ["GET", "POST"],
       credentials: true
     },
