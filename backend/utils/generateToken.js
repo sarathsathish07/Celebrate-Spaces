@@ -4,6 +4,7 @@ const generateToken = (res,userId)=>{
   const token = jwt.sign({userId}, process.env.JWT_SECRET,{
     expiresIn:"30d",
   })
+  console.log('GenerateToken123:', token);
 
   res.cookie('jwt', token, {
     httpOnly: true,  
@@ -13,7 +14,6 @@ const generateToken = (res,userId)=>{
     path: '/'
   })
   
-  console.log('GenerateToken:', token);
 }
 
 export default generateToken
