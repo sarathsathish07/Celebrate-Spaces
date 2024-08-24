@@ -12,8 +12,11 @@ import HotelierNotification from '../models/hotelierNotifications.js';
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
   try {
     const user = await userService.authenticateUser(email, password);
+    console.log("user",user);
+    
     generateToken(res, user._id);
     res.status(201).json({
       _id: user._id,
