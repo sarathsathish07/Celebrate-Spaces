@@ -16,11 +16,12 @@ const generateAdminToken = (res, userId) => {
     expiresIn: "30d",
   });
 
-  res.cookie("jwtAdmin", token, {
+  res.cookie('jwtAdmin', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
-    sameSite: "strict",
-    maxAge: 30 * 24 * 60 * 60 *100
+    secure: true,  // Only true in production
+    sameSite: 'None', // Adjust for production
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    path: '/'
   });
 };
 
