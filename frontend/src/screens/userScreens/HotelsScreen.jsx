@@ -187,7 +187,7 @@ const HotelsScreen = () => {
                   <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
                   <Card.Img
                     variant="top"
-                    src={`https://celebratespaces.site/${hotel.images[0]}`}
+                    src={`https://celebratespaces.site/${hotel.images[0].replace('backend/public/', '')}`}
                     alt={hotel?.name}
                     className="hotel-image"
                   />
