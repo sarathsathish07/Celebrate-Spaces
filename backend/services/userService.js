@@ -10,12 +10,13 @@ const generateToken = (res,userId)=>{
   console.log('GenerateToken123:', token);
 
   res.cookie('jwt', token, {
-    httpOnly: true,  
-    secure: process.env.NODE_ENV === 'production',  
-    sameSite: 'lax',  
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',  // Only true in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for production
     maxAge: 30 * 24 * 60 * 60 * 1000,
     path: '/'
-  })
+  });
+  
   
 }
 
