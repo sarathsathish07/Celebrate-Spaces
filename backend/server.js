@@ -11,6 +11,8 @@ import http from 'http';
 import configureSocket from './config/socket.js';
 import cors from "cors"; 
 import path from "path";
+import { fileURLToPath } from 'url';
+
 
 
 const port = process.env.PORT || 5000;
@@ -27,6 +29,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/users', userRoutes);
