@@ -5,13 +5,14 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { useGetAdminStatsQuery, useGetSalesReportQuery } from '../../slices/adminApiSlice.js';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 
 ChartJS.register(...registerables);
+
 
 const AdminDashboard = () => {
   const [dateRange, setDateRange] = useState({
@@ -24,12 +25,26 @@ const AdminDashboard = () => {
     to: dateRange.to
   });
 
+  const monthlyChartRef = useRef(null);
+  const yearlyChartRef = useRef(null);
+
   const [reportPreview, setReportPreview] = useState(null);
 
   useEffect(() => {
     document.title = "Admin Dashboard";
     refetch();
   }, [refetch]);
+
+  useEffect(() => {
+    return () => {
+      if (monthlyChartRef.current?.chartInstance) {
+        monthlyChartRef.current.chartInstance.destroy();
+      }
+      if (yearlyChartRef.current?.chartInstance) {
+        yearlyChartRef.current.chartInstance.destroy();
+      }
+    };
+  }, []);
 
   const handleDateRangeChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +68,7 @@ const AdminDashboard = () => {
     await fetchSalesReport({ from: dateRange.from, to: dateRange.to });
     setReportPreview(salesReport);
   };
+
 
   const handleDownloadReport = () => {
     if (reportPreview) {
@@ -222,7 +238,7 @@ const AdminDashboard = () => {
                         <tbody>
                           {reportPreview?.map((item, index) => (
                             <tr key={index}>
-                              <td>{new Date(item?._id).toLocaleDateString()}</td>
+                              <td>{item?._id}</td>
                               <td>Rs {item?.totalSales}</td>
                               <td>{item?.userName}</td>
                               <td>{item?.hotelName}</td>
