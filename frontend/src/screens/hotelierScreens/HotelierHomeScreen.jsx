@@ -12,7 +12,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 ChartJS.register(...registerables);
 
 const HotelierDashboard = () => {
