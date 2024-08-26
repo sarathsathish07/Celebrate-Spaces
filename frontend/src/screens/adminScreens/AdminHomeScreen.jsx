@@ -5,15 +5,13 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { useGetAdminStatsQuery, useGetSalesReportQuery } from '../../slices/adminApiSlice.js';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 ChartJS.register(...registerables);
-
 
 const AdminDashboard = () => {
   const [dateRange, setDateRange] = useState({
@@ -26,26 +24,12 @@ const AdminDashboard = () => {
     to: dateRange.to
   });
 
-  const monthlyChartRef = useRef(null);
-  const yearlyChartRef = useRef(null);
-
   const [reportPreview, setReportPreview] = useState(null);
 
   useEffect(() => {
     document.title = "Admin Dashboard";
     refetch();
   }, [refetch]);
-
-  useEffect(() => {
-    return () => {
-      if (monthlyChartRef.current?.chartInstance) {
-        monthlyChartRef.current.chartInstance.destroy();
-      }
-      if (yearlyChartRef.current?.chartInstance) {
-        yearlyChartRef.current.chartInstance.destroy();
-      }
-    };
-  }, []);
 
   const handleDateRangeChange = (e) => {
     const { name, value } = e.target;
@@ -72,67 +56,28 @@ const AdminDashboard = () => {
 
   const handleDownloadReport = () => {
     if (reportPreview) {
-      const docDefinition = {
-        content: [
-          { text: 'Sales Report', style: 'header' },
-          { text: `From: ${new Date(dateRange.from).toLocaleDateString()} To: ${new Date(dateRange.to).toLocaleDateString()}`, style: 'subheader' },
-          {
-            table: {
-              headerRows: 1,
-              widths: [50, 50, '*', '*', '*', 50, 50, 50, 50],
-              body: [
-                [
-                  { text: 'Date', style: 'tableHeader' },
-                  { text: 'Amount', style: 'tableHeader' },
-                  { text: 'Guest', style: 'tableHeader' },
-                  { text: 'Hotel', style: 'tableHeader' },
-                  { text: 'Room', style: 'tableHeader' },
-                  { text: 'Check-In', style: 'tableHeader' },
-                  { text: 'Check-Out', style: 'tableHeader' },
-                  { text: 'Pay Method', style: 'tableHeader' },
-                  { text: 'Booking Status', style: 'tableHeader' }
-                ],
-                ...reportPreview.map(item => [
-                  item?._id,
-                  `Rs ${item?.totalSales}`,
-                  item?.userName,
-                  item?.hotelName,
-                  item?.roomName,
-                  new Date(item?.checkInDate).toLocaleDateString(),
-                  new Date(item?.checkOutDate).toLocaleDateString(),
-                  item?.paymentMethod,
-                  item?.bookingStatus,
-                ])
-              ]
-            }
-          }
-        ],
-        styles: {
-          header: {
-            fontSize: 18,
-            bold: true,
-            margin: [0, 0, 0, 10]
-          },
-          subheader: {
-            fontSize: 15,
-            bold: true,
-            margin: [0, 10, 0, 10]
-          },
-          tableHeader: {
-            bold: true,
-            fontSize: 13,
-            color: 'black'
-          },
-          tableExample: {
-            margin: [0, 5, 0, 15]
-          },
+      const doc = new jsPDF();
+      doc.text('Sales Report', 14, 10);
+      doc.text(`From: ${new Date(dateRange.from).toLocaleDateString()} To: ${new Date(dateRange.to).toLocaleDateString()}`, 14, 20);
 
-          defaultStyle: {
-            fontSize: 9
-          }
-        }
-      };
-      pdfMake.createPdf(docDefinition).download('sales-report.pdf');
+      const tableData = reportPreview.map(item => [
+        new Date(item._id).toLocaleDateString(),
+        `Rs ${item.totalSales}`,
+        item.userName,
+        item.hotelName,
+        item.roomName,
+        new Date(item.checkInDate).toLocaleDateString(),
+        new Date(item.checkOutDate).toLocaleDateString(),
+        item.paymentMethod,
+        item.bookingStatus
+      ]);
+
+      doc.autoTable({
+        head: [['Date', 'Amount', 'Guest', 'Hotel', 'Room', 'Check-In', 'Check-Out', 'Pay Method', 'Booking Status']],
+        body: tableData,
+      });
+
+      doc.save('sales-report.pdf');
     }
   };
 
@@ -277,7 +222,7 @@ const AdminDashboard = () => {
                         <tbody>
                           {reportPreview?.map((item, index) => (
                             <tr key={index}>
-                              <td>{item?._id}</td>
+                              <td>{new Date(item?._id).toLocaleDateString()}</td>
                               <td>Rs {item?.totalSales}</td>
                               <td>{item?.userName}</td>
                               <td>{item?.hotelName}</td>
