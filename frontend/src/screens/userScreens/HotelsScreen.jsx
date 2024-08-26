@@ -22,6 +22,8 @@ const HotelsScreen = () => {
   const [getRooms, { isLoading: isLoadingRooms }] = useGetRoomsDataMutation();
   const navigate = useNavigate();
 
+  const baseURL = 'https://celebratespaces.site/';
+
   useEffect(() => {
     document.title = "Hotels - Celebrate Spaces";
     const fetchHotelsAndRooms = async () => {
@@ -187,7 +189,7 @@ const HotelsScreen = () => {
                   <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
                   <Card.Img
                     variant="top"
-                    src={`https://celebratespaces.site/${hotel.images[0].replace('backend/public/', '')}`}
+                    src={`${baseURL}${hotel?.images[0].replace("backend\\public\\", "")}`}
                     alt={hotel?.name}
                     className="hotel-image"
                   />

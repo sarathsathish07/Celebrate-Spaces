@@ -22,7 +22,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:3000","https://celebrate-spaces.vercel.app"], 
+  origin: ["http://localhost:3000","https://celebrate-spaces-kqbj.vercel.app"], 
   credentials: true,  
 }));
 
