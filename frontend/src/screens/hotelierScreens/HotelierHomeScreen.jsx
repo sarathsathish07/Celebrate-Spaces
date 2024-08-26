@@ -26,9 +26,6 @@ const HotelierDashboard = () => {
   const monthlyChartRef = useRef(null);
   const yearlyChartRef = useRef(null);
 
-  useEffect(() => {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  }, []);
   
 
   useEffect(() => {
