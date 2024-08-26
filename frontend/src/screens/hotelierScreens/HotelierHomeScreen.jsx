@@ -5,8 +5,9 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { useGetHotelierDashboardStatsQuery, useGetHotelierSalesReportMutation } from '../../slices/hotelierApiSlice.js';
 import HotelierLayout from '../../components/hotelierComponents/HotelierLayout.jsx';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from '../../components/userComponents/Loader.jsx';
@@ -72,65 +73,28 @@ const HotelierDashboard = () => {
   };
 
   const handleDownloadReport = () => {
-    if (reportPreview) {
-      const docDefinition = {
-        content: [
-          { text: 'Sales Report', style: 'header' },
-          { text: `From: ${new Date(dateRange.from).toLocaleDateString()} To: ${new Date(dateRange.to).toLocaleDateString()}`, style: 'subheader' },
-          {
-            table: {
-              headerRows: 1,
-              widths: [50, 50, '*', '*', '*', 50, 50, 50, 50],
-              body: [
-                [
-                  { text: 'Date', style: 'tableHeader' },
-                  { text: 'Amount', style: 'tableHeader' },
-                  { text: 'Guest', style: 'tableHeader' },
-                  { text: 'Hotel', style: 'tableHeader' },
-                  { text: 'Room', style: 'tableHeader' },
-                  { text: 'Check-In', style: 'tableHeader' },
-                  { text: 'Check-Out', style: 'tableHeader' },
-                  { text: 'Pay Method', style: 'tableHeader' },
-                  { text: 'Booking Status', style: 'tableHeader' }
-                ],
-                ...reportPreview.map(item => [
-                  item?._id,
-                  `Rs ${item?.totalSales}`,
-                  item?.userName,
-                  item?.hotelName,
-                  item?.roomName,
-                  new Date(item?.checkInDate).toLocaleDateString(),
-                  new Date(item?.checkOutDate).toLocaleDateString(),
-                  item?.paymentMethod,
-                  item?.bookingStatus,
-                ])
-              ]
-            }
-          }
-        ],
-        styles: {
-          header: {
-            fontSize: 18,
-            bold: true,
-            margin: [0, 0, 0, 10]
-          },
-          subheader: {
-            fontSize: 15,
-            bold: true,
-            margin: [0, 10, 0, 10]
-          },
-          tableHeader: {
-            bold: true,
-            fontSize: 13,
-            color: 'black'
-          },
-          defaultStyle: {
-            fontSize: 9
-          }
-        }
-      };
-      pdfMake.createPdf(docDefinition).download('sales-report.pdf');
-    }
+    const doc = new jsPDF();
+    doc.text('Sales Report', 14, 10);
+    doc.text(`From: ${new Date(dateRange.from).toLocaleDateString()} To: ${new Date(dateRange.to).toLocaleDateString()}`, 14, 20);
+  
+    const tableData = reportPreview.map(item => [
+      new Date(item._id).toLocaleDateString(),
+      `Rs ${item.totalSales}`,
+      item.userName,
+      item.hotelName,
+      item.roomName,
+      new Date(item.checkInDate).toLocaleDateString(),
+      new Date(item.checkOutDate).toLocaleDateString(),
+      item.paymentMethod,
+      item.bookingStatus,
+    ]);
+  
+    doc.autoTable({
+      head: [['Date', 'Amount', 'Guest', 'Hotel', 'Room', 'Check-In', 'Check-Out', 'Pay Method', 'Booking Status']],
+      body: tableData,
+    });
+  
+    doc.save('sales-report.pdf');
   };
 
   if (isLoading) return <Loader />;
