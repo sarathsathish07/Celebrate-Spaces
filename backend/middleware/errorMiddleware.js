@@ -1,4 +1,4 @@
-export const notFound = (req, res, next) => {
+ const notFound = (req, res, next) => {
   console.log(`Not found: ${req.originalUrl}`);
   const error = new Error(`Not found - ${req.originalUrl}`);
   res.status(404);
