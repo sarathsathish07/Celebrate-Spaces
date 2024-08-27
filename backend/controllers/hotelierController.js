@@ -116,7 +116,7 @@ const updateHotelierProfileHandler = expressAsyncHandler(async (req, res) => {
 
 const uploadVerificationDetailsHandler = expressAsyncHandler(async (req, res) => {
   const hotelId = req.params.hotelId;
-  const certificatePath = req.file.path;
+  const certificatePath = req.file.path.replace(/.*public[\\/]/, "");
 
   try {
     await uploadCertificates(hotelId, certificatePath);
