@@ -11,7 +11,9 @@ const addRoom = asyncHandler(async (req, res) => {
     throw new Error("No images uploaded");
   }
 
-  const images = req.files.map((file) => file.path);
+  const images = req.files.map((file) => {
+    return file.path.replace(/.*public[\\/]/, ""); 
+  });
 
   const roomData = {
     type,
