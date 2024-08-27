@@ -245,7 +245,7 @@ const ChatScreen = () => {
                                       <div style={{ display: "flex", flexDirection: "column" }}>
                                       <div>{msg.content}</div> 
                                       <a
-                                        href={`https://celebratespaces.site/${msg?.fileUrl}`}
+                                        href={`https://celebratespaces.site/backend/public${msg?.fileUrl}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         download
