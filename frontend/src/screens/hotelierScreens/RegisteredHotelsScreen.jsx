@@ -22,15 +22,16 @@ const RegisteredHotelsScreen = () => {
       <Col key={hotel?._id} md={4} className="mb-4">
         <Card className="h-100 shadow hotelscard">
           {hotel?.images.length > 0 && (
-            <Card.Img
-              variant="top"
-              src={`https://celebratespaces.site/${hotel?.images[0].replace(
-                "backend\\public\\",
-                ""
-              )}`}
-              alt={hotel.name}
-              style={{ height: "200px", objectFit: "cover" }}
-            />
+           <Card.Img
+           variant="top"
+           src={`https://celebratespaces.site/${hotel?.images[0].replace(
+             "backend/public/",
+             ""
+           ).replace(/\\/g, "/")}`}
+           alt={hotel.name}
+           style={{ height: "200px", objectFit: "cover" }}
+         />
+         
           )}
           <Card.Body>
             <Card.Title>{hotel?.name}</Card.Title>
