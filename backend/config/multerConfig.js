@@ -45,9 +45,10 @@ const roomStorage = multer.diskStorage({
 });
 const messageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, 'public', 'MessageFiles');
-    console.log(`File will be uploaded to: ${uploadPath}`);
-    cb(null, uploadPath);
+    const uploadPath = path.join(__dirname, '..', 'public', 'MessageFiles');
+console.log(`File will be uploaded to: ${uploadPath}`);
+cb(null, uploadPath);
+
   },
   filename: (req, file, cb) => {
     cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
