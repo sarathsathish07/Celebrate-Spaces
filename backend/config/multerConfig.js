@@ -51,12 +51,14 @@ const messageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, 'public', 'MessageFiles');
     ensureDirectoryExists(uploadPath);
+    console.log(`File will be uploaded to: ${uploadPath}`);
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
   },
 });
+
 
 
 const fileFilter = (req, file, cb) => {
