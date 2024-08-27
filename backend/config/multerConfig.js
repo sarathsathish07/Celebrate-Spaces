@@ -38,12 +38,14 @@ const roomStorage = multer.diskStorage({
 });
 const messageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "backend/public/MessageFiles");
+    const uploadPath = path.join(__dirname, 'public', 'MessageFiles');
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
   },
 });
+
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
