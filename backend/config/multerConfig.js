@@ -6,11 +6,18 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
+const ensureDirectoryExists = (directory) => {
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true });
+  }
+};
 
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "backend/public/UserProfileImages");
+    const uploadPath = path.join(__dirname, '..', 'public', 'UserProfileImages');
+    ensureDirectoryExists(uploadPath);
+    console.log(`Profile images will be uploaded to: ${uploadPath}`);
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
@@ -19,7 +26,10 @@ const profileStorage = multer.diskStorage({
 
 const certificateStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "backend/public/CertificateUploads");
+    const uploadPath = path.join(__dirname, '..', 'public', 'CertificateUploads');
+    ensureDirectoryExists(uploadPath);
+    console.log(`Certificates will be uploaded to: ${uploadPath}`);
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
@@ -28,7 +38,10 @@ const certificateStorage = multer.diskStorage({
 
 const hotelStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "backend/public/HotelImages"); 
+    const uploadPath = path.join(__dirname, '..', 'public', 'HotelImages');
+    ensureDirectoryExists(uploadPath);
+    console.log(`Hotel images will be uploaded to: ${uploadPath}`);
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
@@ -37,24 +50,27 @@ const hotelStorage = multer.diskStorage({
 
 const roomStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "backend/public/RoomImages"); 
+    const uploadPath = path.join(__dirname, '..', 'public', 'RoomImages');
+    ensureDirectoryExists(uploadPath);
+    console.log(`Room images will be uploaded to: ${uploadPath}`);
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
   },
 });
+
 const messageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '..', 'public', 'MessageFiles');
-console.log(`File will be uploaded to: ${uploadPath}`);
-cb(null, uploadPath);
-
+    ensureDirectoryExists(uploadPath);
+    console.log(`Message files will be uploaded to: ${uploadPath}`);
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
   },
 });
-
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
