@@ -157,6 +157,7 @@ const AdminVerificationScreen = () => {
               Close
             </Button>
             <Button variant="danger" onClick={handleReject}>
+              Reject
             </Button>
           </Modal.Footer>
         </Modal>

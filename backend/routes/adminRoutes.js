@@ -2,7 +2,6 @@ import express from 'express'
 const router= express.Router()
 import { authAdmin, 
   logoutAdmin,
-  updateUser,
   getAllUsers,
   getVerificationDetails,
   acceptVerification,
@@ -18,11 +17,11 @@ import { authAdmin,
   import { getAllBookings } from '../controllers/bookingController.js'
 import {protect} from '../middleware/adminAuthMiddleware.js'
 
-  router.post('/auth',authAdmin)
-  router.post('/logout',logoutAdmin)
-  router.post('/get-user',protect,getAllUsers)
-  router.put('/update-user',protect,updateUser)
-  router.get('/verification',protect,getVerificationDetails)
+  router.post('/auth',authAdmin) //
+  router.post('/logout',logoutAdmin) //
+  router.post('/get-user',protect,getAllUsers) //
+  
+  router.get('/verification',protect,getVerificationDetails) //
   router.put('/verification/:hotelId/accept',protect,acceptVerification)
   router.put('/verification/:adminId/reject', protect,rejectVerification);
   router.patch('/block-user',protect,blockUser)
