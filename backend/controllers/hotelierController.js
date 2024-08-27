@@ -226,12 +226,22 @@ const updateHotelHandler = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const updatedHotel = await updateHotelData(id, updateData,req.files);
+    const images = req.files.map((file) => {
+      return file.path.replace(/.*public[\\/]/, ""); 
+    });
+
+    const updatedHotelData = {
+      ...updateData,
+      images, 
+    };
+
+    const updatedHotel = await updateHotelData(id, updatedHotelData);
     res.status(200).json(updatedHotel);
   } catch (error) {
     res.status(500).json({ message: 'Error updating hotel', error: error.message });
   }
 };
+
 const getHotelierStats = async (req, res) => {
   try {
     const hotelierId = req.hotelier._id;
