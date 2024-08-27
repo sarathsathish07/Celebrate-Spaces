@@ -243,9 +243,9 @@ const ChatScreen = () => {
                                     msg.fileUrl.endsWith('.xlsx') ||
                                     msg.fileUrl.endsWith('.txt') ? (
                                       <div style={{ display: "flex", flexDirection: "column" }}>
-                                      <div>{msg.content}</div> 
+                                      <div>{msg.content}</div>
                                       <a
-                                        href={`https://celebratespaces.site/backend/public${msg?.fileUrl}`}
+                                        href={`https://celebratespaces.site${msg?.fileUrl?.startsWith('/') ? msg?.fileUrl : `/${msg?.fileUrl}`}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         download
@@ -254,6 +254,7 @@ const ChatScreen = () => {
                                         Download
                                       </a>
                                     </div>
+                                    
                                 ) : (
                                   <img
                                     src={`https://celebratespaces.site/${msg?.fileUrl}`}
