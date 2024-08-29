@@ -47,6 +47,7 @@ const HotelierLoginScreen = () => {
       }
     }
   };
+  if (isLoading) return <Loader />;
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginbody">
@@ -87,7 +88,6 @@ const HotelierLoginScreen = () => {
                   ></Form.Control>
                 </Form.Group>
 
-                {isLoading && <Loader />}
 
                 <Button type="submit" variant="primary" className="mt-3" block>
                   Sign In

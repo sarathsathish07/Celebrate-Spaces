@@ -66,6 +66,7 @@ const HotelierOtpVerificationScreen = () => {
       setIsLoading(false);
     }
   };
+  if (isLoading) return <Loader />;
 
   return (
     <div className="login-container loginbody">
@@ -86,7 +87,6 @@ const HotelierOtpVerificationScreen = () => {
             />
           </Form.Group>
 
-          {isLoading && <Loader />}
 
           <Button
             type="submit"
