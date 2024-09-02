@@ -17,7 +17,6 @@ const HotelierBookingsScreen = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [bookingsPerPage] = useState(5);
 
@@ -49,7 +48,6 @@ const HotelierBookingsScreen = () => {
 
   if (isLoading) return <Loader />;
   
-  // Sorting and pagination logic
   const sortedBookings = [...bookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;

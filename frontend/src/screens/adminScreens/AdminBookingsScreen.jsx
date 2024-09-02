@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Table, Container, Row, Col, Card, Button, Collapse, Form as BootstrapForm } from 'react-bootstrap';
+import { Table, Container, Row, Col, Card, Button, Collapse, Form as BootstrapForm, Pagination } from 'react-bootstrap';
 import { useGetAllBookingsQuery } from '../../slices/adminApiSlice';
 import Loader from '../../components/userComponents/Loader';
 import AdminLayout from '../../components/adminComponents/AdminLayout';
@@ -11,6 +11,9 @@ const AdminBookingsScreen = () => {
   const { data: bookings, isLoading, refetch } = useGetAllBookingsQuery();
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsPerPage] = useState(5);
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
@@ -23,6 +26,7 @@ const AdminBookingsScreen = () => {
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
+    setCurrentPage(1); 
   };
 
   const filteredBookings = bookings?.filter(
@@ -30,10 +34,16 @@ const AdminBookingsScreen = () => {
       booking.hotelId.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.roomId.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.userId.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) || [];
+  const sortedBookings = [...filteredBookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = sortedBookings?.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (isLoading) return <Loader />;
-  const sortedBookings = [...filteredBookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
 
 
   return (
@@ -72,7 +82,7 @@ const AdminBookingsScreen = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedBookings?.map((booking) => (
+                      {currentBookings?.map((booking) => (
                         <React.Fragment key={booking?._id}>
                           <tr>
                             <td>{booking?.hotelId?.name}</td>
@@ -108,6 +118,19 @@ const AdminBookingsScreen = () => {
                       ))}
                     </tbody>
                   </Table>
+                  <div className="d-flex justify-content-center mt-3">
+                    <Pagination>
+                      {Array.from({ length: Math.ceil(filteredBookings.length / bookingsPerPage) }).map((_, index) => (
+                        <Pagination.Item
+                          key={index + 1}
+                          active={index + 1 === currentPage}
+                          onClick={() => paginate(index + 1)}
+                        >
+                          {index + 1}
+                        </Pagination.Item>
+                      ))}
+                    </Pagination>
+                  </div>
                 </div>
               </Card.Body>
             </Card>
