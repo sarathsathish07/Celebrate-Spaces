@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Table, Container, Row, Col, Card, Button, Collapse, Modal } from 'react-bootstrap';
+import { Table, Container, Row, Col, Card, Button, Collapse, Modal, Pagination } from 'react-bootstrap';
 import { useGetHotelierBookingsQuery } from '../../slices/hotelierApiSlice';
 import { useCancelBookingMutation } from '../../slices/usersApiSlice';
 import Loader from '../../components/userComponents/Loader';
@@ -16,6 +16,10 @@ const HotelierBookingsScreen = () => {
   const [expandedRow, setExpandedRow] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsPerPage] = useState(5);
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
@@ -44,7 +48,14 @@ const HotelierBookingsScreen = () => {
   };
 
   if (isLoading) return <Loader />;
+  
+  // Sorting and pagination logic
   const sortedBookings = [...bookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = sortedBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <HotelierLayout>
@@ -67,7 +78,7 @@ const HotelierBookingsScreen = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedBookings.map((booking) => (
+                      {currentBookings.map((booking) => (
                         <React.Fragment key={booking?._id}>
                           <tr>
                             <td>{booking?.hotelId?.name}</td>
@@ -76,36 +87,31 @@ const HotelierBookingsScreen = () => {
                             <td>{new Date(booking?.bookingDate).toLocaleDateString()}</td>
                             <td>{booking?.totalAmount}</td>
                             <td>
-                              <Row>
-                                <Col>
-                                <Button variant="link" onClick={() => toggleRow(booking?._id)}>
-                                {expandedRow === booking?._id ? 'Hide Details' : 'View Details'}{' '}
-                                <FaChevronDown />
-                              </Button>
-                                </Col>
-                                <Col>
-                                {booking?.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking?.checkOutDate) && (
-                                <Button
-                                  variant="danger"
-                                  onClick={() => {
-                                    setSelectedBooking(booking?._id);
-                                    setShowCancelModal(true);
-                                  }}
-                                  className="ms-2"
-                                >
-                                  Cancel Booking
-                                </Button>
-                              )}
-                              {booking?.bookingStatus === 'cancelled' && (
-                                <div className="d-flex align-items-center text-danger">
-                                  <FaTimes className="me-2" />
-                                   Cancelled
-                                </div>
-                              )}
-                                </Col>
-                              </Row>
-                              
-                              
+                          
+                                  <Button variant="link" onClick={() => toggleRow(booking?._id)}>
+                                    {expandedRow === booking?._id ? 'Hide Details' : 'View Details'}{' '}
+                                    <FaChevronDown />
+                                  </Button>
+                                  </td>
+                                  <td>
+                                  {booking?.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking?.checkOutDate) && (
+                                    <Button
+                                      variant="danger"
+                                      onClick={() => {
+                                        setSelectedBooking(booking?._id);
+                                        setShowCancelModal(true);
+                                      }}
+                                      className="ms-2"
+                                    >
+                                      Cancel Booking
+                                    </Button>
+                                  )}
+                                  {booking?.bookingStatus === 'cancelled' && (
+                                    <div className="d-flex align-items-center text-danger">
+                                      <FaTimes className="me-2" />
+                                      Cancelled
+                                    </div>
+                                  )}
                             </td>
                           </tr>
                           <tr>
@@ -122,26 +128,6 @@ const HotelierBookingsScreen = () => {
                                           <p><strong>Check-In:</strong> {new Date(booking?.checkInDate).toLocaleDateString()}</p>
                                           <p><strong>Check-Out:</strong> {new Date(booking?.checkOutDate).toLocaleDateString()}</p>
                                         </Col>
-                                        {/* <Col>
-                                          {booking.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking.checkOutDate) && (
-                                            <Button
-                                              variant="danger"
-                                              onClick={() => {
-                                                setSelectedBooking(booking._id);
-                                                setShowCancelModal(true);
-                                              }}
-                                              className="me-2"
-                                            >
-                                              Cancel Booking
-                                            </Button>
-                                          )}
-                                          {booking.bookingStatus === 'cancelled' && (
-                                            <div className="d-flex align-items-center text-danger">
-                                              <FaTimes className="me-2" />
-                                              Booking Cancelled
-                                            </div>
-                                          )}
-                                        </Col> */}
                                       </Row>
                                     </Card.Body>
                                   </Card>
@@ -153,6 +139,14 @@ const HotelierBookingsScreen = () => {
                       ))}
                     </tbody>
                   </Table>
+                
+                <Pagination className="my-3 d-flex justify-content-center">
+                  {[...Array(Math.ceil(sortedBookings.length / bookingsPerPage)).keys()].map((x) => (
+                    <Pagination.Item key={x + 1} active={x + 1 === currentPage} onClick={() => paginate(x + 1)}>
+                      {x + 1}
+                    </Pagination.Item>
+                  ))}
+                </Pagination>
                 </div>
               </Card.Body>
             </Card>
