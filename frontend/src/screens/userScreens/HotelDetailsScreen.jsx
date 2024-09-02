@@ -28,6 +28,7 @@ const HotelDetailsScreen = () => {
   const [checkInDate, setCheckInDate] = useState(new Date());
   const [checkOutDate, setCheckOutDate] = useState(new Date());
   const [roomCount, setRoomCount] = useState(1);
+  const [guestCount, setGuestCount] = useState(1);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: 'AIzaSyDfWY6h4Y7JrizQHDZcfsds0NSLcvC1bVM', 
@@ -58,36 +59,38 @@ const HotelDetailsScreen = () => {
   const handleBooking = async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
+  
     if (checkInDate < today) {
       toast.error('Check-in date cannot be in the past');
       return;
     }
-
+  
     if (checkOutDate <= checkInDate) {
       toast.error('Check-out date must be after check-in date');
       return;
     }
-
+  
     try {
       const availabilityResponse = await checkRoomAvailability({
         roomId: selectedRoom,
         checkInDate,
         checkOutDate,
         roomCount,
+        guestCount,
       }).unwrap();
-
+  
       if (!availabilityResponse.isAvailable) {
-        toast.error('Room is not available for the selected dates');
+        toast.error(availabilityResponse.message || 'Room is not available for the selected dates');
         return;
       }
-
+  
       const queryParams = {
         hotelId: id,
         room: selectedRoom,
         checkInDate: checkInDate.toISOString(),
         checkOutDate: checkOutDate.toISOString(),
-        roomCount: roomCount,
+        roomCount,
+        guestCount,
       };
       const queryString = new URLSearchParams(queryParams).toString();
       navigate(`/booking?${queryString}`);
@@ -95,6 +98,7 @@ const HotelDetailsScreen = () => {
       toast.error('Error checking room availability');
     }
   };
+  
 
   const mapContainerStyle = {
     width: '100%',
@@ -198,7 +202,8 @@ const HotelDetailsScreen = () => {
                               {room?.description}
                               <br />
                               <br />
-                              <strong>Price:</strong> ${room?.price}/night
+                              <strong>Occupancy:</strong> {room?.occupancy}<br/><br/>
+                              <strong>Price:</strong> Rs {room?.price}/night
                             </Card.Text>
                             <Button onClick={() => handleBookNow(room?._id)}>
                               Book Now
@@ -228,8 +233,6 @@ const HotelDetailsScreen = () => {
                                 emptySymbol={<i className="fa fa-star-o" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
                                 fullSymbol={<i className="fa fa-star" style={{ color: '#FFD700', fontSize: '1.5rem' }} />}
                               />
-
-
                               </Card.Text>
                               <Card.Text>{review?.review}</Card.Text>
                             </Card.Body>
@@ -248,45 +251,56 @@ const HotelDetailsScreen = () => {
       </Container>
       <Footer />
       <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Book Room</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="checkInDate" className='my-2'>
-              <Form.Label className='mx-2'>Check-in Date</Form.Label>
-              <DatePicker
-                selected={checkInDate}
-                onChange={(date) => setCheckInDate(date)}
-                dateFormat="dd/MM/yyyy"
-                className="form-control"
-              />
-            </Form.Group>
-            <Form.Group controlId="checkOutDate">
-              <Form.Label className='mx-2'>Check-out Date</Form.Label>
-              <DatePicker
-                selected={checkOutDate}
-                onChange={(date) => setCheckOutDate(date)}
-                dateFormat="dd/MM/yyyy"
-                className="form-control"
-              />
-            </Form.Group>
-            <Form.Group controlId="roomCount" className='my-2' style={{display:"flex",flexDirection:"row"}}>
-              <Form.Label className='mx-2'>Room Count</Form.Label>
-              <Form.Control
-                type="number"
-                min="1"
-                value={roomCount}
-                style={{width:"48%"}}
-                onChange={(e) => setRoomCount(Number(e.target.value))}
-              />
-            </Form.Group>
-            <Button variant="primary" onClick={handleBooking}>
-              Book Now
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Book Room</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group controlId="checkInDate" className='my-2'>
+        <Form.Label className='mx-2'>Check-in Date</Form.Label>
+        <DatePicker
+          selected={checkInDate}
+          onChange={(date) => setCheckInDate(date)}
+          dateFormat="dd/MM/yyyy"
+          className="form-control"
+        />
+      </Form.Group>
+      <Form.Group controlId="checkOutDate">
+        <Form.Label className='mx-2'>Check-out Date</Form.Label>
+        <DatePicker
+          selected={checkOutDate}
+          onChange={(date) => setCheckOutDate(date)}
+          dateFormat="dd/MM/yyyy"
+          className="form-control"
+        />
+      </Form.Group>
+      <Form.Group controlId="roomCount" className='my-2' style={{display:"flex",flexDirection:"row"}}>
+        <Form.Label className='mx-2'>Room Count</Form.Label>
+        <Form.Control
+          type="number"
+          min="1"
+          value={roomCount}
+          style={{width:"48%"}}
+          onChange={(e) => setRoomCount(Number(e.target.value))}
+        />
+      </Form.Group>
+      <Form.Group controlId="guestCount" className='my-2' style={{display:"flex",flexDirection:"row"}}>
+        <Form.Label className='mx-2'>Number of Guests</Form.Label>
+        <Form.Control
+          type="number"
+          min="1"
+          value={guestCount}
+          style={{width:"48%"}}
+          onChange={(e) => setGuestCount(Number(e.target.value))}
+        />
+      </Form.Group>
+      <Button variant="primary" onClick={handleBooking}>
+        Book Now
+      </Button>
+    </Form>
+  </Modal.Body>
+</Modal>
+
     </div>
   );
 };

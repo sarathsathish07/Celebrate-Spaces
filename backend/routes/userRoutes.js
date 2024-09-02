@@ -37,7 +37,7 @@ router.post('/resend-otp', resendOtp);
 router.post('/forgot-password', sendPasswordResetEmail);
 router.put('/reset-password/:token', resetPassword);
 router.post('/logout',logoutUser) 
-router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfile.single('profileImage'),protect,updateUserProfile); //
+router.route('/profile').get(protect,getUserProfile).put( multerUploadUserProfile.single('profileImage'),protect,updateUserProfile); 
 router.get('/hotels',getHotels ) 
 router.post('/rooms', getRoomsByHotelIds); 
 router.get('/rooms/:roomId',protect, getRoomByRoomId); 

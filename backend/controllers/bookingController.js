@@ -126,9 +126,11 @@ const getAllBookings = asyncHandler(async (req, res) => {
   }
 });
 const checkRoomAvailability = asyncHandler(async (req, res) => {
-  const { roomId, checkInDate, checkOutDate, roomCount } = req.body;
+  console.log("1");
+  
+  const { roomId, checkInDate, checkOutDate, roomCount,guestCount } = req.body;
 
-  const availability = await checkAvailability(roomId, checkInDate, checkOutDate, roomCount);
+  const availability = await checkAvailability(roomId, checkInDate, checkOutDate, roomCount,guestCount);
 
   res.json(availability);
 });

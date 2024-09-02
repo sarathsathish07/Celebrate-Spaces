@@ -7,8 +7,8 @@ const generateHotelierToken = (res,userId)=>{
 
   res.cookie('jwtHotelier', token, {
     httpOnly: true,
-    secure: true,  // Only true in production
-    sameSite: 'None', // Adjust for production
+    secure: true,  
+    sameSite: 'None',
     maxAge: 30 * 24 * 60 * 60 * 1000,
     path: '/'
   });
