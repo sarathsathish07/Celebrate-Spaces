@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Table, Container, Row, Col, Card, Button, Collapse, Form, Modal } from "react-bootstrap";
+import { Table, Container, Row, Col, Card, Button, Collapse, Form, Modal, Pagination } from "react-bootstrap";
 import Rating from 'react-rating';
 import { useGetBookingsQuery, useAddReviewMutation, useGetReviewsQuery, useCancelBookingMutation, useCreateChatRoomMutation } from "../../slices/usersApiSlice.js";
 import Loader from "../../components/userComponents/Loader";
@@ -27,6 +27,9 @@ const BookingsScreen = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showRefundPolicyModal, setShowRefundPolicyModal] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsPerPage] = useState(5);
 
   const toggleRow = (bookingId) => {
     setExpandedRow(expandedRow === bookingId ? null : bookingId);
@@ -87,6 +90,12 @@ const BookingsScreen = () => {
   if (bookingsLoading || reviewsLoading) return <Loader />;
   const sortedBookings = [...bookings].sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
 
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = sortedBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div>
       <div className="position-relative">
@@ -117,7 +126,7 @@ const BookingsScreen = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedBookings.map((booking) => (
+                    {currentBookings.map((booking) => (
                       <React.Fragment key={booking?._id}>
                         <tr>
                           <td>{booking?.hotelId?.name}</td>
@@ -192,10 +201,10 @@ const BookingsScreen = () => {
                                                   initialRating={rating}
                                                   emptySymbol="fa fa-star-o fa-2x"
                                                   fullSymbol="fa fa-star fa-2x"
-                                                  onChange={(value) => setRating(value)}
+                                                  onChange={(rate) => setRating(rate)}
                                                 />
                                               </Form.Group>
-                                              <Form.Group controlId="review">
+                                              <Form.Group controlId="review" className="mt-2">
                                                 <Form.Label><strong>Review</strong></Form.Label>
                                                 <Form.Control
                                                   as="textarea"
@@ -206,11 +215,11 @@ const BookingsScreen = () => {
                                               </Form.Group>
                                               <Button
                                                 variant="primary"
+                                                className="mt-2"
                                                 onClick={() => handleReviewSubmit(booking?._id, booking?.hotelId?._id)}
                                                 disabled={isAddingReview}
-                                                className="mt-3"
                                               >
-                                                {isAddingReview ? 'Submitting...' : 'Submit Review'}
+                                                Submit Review
                                               </Button>
                                             </Form>
                                           </>
@@ -255,6 +264,15 @@ const BookingsScreen = () => {
                 </Modal.Footer>
               </Modal>
 
+                <div className="d-flex justify-content-center mt-3">
+                  <Pagination>
+                    {Array.from({ length: Math.ceil(bookings.length / bookingsPerPage) }).map((_, index) => (
+                      <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
+                        {index + 1}
+                      </Pagination.Item>
+                    ))}
+                  </Pagination>
+                </div>
               </Card.Body>
             </Card>
           </Col>
