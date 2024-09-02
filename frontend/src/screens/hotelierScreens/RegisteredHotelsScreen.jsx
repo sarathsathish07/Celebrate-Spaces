@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Button, Container, Card, Row, Col } from "react-bootstrap";
+import React, { useEffect,useState } from "react";
+import { Button, Container, Card, Row, Col,Pagination  } from "react-bootstrap";
 import { useGetHotelsQuery } from "../../slices/hotelierApiSlice.js";
 import HotelierLayout from "../../components/hotelierComponents/HotelierLayout";
 import { toast } from "react-toastify";
@@ -11,14 +11,22 @@ const RegisteredHotelsScreen = () => {
   const { data: hotels, isLoading, isError, refetch } = useGetHotelsQuery();
   const { hotelierInfo } = useSelector((state) => state.hotelierAuth);
 
+  const [currentPage, setCurrentPage] = useState(1);
+const [hotelsPerPage] = useState(3); 
+
+
   useEffect(() => {
     document.title = "Registered Hotels";
    refetch();
     })
 
+    const indexOfLastHotel = currentPage * hotelsPerPage;
+const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
+const currentHotels = hotels?.slice(indexOfFirstHotel, indexOfLastHotel);
+
 
   const renderHotels = () => {
-    return hotels?.map((hotel) => (
+    return currentHotels ?.map((hotel) => (
       <Col key={hotel?._id} md={4} className="mb-4">
         <Card className="h-100 shadow hotelscard">
           {hotel?.images.length > 0 && (
@@ -63,7 +71,7 @@ const RegisteredHotelsScreen = () => {
     toast.error("Error fetching hotels");
     return <div>Error</div>;
   }
-
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <HotelierLayout>
       <div style={{ maxHeight: '700px', overflowY: 'auto' }}>
@@ -79,6 +87,13 @@ const RegisteredHotelsScreen = () => {
             </Col>
           </Row>
           <Row>{renderHotels()}</Row>
+          <Pagination className="my-3 d-flex justify-content-center">
+          {[...Array(Math.ceil(hotels?.length / hotelsPerPage)).keys()].map((number) => (
+            <Pagination.Item key={number + 1} onClick={() => paginate(number + 1)} active={number + 1 === currentPage}>
+              {number + 1}
+            </Pagination.Item>
+          ))}
+        </Pagination>
         </Container>
       </div>
     </HotelierLayout>
