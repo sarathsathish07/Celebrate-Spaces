@@ -21,6 +21,7 @@ const CheckoutScreen = () => {
   const checkInDate = new Date(queryParams.get('checkInDate'));
   const checkOutDate = new Date(queryParams.get('checkOutDate'));
   const roomCount = parseInt(queryParams.get('roomCount'), 10);
+  const guestCount = parseInt(queryParams.get('guestCount'), 10);
 
   const { data: room, error, isLoading } = useGetRoomByRoomIdQuery(roomId);
   const { userInfo } = useSelector((state) => state.auth);
@@ -130,6 +131,7 @@ const CheckoutScreen = () => {
                   <ListGroup.Item><strong>Check-In Date:</strong> {checkInDate.toLocaleDateString()}</ListGroup.Item>
                   <ListGroup.Item><strong>Check-Out Date:</strong> {checkOutDate.toLocaleDateString()}</ListGroup.Item>
                   <ListGroup.Item><strong>Room Count:</strong> {roomCount}</ListGroup.Item>
+                  <ListGroup.Item><strong>Guest Count:</strong> {guestCount}</ListGroup.Item>
                 </ListGroup>
               </Card.Body>
             </Card>
