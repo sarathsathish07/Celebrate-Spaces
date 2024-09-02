@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Container, Row, Col, Card, Button, Form as BootstrapForm } from "react-bootstrap";
+import { Table, Container, Row, Col, Card, Button, Form as BootstrapForm, Pagination } from "react-bootstrap";
 import { AiFillLock, AiFillUnlock } from "react-icons/ai";
 import { useAdminBlockUserMutation, useAdminUnblockUserMutation } from "../../slices/adminApiSlice";
 import { toast } from "react-toastify";
@@ -12,6 +12,9 @@ export const UsersTable = ({ users, refetchData }) => {
   const { adminInfo } = useSelector((state) => state.adminAuth);
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5); 
+
   useEffect(() => {
     if (adminInfo) {
       navigate("/admin/get-user");
@@ -22,6 +25,7 @@ export const UsersTable = ({ users, refetchData }) => {
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
+    setCurrentPage(1); 
   };
 
   const filteredUsers = users.filter(
@@ -29,6 +33,10 @@ export const UsersTable = ({ users, refetchData }) => {
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   const [blockUser] = useAdminBlockUserMutation();
   const [unblockUser] = useAdminUnblockUserMutation();
@@ -53,6 +61,8 @@ export const UsersTable = ({ users, refetchData }) => {
     }
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Container fluid>
       <Row>
@@ -76,35 +86,47 @@ export const UsersTable = ({ users, refetchData }) => {
               </div>
               <br />
               <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user, index) => (
-                    <tr key={index}>
-                      <td>{user?.name}</td>
-                      <td>{user?.email}</td>
-                      <td>{user?.isBlocked ? "Blocked" : "Active"}</td>
-                      <td>
-                        <Button
-                          variant="transparent"
-                          size="sm"
-                          onClick={() => (user?.isBlocked ? handleUnblock(user) : handleBlock(user))}
-                        >
-                          {user?.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
-                        </Button>
-                      </td>
+                <Table responsive>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {currentUsers.map((user, index) => (
+                      <tr key={index}>
+                        <td>{user?.name}</td>
+                        <td>{user?.email}</td>
+                        <td>{user?.isBlocked ? "Blocked" : "Active"}</td>
+                        <td>
+                          <Button
+                            variant="transparent"
+                            size="sm"
+                            onClick={() => (user?.isBlocked ? handleUnblock(user) : handleBlock(user))}
+                          >
+                            {user?.isBlocked ? <AiFillUnlock /> : <AiFillLock />}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+                <div className="d-flex justify-content-center mt-3">
+                  <Pagination>
+                    {Array.from({ length: Math.ceil(filteredUsers.length / usersPerPage) }).map((_, index) => (
+                      <Pagination.Item
+                        key={index + 1}
+                        active={index + 1 === currentPage}
+                        onClick={() => paginate(index + 1)}
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    ))}
+                  </Pagination>
+                </div>
               </div>
             </Card.Body>
           </Card>
