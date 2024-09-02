@@ -21,6 +21,8 @@ const HotelsScreen = () => {
   const [getHotels, { isLoading: isLoadingHotels }] = useGetHotelsDataMutation();
   const [getRooms, { isLoading: isLoadingRooms }] = useGetRoomsDataMutation();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const hotelsPerPage = 6;
 
   const baseURL = 'https://celebratespaces.site/';
 
@@ -101,6 +103,24 @@ const HotelsScreen = () => {
     return (total / hotelRooms.length).toFixed(2);
   };
 
+  const indexOfLastHotel = currentPage * hotelsPerPage;
+  const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
+  const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(hotels.length / hotelsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   if (isLoadingHotels || isLoadingRooms)
     return (
       <div>
@@ -116,7 +136,7 @@ const HotelsScreen = () => {
           <h1>Find Your Dream Luxury Hotel</h1>
         </div>
       </div>
-      <Container style={{ height: "100vh" }}>
+      <Container>
         <Row>
           <Col md={3}>
             <Card className="p-3 my-5">
@@ -182,9 +202,9 @@ const HotelsScreen = () => {
             </Card>
           </Col>
 
-          <Col md={9} className="mt-5 hotels-section">
+          <Col md={9} className="mt-5 hotels-section mb-5">
             <Row>
-              {hotels.map((hotel) => (
+              {currentHotels.map((hotel) => (
                 <Col key={hotel?._id} md={4} className="mb-4">
                   <Card className="hotel-card" onClick={() => handleHotelClick(hotel?._id)}>
                   <Card.Img
@@ -193,9 +213,6 @@ const HotelsScreen = () => {
                     alt={hotel?.name}
                     className="hotel-image"
                   />
-
-
-
                     <Card.Body className="hotel-card-body">
                       <Card.Title>{hotel?.name}</Card.Title>
                       <Row>
@@ -213,6 +230,15 @@ const HotelsScreen = () => {
                 </Col>
               ))}
             </Row>
+            <div className="pagination-controls d-flex justify-content-center align-items-center mt-3">
+              <Button variant="secondary" onClick={handlePrevPage} disabled={currentPage === 1}>
+                Previous
+              </Button>
+              <span className="mx-2">Page {currentPage} of {Math.ceil(hotels.length / hotelsPerPage)}</span>
+              <Button variant="secondary" onClick={handleNextPage} disabled={currentPage === Math.ceil(hotels.length / hotelsPerPage)}>
+                Next
+              </Button>
+            </div>
           </Col>
         </Row>
       </Container>

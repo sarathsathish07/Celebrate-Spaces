@@ -712,8 +712,6 @@ html {
   color: white;
 }
 .hotels-section {
-  max-height: 90vh; 
-  overflow-y: auto;
   padding-right: 15px;
 }
 
