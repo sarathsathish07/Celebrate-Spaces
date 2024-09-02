@@ -60,6 +60,9 @@ const bookingSchema = new mongoose.Schema({
   paymentId: { 
     type: String,
   },
+  cancelMessage : { 
+    type: String,
+  },
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

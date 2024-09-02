@@ -350,6 +350,7 @@ const cancelBooking = async (req, res) => {
     }
 
     booking.bookingStatus = 'cancelled';
+    booking.cancelMessage  = `Your booking has been cancelled and ${refundPercentage}% amount has been refunded to your wallet.`;
     await booking.save();
 
     const wallet = await Wallet.findOne({ user: booking.userId });
@@ -364,6 +365,8 @@ const cancelBooking = async (req, res) => {
       });
       await wallet.save();
     }
+
+    
 
     const userNotification = new Notification({
       userId: booking.userId,

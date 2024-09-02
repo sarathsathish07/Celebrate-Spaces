@@ -147,6 +147,9 @@ const BookingsScreen = () => {
                                         <p><strong>Total Amount:</strong> Rs {booking?.totalAmount}</p>
                                         <p><strong>Payment Method:</strong> {booking?.paymentMethod}</p>
                                         <p><strong>Status:</strong> {booking?.bookingStatus}</p>
+                                        {booking?.bookingStatus === 'cancelled' && booking?.cancelMessage && (
+                                          <p><strong>Cancel Message:</strong> {booking?.cancelMessage}</p>
+                                        )}
                                       </Col>
                                       <Col>
                                         {booking?.bookingStatus === 'confirmed' && !isPastCheckoutDate(booking?.checkOutDate) && (
