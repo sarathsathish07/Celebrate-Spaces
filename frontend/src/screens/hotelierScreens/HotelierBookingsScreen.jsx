@@ -143,6 +143,8 @@ const HotelierBookingsScreen = () => {
                                           <p><strong>Payment Method:</strong> {booking?.paymentMethod}</p>
                                           <p><strong>Check-In:</strong> {new Date(booking?.checkInDate).toLocaleDateString()}</p>
                                           <p><strong>Check-Out:</strong> {new Date(booking?.checkOutDate).toLocaleDateString()}</p>
+                                          <p><strong>Rooms Count:</strong> {booking?.roomsBooked}</p>
+                                          <p><strong>Guests Count:</strong> {booking?.guestCount}</p>
                                         </Col>
                                       </Row>
                                     </Card.Body>
