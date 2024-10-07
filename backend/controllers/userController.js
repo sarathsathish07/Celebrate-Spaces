@@ -9,6 +9,7 @@ import Hotel from '../models/hotelModel.js';
 import Room from '../models/roomModel.js';
 import Notification from '../models/notificationModel.js';
 import HotelierNotification from '../models/hotelierNotifications.js';
+import jwt from 'jsonwebtoken'    
 
 const authUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
