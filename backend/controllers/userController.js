@@ -18,10 +18,12 @@ const authUser = expressAsyncHandler(async (req, res) => {
     console.log("user",user);
     
     generateToken(res, user._id);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "30d" });
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
+      token
     });
   } catch (error) {
     res.status(401);

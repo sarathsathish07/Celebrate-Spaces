@@ -34,7 +34,10 @@ const LoginScreen = () => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      dispatch(setCredentials({
+        userInfo: { _id: res._id, name: res.name, email: res.email },
+        token: res.token  
+      }));
       navigate("/");
     } catch (error) {
       if (error?.data?.message === "Please verify your OTP before logging in") {

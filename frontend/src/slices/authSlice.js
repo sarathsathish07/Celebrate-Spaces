@@ -11,11 +11,13 @@ const authSlice = createSlice({
     setCredentials: (state, action) => {
       state.userInfo = action.payload;
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
+      localStorage.setItem('token', action.payload.token);
       console.log('User Info Set:', state.userInfo);
     },
     logout: (state, action) => {
       state.userInfo = null;
       localStorage.removeItem('userInfo');
+      localStorage.removeItem('token'); 
       console.log('User Logged Out');
     }
   }
