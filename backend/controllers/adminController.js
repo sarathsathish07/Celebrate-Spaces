@@ -32,12 +32,6 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
-// const updateUser = expressAsyncHandler(async (req, res) => {
-//   const { userId, name, email } = req.body;
-//   const updatedUser = await adminService.updateUser(userId, { name, email });
-//   res.status(200).json(updatedUser);
-// });
-
 
 const getVerificationDetails = expressAsyncHandler(async (req, res) => {
   const hotels = await adminService.getVerificationDetails();
